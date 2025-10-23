@@ -5,7 +5,6 @@ import { Mail, Lock } from "lucide-react";
 export default function Login() {
   return (
     <div className="w-screen h-screen flex font-[Inter] bg-[#E6F0FA] overflow-hidden">
-      {/* Kiri: gambar full mentok pinggir */}
       <div className="hidden md:block w-1/2 h-full">
         <img
           src={loginImg}
@@ -14,7 +13,6 @@ export default function Login() {
         />
       </div>
 
-      {/* Kanan: form login full tinggi, mentok kanan */}
       <div className="flex w-full md:w-1/2 h-full items-center justify-center">
         <div className="w-[70%] space-y-10">
           {/* Judul */}
