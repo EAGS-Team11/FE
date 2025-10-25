@@ -44,6 +44,6 @@ export const essays = [
     score: "-",
     feedback: "-",
     date: "13 Oct 2025",
-    action: "Edit",
+    action: "Submit",
   },
 ];
