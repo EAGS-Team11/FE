@@ -7,23 +7,6 @@ export default function ViewGraded() {
   const navigate = useNavigate();
   const { state: essay } = useLocation(); // Ambil data essay dari table
 
-  // Tentukan kalimat berdasarkan score
-  const getMessageByScore = (score) => {
-    if (score >= 70) {
-      return {
-        title: "Congratulations!",
-        subtitle: "You achieved a high score.",
-      };
-    } else {
-      return {
-        title: "Keep learning!",
-        subtitle: "You can do even better next time.",
-      };
-    }
-  };
-
-  const message = getMessageByScore(essay.score);
-
   return (
     <div className="relative w-full min-h-screen bg-[#F5F8FB] font-[Inter] px-12 py-10">
       {/* Header */}
