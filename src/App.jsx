@@ -4,6 +4,7 @@ import Register from './pages/register';
 import Home from './pages/home';
 import MyCourse from './pages/course/MyCourse'; 
 import MyEssays from './pages/essay/MyEssays'; 
+import SubmitEssay from "./pages/essay/SubmitEssay";
 import './App.css';
 
 export default function App() {
@@ -16,6 +17,7 @@ export default function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/my-course" element={<MyCourse />} />
         <Route path="/my-essays" element={<MyEssays />} />
+        <Route path="/submit-essay" element={<SubmitEssay />} />
       </Routes>
     </Router>
   );

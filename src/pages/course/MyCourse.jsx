@@ -1,5 +1,5 @@
-import CourseCard from "../../components/CourseCard";
-import { dummyCourses } from "../../data/dummyCourses";
+import CourseCard from "../../components/course/CourseCard";
+import { dummyCourses } from "../../data/course/dummyCourses";
 import courseImg from "../../assets/course1.png";
 
 const MyCourse = () => {

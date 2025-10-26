@@ -2,15 +2,17 @@ import React, { useState, useEffect, useRef } from "react";
 import { ChevronDown, Search } from "lucide-react";
 import myessays1 from "../../assets/myessays1.png";
 import myessays2 from "../../assets/myessays2.png";
-import EssayTable from "../../components/EssayTable";
-import EssayStat from "../../components/EssayStat"; 
-import { essays } from "../../data/essayData";
+import EssayTable from "../../components/essay/EssayTable";
+import EssayStat from "../../components/essay/EssayStat"; 
+import { essays } from "../../data/essay/essayData";
+import { useNavigate } from "react-router-dom";
 
 export default function MyEssays() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -75,7 +77,10 @@ export default function MyEssays() {
       {/* Header */}
       <div className="relative z-10 flex justify-between items-center px-12 pt-10">
         <h1 className="text-[28px] font-bold text-black ml-14">My Essays</h1>
-        <button className="bg-[#3D73B4] text-white font-bold px-6 py-2 rounded-[7px] hover:bg-[#2f5f97] transition">
+        <button 
+          className="bg-[#3D73B4] text-white font-bold px-6 py-2 rounded-[7px] hover:bg-[#2f5f97] transition"
+          onClick={() => navigate("/submit-essay")}
+        >
           Submit New Essay
         </button>
       </div>
@@ -100,7 +105,7 @@ export default function MyEssays() {
             />
           </button>
 
-          {/* Dropdown animasi slide down */}
+          {/* Dropdown slide down */}
           <div
             className={`absolute bg-white border border-gray-300 rounded-[10px] shadow-md z-10 w-[180px] 
               transition-all duration-300 ease-out origin-top

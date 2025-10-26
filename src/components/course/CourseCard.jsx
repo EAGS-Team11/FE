@@ -1,4 +1,3 @@
-// src/components/CourseCard.jsx
 const CourseCard = ({ title, category }) => {
   return (
     <div className="relative w-[280px] h-[273px] bg-white rounded-[15px] overflow-hidden shadow-md
