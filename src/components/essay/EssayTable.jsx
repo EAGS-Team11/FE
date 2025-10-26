@@ -1,6 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function EssayTable({ essays }) {
+  const navigate = useNavigate();
+  const [feedbackType, setFeedbackType] = useState(
+    essays.map(() => "AI") // default AI untuk semua row
+  );
+
+  // Status icon
   const getStatusIcon = (status) => {
     if (status === "Graded") {
       return (
@@ -41,6 +48,7 @@ export default function EssayTable({ essays }) {
     return null;
   };
 
+  // Wrap text untuk title
   const wrapText = (text) => {
     const words = text.split(" ");
     const chunked = [];
@@ -48,6 +56,13 @@ export default function EssayTable({ essays }) {
       chunked.push(words.slice(i, i + 3).join(" "));
     }
     return chunked.join("\n");
+  };
+
+  // Truncate 2 kalimat pertama untuk feedback
+  const truncateFeedback = (text) => {
+    if (!text) return "-";
+    const sentences = text.split(". ");
+    return sentences.slice(0, 2).join(". ") + (sentences.length > 2 ? "..." : "");
   };
 
   return (
@@ -59,6 +74,7 @@ export default function EssayTable({ essays }) {
             <th className="py-3 px-4 w-[15%] text-left">Status</th>
             <th className="py-3 px-4 w-[10%] text-left">Score</th>
             <th className="py-3 px-4 w-[25%] text-left">Feedback</th>
+            <th className="py-3 px-4 w-[10%] text-left"></th> 
             <th className="py-3 px-4 w-[15%] text-left">Date</th>
             <th className="py-3 px-4 w-[10%] text-right">Actions</th>
           </tr>
@@ -86,7 +102,23 @@ export default function EssayTable({ essays }) {
 
               {/* Feedback */}
               <td className="py-3 px-4 whitespace-pre-line break-words leading-snug text-left">
-                {wrapText(essay.feedback)}
+                <p>{truncateFeedback(essay[feedbackType[index] === "AI" ? "feedbackAI" : "feedbackLecturer"])}</p>
+              </td>
+
+              {/* Dropdown Feedback Type */}
+              <td className="py-3 px-4">
+                <select
+                  value={feedbackType[index]}
+                  onChange={(e) => {
+                    const newTypes = [...feedbackType];
+                    newTypes[index] = e.target.value;
+                    setFeedbackType(newTypes);
+                  }}
+                  className="border border-gray-300 rounded px-2 py-1 text-[12px] w-full"
+                >
+                  <option value="AI">AI</option>
+                  <option value="Lecturer">Lecturer</option>
+                </select>
               </td>
 
               {/* Date */}
@@ -94,7 +126,9 @@ export default function EssayTable({ essays }) {
 
               {/* Action */}
               <td className="py-3 px-4 text-right text-[#3D73B4] font-semibold cursor-pointer hover:underline">
-                {essay.action}
+                <span onClick={() => navigate("/view-graded", { state: essay })}>
+                  {essay.action}
+                </span>
               </td>
             </tr>
           ))}
