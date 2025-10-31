@@ -1,17 +1,27 @@
 import React from "react";
-import SubmitEssayTable from "../../components/essay/SubmitEssayTable";
-import myessays3 from "../../assets/myessays3.png";
 import { useNavigate } from "react-router-dom";
-import { submitEssayData } from "../../data/essay/submitData";
-import { ArrowLeft } from "lucide-react"; 
+import SubmitEssayTable from "../../components/essay/SubmitEssayTable";
+import { dummyCourses } from "../../data/course/dummyCourses";
+import { courseEssays } from "../../data/course/courseEssay";
+import myessays3 from "../../assets/myessays3.png";
+import { ArrowLeft } from "lucide-react";
 
 export default function SubmitEssay() {
   const navigate = useNavigate();
 
-  const courses = submitEssayData.map(item => ({
-    ...item,
-    onAction: () => navigate(item.route),
-  }));
+  // 🔗 Ambil hanya essay yang belum dikerjakan
+  const courses = dummyCourses.flatMap((course) => {
+    const essays = courseEssays[course.id];
+    if (!essays) return [];
+
+    return essays.map((essay) => ({
+      courseTitle: course.title, // Judul course
+      essayTitle: essay.title, // Title essay
+      deadline: essay.deadline,
+      status: "Belum Dikirim",
+      onAction: () => navigate(`/submit-essay/${course.id}/${essay.id}`),
+    }));
+  });
 
   return (
     <div className="relative w-full min-h-screen bg-[#F5F8FB] font-[Inter] overflow-hidden px-12 py-10">

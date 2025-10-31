@@ -1,20 +1,25 @@
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import CourseCard from "../../components/course/CourseCard";
 import { dummyCourses } from "../../data/course/dummyCourses";
 import courseImg from "../../assets/course1.png";
 
 const MyCourse = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="p-8 bg-[#F6F7FB] min-h-screen font-inter">
       {/* Header */}
-      <div className="flex items-center gap-2 mb-6  mt-1 ml-8">
+      <div className="flex items-center gap-2 mb-6 mt-1 ml-8">
         <h1 className="text-[32px] font-bold">Courses</h1>
-        <div className="w-10 h-10 flex justify-center items-center rounded-[10px]  mt-1">
+        <div className="w-10 h-10 flex justify-center items-center rounded-[10px] mt-1">
           <img src={courseImg} alt="Book" className="w-30 h-30" />
         </div>
       </div>
 
-      {/*search + semua card */}
+      {/* Search + Course Grid */}
       <div className="bg-[#ECEDEF] rounded-[15px] p-8 flex flex-col items-center max-w-[1000px] mx-auto">
+        {/* Search Bar */}
         <div className="mb-6 w-full max-w-[800px]">
           <div className="relative w-full">
             <input
@@ -39,14 +44,20 @@ const MyCourse = () => {
           </div>
         </div>
 
-        {/* Grid course cards */}
+        {/* Course Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full justify-center">
           {dummyCourses.map((course) => (
-            <CourseCard
+            <div
               key={course.id}
-              title={course.title}
-              category={course.category}
-            />
+              onClick={() => navigate(`/course/${course.id}`)}
+              className="cursor-pointer"
+            >
+              <CourseCard
+                id={course.id}
+                title={course.title}
+                category={course.category}
+              />
+            </div>
           ))}
         </div>
       </div>

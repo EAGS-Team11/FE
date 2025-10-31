@@ -24,30 +24,33 @@ export default function MyEssays() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Filter essays 
-  const filteredEssays = essays.filter((essay) => {
+  // 🔹 Ambil essay tambahan dari localStorage
+  const storedEssays = JSON.parse(localStorage.getItem("submittedEssays")) || [];
+  const allEssays = [...essays, ...storedEssays];
+
+  // 🔹 Filter essay
+  const filteredEssays = allEssays.filter((essay) => {
     const query = searchQuery.toLowerCase();
     const matchesSearch =
       essay.title.toLowerCase().includes(query) ||
       essay.status.toLowerCase().includes(query) ||
-      essay.feedback.toLowerCase().includes(query) ||
-      essay.score?.toString().includes(query) ||
-      essay.date?.toLowerCase().includes(query);
+      essay.feedbackAI?.toLowerCase().includes(query) ||
+      essay.feedbackLecturer?.toLowerCase().includes(query);
     const matchesStatus =
       filterStatus === "All" ? true : essay.status === filterStatus;
     return matchesSearch && matchesStatus;
   });
 
-  // Hitung statistik berdasarkan tabel
-  const totalSubmitted = essays.length;
-  const gradedEssays = essays.filter((e) => e.status === "Graded").length;
-  const pendingReview = essays.filter(
+  // 🔹 Statistik berdasarkan allEssays
+  const totalSubmitted = allEssays.length;
+  const gradedEssays = allEssays.filter((e) => e.status === "Graded").length;
+  const pendingReview = allEssays.filter(
     (e) => e.status === "Pending" || e.status === "In Review"
   ).length;
   const averageScore =
     gradedEssays > 0
       ? (
-          essays
+          allEssays
             .filter((e) => e.status === "Graded")
             .reduce((sum, e) => sum + (e.score || 0), 0) / gradedEssays
         ).toFixed(1)
@@ -63,16 +66,8 @@ export default function MyEssays() {
   return (
     <div className="relative w-full min-h-screen bg-[#F5F8FB] font-[Inter] overflow-hidden z-10">
       {/* Background images */}
-      <img
-        src={myessays1}
-        alt="header decoration"
-        className="absolute top-4 left-6 w-20"
-      />
-      <img
-        src={myessays2}
-        alt="background decoration"
-        className="absolute bottom-0 right-[-130px] w-[350px]"
-      />
+      <img src={myessays1} alt="header decoration" className="absolute top-4 left-6 w-20" />
+      <img src={myessays2} alt="background decoration" className="absolute bottom-0 right-[-130px] w-[350px]" />
 
       {/* Header */}
       <div className="relative z-10 flex justify-between items-center px-12 pt-10">
@@ -87,7 +82,6 @@ export default function MyEssays() {
 
       {/* Filter & Search */}
       <div className="flex flex-wrap items-center gap-4 px-12 mt-6 relative">
-        {/* Filter Dropdown */}
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -105,7 +99,7 @@ export default function MyEssays() {
             />
           </button>
 
-          {/* Dropdown slide down */}
+          {/* Dropdown */}
           <div
             className={`absolute bg-white border border-gray-300 rounded-[10px] shadow-md z-10 w-[180px] 
               transition-all duration-300 ease-out origin-top
@@ -114,7 +108,6 @@ export default function MyEssays() {
                   ? "scale-y-100 opacity-100 mt-2"
                   : "scale-y-0 opacity-0 mt-0"
               } `}
-            style={{ transformOrigin: "top" }}
           >
             {["All", "Graded", "In Review", "Pending"].map((status) => (
               <div
@@ -145,15 +138,10 @@ export default function MyEssays() {
         </div>
       </div>
 
-      {/* Statistic Cards pakai komponen EssayStat */}
+      {/* Statistik */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-12 mt-10">
         {stats.map((item, idx) => (
-          <EssayStat
-            key={idx}
-            label={item.label}
-            value={item.value}
-            staticShadow={true}
-          />
+          <EssayStat key={idx} label={item.label} value={item.value} staticShadow={true} />
         ))}
       </div>
 

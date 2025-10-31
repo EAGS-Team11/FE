@@ -6,9 +6,9 @@ export default function SubmitEssayTable({ courses }) {
       <table className="w-full table-fixed text-[13.5px] font-[Inter] text-left">
         <thead className="bg-[#D4E2F0] text-[#1F3A60] font-semibold">
           <tr>
-            <th className="py-3 px-4 w-[40%] text-left">Course</th>
+            <th className="py-3 px-4 w-[30%] text-left">Course</th>
+            <th className="py-3 px-4 w-[30%] text-left">Essay Title</th>
             <th className="py-3 px-4 w-[20%] text-left">Deadline</th>
-            <th className="py-3 px-4 w-[20%] text-left">Status</th>
             <th className="py-3 px-4 w-[20%] text-right">Actions</th>
           </tr>
         </thead>
@@ -19,9 +19,9 @@ export default function SubmitEssayTable({ courses }) {
               key={index}
               className="border-t border-gray-200 hover:bg-gray-50 transition-colors"
             >
-              <td className="py-3 px-4">{course.name}</td>
+              <td className="py-3 px-4">{course.courseTitle}</td>
+              <td className="py-3 px-4">{course.essayTitle}</td>
               <td className="py-3 px-4">{course.deadline}</td>
-              <td className="py-3 px-4">{course.status}</td>
               <td
                 className="py-3 px-4 text-right text-[#3D73B4] font-semibold cursor-pointer hover:underline"
                 onClick={course.onAction}
