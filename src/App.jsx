@@ -9,14 +9,16 @@ import SubmitEssay from "./pages/essay/SubmitEssay";
 import ViewGraded from "./pages/essay/ViewGraded";
 import InputEssay from "./pages/essay/InputEssay";
 import Navbar from "./pages/navbar";
+import Profil from "./pages/profil/profil";
+import EditMyProfil from "./pages/profil/EditMyProfil";
+import EditPersonal from "./pages/profil/EditPersonal";
 import './App.css';
-
 
 function MainLayout() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <div className="">
+      <div className="p-6">
         <Outlet /> {/*  */}
       </div>
     </div>
@@ -42,6 +44,9 @@ export default function App() {
           <Route path="/submit-essay/:courseId/:essayId" element={<InputEssay />} />
           <Route path="/view-graded" element={<ViewGraded />} />
           <Route path="/input-essay" element={<InputEssay />} />
+          <Route path="/profile" element={<Profil />} />  
+          <Route path="/EditMyProfil" element={<EditMyProfil />} /> 
+          <Route path="/EditPersonal" element={<EditPersonal />} />        
         </Route>
       </Routes>
     </Router>

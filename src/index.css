@@ -5,6 +5,9 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  @apply font-[Inter];
+}
 
 html,
 body,
