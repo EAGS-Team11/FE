@@ -19,7 +19,7 @@ function MainLayout() {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <div className="p-6">
-        <Outlet />
+        <Outlet /> {/*  */}
       </div>
     </div>
   );
