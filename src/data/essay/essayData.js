@@ -13,6 +13,7 @@ export const essays = [
     feedbackAI: "Strengthening the introduction and conclusion would help reinforce your main argument...",
     feedbackLecturer: "Good argument structure, but need more reference",
     date: "10 Oct 2025",
+    lecturerName: "Azzatul Nabila S.Kom",
     action: "View",
   },
   {
@@ -22,6 +23,7 @@ export const essays = [
     feedbackAI: "-",
     feedbackLecturer: "-",
     date: "14 Oct 2025",
+    lecturerName: "Azzatul Nabila S.Kom",
     action: "View",
   },
   {
@@ -31,6 +33,7 @@ export const essays = [
     feedbackAI: "Provide more real-world examples to strengthen your points.",
     feedbackLecturer: "Good examples, but could expand on real-world cases.",
     date: "9 Oct 2025",
+    lecturerName: "Azzatul Nabila S.Kom",
     action: "View",
   },
   {
@@ -40,6 +43,7 @@ export const essays = [
     feedbackAI: "Explain more on modern threats and preventive measures.",
     feedbackLecturer: "Clear explanation and consistent tone. Great job.",
     date: "6 Oct 2025",
+    lecturerName: "Azzatul Nabila S.Kom",
     action: "View",
   },
   {
@@ -49,6 +53,7 @@ export const essays = [
     feedbackAI: "-",
     feedbackLecturer: "-",
     date: "13 Oct 2025",
+    lecturerName: "Azzatul Nabila S.Kom",
     action: "Submit",
   },
 ];

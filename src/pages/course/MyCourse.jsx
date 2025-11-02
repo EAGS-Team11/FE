@@ -8,13 +8,13 @@ const MyCourse = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="p-8 bg-[#F6F7FB] min-h-screen font-inter">
+    <div className="p-8 bg-[#F6F7FB] min-h-screen font-inter py-24">
       {/* Header */}
       <div className="flex items-center gap-2 mb-6 mt-1 ml-8">
-        <h1 className="text-[32px] font-bold">Courses</h1>
-        <div className="w-10 h-10 flex justify-center items-center rounded-[10px] mt-1">
+        <div className="w-20 h-20 flex justify-center items-center rounded-[10px] mt-1">
           <img src={courseImg} alt="Book" className="w-30 h-30" />
         </div>
+        <h1 className="text-[32px] font-bold">Courses</h1>
       </div>
 
       {/* Search + Course Grid */}

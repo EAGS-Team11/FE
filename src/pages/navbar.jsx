@@ -1,13 +1,14 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Home, FileText, MessageCircle, User, LogOut, UserCircle } from "lucide-react";
 import logo from "../assets/logo capstone.png";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
 
   return (
-    <nav className="bg-[#1E3A5F] text-white flex justify-between items-center px-10 py-3 shadow-md">
+    <nav className="fixed top-0 left-0 w-full z-50 bg-[#1E3A5F] text-white flex justify-between items-center px-10 py-3 shadow-md">
       {/* Logo */}
       <div className="flex items-center space-x-2">
         <Link to="/home" className="flex items-center space-x-2">
@@ -20,21 +21,31 @@ export default function Navbar() {
       </div>
 
       {/* Menu Navigasi */}
-      <ul className="flex items-center space-x-10 text-gray-300 ml-32"> 
+      <div className="flex items-center space-x-10 mr-10">
+       <ul className="flex items-center space-x-10 text-gray-300">
         <li>
-          <Link to="/home" className="flex items-center space-x-1 hover:text-white">
+          <Link to="/home" className={`flex items-center space-x-1 ${
+              location.pathname === "/home" ? "text-white font-semibold" : "text-gray-300"
+            } hover:text-white`}
+          >
             <Home size={18} />
             <span>Home</span>
           </Link>
         </li>
         <li>
-          <Link to="/my-essays" className="flex items-center space-x-1 hover:text-white">
+          <Link to="/my-essays" className={`flex items-center space-x-1 ${
+                location.pathname === "/my-essays" ? "text-white font-semibold" : "text-gray-300"
+            } hover:text-white`}
+          >
             <FileText size={18} />
             <span>My Essays</span>
           </Link>
         </li>
         <li>
-          <Link to="/my-course" className="flex items-center space-x-1 hover:text-white">
+          <Link to="/my-course" className={`flex items-center space-x-1 ${
+              location.pathname === "/my-course" ? "text-white font-semibold" : "text-gray-300"
+            } hover:text-white`}
+          >
             <MessageCircle size={18} />
             <span>Courses</span>
           </Link>
@@ -76,7 +87,8 @@ export default function Navbar() {
               </li>
             </ul>
           </div>
-        )}
+         )}
+       </div>
       </div>
     </nav>
   );

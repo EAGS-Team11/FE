@@ -87,7 +87,7 @@ export default function InputEssay() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex font-[Inter]">
+    <div className="min-h-screen bg-white flex font-[Inter] py-20">
       {/* Sidebar Soal */}
       <div className="w-[150px] bg-white border-r border-gray-200 flex flex-col items-center py-8">
         <h2 className="text-[#222] font-semibold text-lg mb-6">Soal</h2>

@@ -15,7 +15,7 @@ export default function CourseEssayList() {
   }
 
   return (
-    <div className="p-8 bg-[#F6F7FB] min-h-screen font-inter">
+    <div className="p-8 bg-[#F6F7FB] min-h-screen font-inter py-28">
       {/* Header */}
       <div className="flex flex-col items-start mb-8 ml-12">
         <h1 className="text-[28px] font-bold text-[#25335A] mb-2">

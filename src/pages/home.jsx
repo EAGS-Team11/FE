@@ -13,7 +13,7 @@ const data = [
 
 const Home = () => {
   return (
-    <div className="relative min-h-screen w-full bg-[#F6F7FB] font-[Inter] overflow-hidden px-8 py-6">
+    <div className="relative min-h-screen w-full bg-[#F6F7FB] font-[Inter] overflow-hidden px-8 py-20">
       {/* Gambar kiri bawah */}
       <img
         src={homeImg}
@@ -75,11 +75,6 @@ const Home = () => {
               </div>
             </div>
           </div>
-
-          {/* Tombol Get Started */}
-          <button className="w-[324px] h-[42px] bg-[#1F3A60] text-white text-[16px] font-bold rounded-[40px] shadow hover:bg-[#274a7c] transition mt-12 ml-12">
-            Get Started
-          </button>
         </div>
 
         {/* Bagian kanan */}

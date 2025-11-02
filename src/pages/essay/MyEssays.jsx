@@ -64,9 +64,9 @@ export default function MyEssays() {
   ];
 
   return (
-    <div className="relative w-full min-h-screen bg-[#F5F8FB] font-[Inter] overflow-hidden z-10">
+    <div className="relative w-full min-h-screen bg-[#F5F8FB] font-[Inter] overflow-hidden z-10 py-20">
       {/* Background images */}
-      <img src={myessays1} alt="header decoration" className="absolute top-4 left-6 w-20" />
+      <img src={myessays1} alt="header decoration" className="absolute top-4 left-6 w-20 py-20" />
       <img src={myessays2} alt="background decoration" className="absolute bottom-0 right-[-130px] w-[350px]" />
 
       {/* Header */}

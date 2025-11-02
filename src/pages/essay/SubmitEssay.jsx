@@ -24,7 +24,7 @@ export default function SubmitEssay() {
   });
 
   return (
-    <div className="relative w-full min-h-screen bg-[#F5F8FB] font-[Inter] overflow-hidden px-12 py-10">
+    <div className="relative w-full min-h-screen bg-[#F5F8FB] font-[Inter] overflow-hidden px-12 py-24">
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-[28px] font-bold text-black flex items-center gap-2">
@@ -34,7 +34,9 @@ export default function SubmitEssay() {
       </div>
 
       {/* Table */}
-      <SubmitEssayTable courses={courses} />
+      <div className="-mt-6">
+        <SubmitEssayTable courses={courses} />
+      </div>
 
       {/* Back Button */}
       <div className="mt-6 flex justify-start">
