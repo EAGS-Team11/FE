@@ -17,7 +17,6 @@ export default function EditPersonal() {
         Hello, User <span className="ml-2 text-4xl">🦉</span>
       </h1>
 
-      {/* Edit Personal Information */}
       <div className="bg-white rounded-md shadow-md border border-gray-200">
         {/* Header */}
         <div className="bg-[#f3f5f9] px-4 py-2 flex justify-between items-center rounded-t-md">
@@ -32,7 +31,6 @@ export default function EditPersonal() {
           </button>
         </div>
 
-        {/* Form Input */}
         <form className="p-6 grid grid-cols-2 gap-6 text-left">
           <div>
             <label className="text-sm text-gray-800 font-bold">First Name</label>

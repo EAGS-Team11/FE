@@ -7,12 +7,10 @@ export default function Profil() {
 
   return (
     <div className="max-w-5xl mx-auto mt-10">
-      {/* Judul */}
       <h1 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
         Hello, User <span className="ml-2 text-4xl">🦉</span>
       </h1>
 
-      {/* My Profile */}
       <div className="bg-white rounded-md shadow-md mb-6 border border-gray-200">
         <div className="bg-[#f3f5f9] px-4 py-2 flex justify-between items-center rounded-t-md">
           <h2 className="font-semibold text-[#1E3A5F]">My Profile</h2>
@@ -34,7 +32,6 @@ export default function Profil() {
             />
           </div>
 
-          {/* Informasi User */}
           <div className="w-2/3 text-left">
             <h3 className="font-bold text-gray-800 mb-1">
               Azzatul Nabila Kahar
@@ -50,7 +47,6 @@ export default function Profil() {
         </div>
       </div>
 
-      {/* Personal Information */}
       <div className="bg-white rounded-md shadow-md border border-gray-200">
         <div className="bg-[#f3f5f9] px-4 py-2 flex justify-between items-center rounded-t-md">
           <h2 className="font-semibold text-[#1E3A5F]">Personal Information</h2>

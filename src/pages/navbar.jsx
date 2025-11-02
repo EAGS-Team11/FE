@@ -1,26 +1,41 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { Home, FileText, MessageCircle, User, LogOut, UserCircle } from "lucide-react";
+import {
+  Home,
+  FileText,
+  MessageCircle,
+  User,
+  LogOut,
+  UserCircle,
+} from "lucide-react";
 import logo from "../assets/logo capstone.png";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null); 
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <nav className="bg-[#1E3A5F] text-white flex justify-between items-center px-10 py-3 shadow-md">
       {/* Logo */}
       <div className="flex items-center space-x-2">
         <Link to="/home" className="flex items-center space-x-2">
-          <img
-            src={logo}
-            alt="Essay Grading Logo"
-            className="h-14 w-auto mr-3"
-          />
+          <img src={logo} alt="Essay Grading Logo" className="h-14 w-auto mr-3" />
         </Link>
       </div>
 
-      {/* Menu Navigasi */}
-      <ul className="flex items-center space-x-10 text-gray-300 ml-32"> 
+      {/* Menu utama */}
+      <ul className="flex items-center space-x-10 text-gray-300 ml-32">
         <li>
           <Link to="/home" className="flex items-center space-x-1 hover:text-white">
             <Home size={18} />
@@ -41,8 +56,7 @@ export default function Navbar() {
         </li>
       </ul>
 
-      {/* Dropdown User */}
-      <div className="relative mr-8">
+      <div className="relative mr-8" ref={dropdownRef}>
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="flex items-center space-x-1 text-gray-300 hover:text-white focus:outline-none"
