@@ -15,7 +15,7 @@ import EditPersonal from "./pages/profil/EditPersonal";
 import Footer from "./pages/footer"; 
 
 import NavbarDosen from "./pages/NavbarDosen";
-import Dashboard from "./pages/dosen/Dashboard";
+import Course from "./pages/dosen/Course";
 import "./App.css";
 
 function MainLayout() {
@@ -43,7 +43,6 @@ function DosenLayout() {
 }
 
 
-
 export default function App() {
   return (
     <Router>
@@ -69,9 +68,8 @@ export default function App() {
 
           {/* Layout untuk dosen */}
         <Route element={<DosenLayout />}>
-          <Route path="/Dashboard" element={<Dashboard />} />
+          <Route path="/Course" element={<Course />} />
         </Route>
-
       </Routes>
     </Router>
   );

@@ -1,7 +1,7 @@
 import React from "react";
 import { Search, Edit2, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 
-export default function DashboardDosen() {
+export default function Course() {
   const courses = [
     { id: 1, title: "Capstone Project - A2526", category: "Informatics" },
     { id: 2, title: "Capstone Project - A2526", category: "Informatics" },

@@ -56,7 +56,7 @@ export default function NavbarDosen() {
         {/* Menu */}
         <div className="p-5 text-sm ">
           <div className="uppercase text-gray-300 text-xs mb-3 text-left">Main Menu</div>
-          <ul className="space-y-2">
+          <ul className="space-y-2">       
             <li className="flex items-center space-x-3 hover:bg-white/10 py-2 rounded-md cursor-pointer">
               <BookOpen size={16} /> <span>Courses</span>
             </li>
