@@ -13,25 +13,41 @@ import Profil from "./pages/profil/profil";
 import EditMyProfil from "./pages/profil/EditMyProfil";
 import EditPersonal from "./pages/profil/EditPersonal";
 import Footer from "./pages/footer"; 
+
+import NavbarDosen from "./pages/NavbarDosen";
+import Dashboard from "./pages/dosen/Dashboard";
 import "./App.css";
 
 function MainLayout() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <Navbar />
-      <main className="flex-grow">
+      <main className="flex-grow pt-20">
         <Outlet />
       </main>
-      <Footer /> {/* ✅ footer selalu di bawah */}
+      <Footer />
     </div>
   );
 }
+
+function DosenLayout() {
+  return (
+    <div className="flex flex-col min-h-screen bg-gray-50">
+      <NavbarDosen />
+      <main className="flex-grow pt-20">
+        <Outlet />
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+
 
 export default function App() {
   return (
     <Router>
       <Routes>
-        {/* Halaman tanpa Navbar dan Footer */}
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -50,6 +66,12 @@ export default function App() {
           <Route path="/EditMyProfil" element={<EditMyProfil />} />
           <Route path="/EditPersonal" element={<EditPersonal />} />
         </Route>
+
+          {/* Layout untuk dosen */}
+        <Route element={<DosenLayout />}>
+          <Route path="/Dashboard" element={<Dashboard />} />
+        </Route>
+
       </Routes>
     </Router>
   );
