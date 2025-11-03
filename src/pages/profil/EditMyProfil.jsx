@@ -20,9 +20,9 @@ export default function EditMyProfil() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto mt-10 font-inter">
+    <div className="max-w-5xl mx-auto mt-10 font-inter py-20">
       <h1 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-        Hello, User <span className="ml-2 text-4xl">🦉</span>
+        <span className="mr-2 text-4xl">🦉</span> Hello, User
       </h1>
 
       <div className="bg-white rounded-md shadow-md border border-gray-200">
@@ -61,7 +61,7 @@ export default function EditMyProfil() {
 
             <div className="md:w-2/3 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-900 mb-1 text-left font-semibold">
+                <label className="block text-sm font-medium text-gray-900 mb-1 text-left">
                   Username
                 </label>
                 <input
@@ -72,7 +72,7 @@ export default function EditMyProfil() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-900 mb-1 text-left font-semibold">
+                <label className="block text-sm font-medium text-gray-900 mb-1 text-left">
                   Email Address
                 </label>
                 <input

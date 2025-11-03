@@ -6,9 +6,9 @@ export default function Profil() {
   const navigate = useNavigate(); 
 
   return (
-    <div className="max-w-5xl mx-auto mt-10">
+    <div className="max-w-5xl mx-auto mt-10 py-20">
       <h1 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-        Hello, User <span className="ml-2 text-4xl">🦉</span>
+        <span className="mr-2 text-4xl">🦉</span> Hello, User
       </h1>
 
       <div className="bg-white rounded-md shadow-md mb-6 border border-gray-200">
