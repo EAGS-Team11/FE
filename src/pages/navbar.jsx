@@ -8,7 +8,6 @@ export default function Navbar() {
   const location = useLocation();
   const dropdownRef = useRef(null);
 
-  // Tutup dropdown ketika klik di luar area dropdown
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -31,7 +30,6 @@ export default function Navbar() {
         </Link>
       </div>
 
-      {/* Menu Navigasi */}
       <div className="flex items-center space-x-10 mr-10">
         <ul className="flex items-center space-x-10 text-gray-300">
           <li>
@@ -69,7 +67,7 @@ export default function Navbar() {
           </li>
         </ul>
 
-        {/* Dropdown User */}
+
         <div className="relative mr-8" ref={dropdownRef}>
           <button
             onClick={() => setIsOpen(!isOpen)}
