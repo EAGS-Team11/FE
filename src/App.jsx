@@ -1,17 +1,17 @@
 import { BrowserRouter as Router, Routes, Route, Outlet } from "react-router-dom";
 import Login from "./pages/login";
 import Register from "./pages/register";
-import Home from "./pages/home";
-import MyCourse from "./pages/course/MyCourse";
-import CourseEssay from "./pages/course/CourseEssay";
-import MyEssays from "./pages/essay/MyEssays";
-import SubmitEssay from "./pages/essay/SubmitEssay";
-import ViewGraded from "./pages/essay/ViewGraded";
-import InputEssay from "./pages/essay/InputEssay";
+import Home from "./pages/mahasiswa/home";
+import MyCourse from "./pages/mahasiswa/course/MyCourse";
+import CourseEssay from "./pages/mahasiswa/course/CourseEssay";
+import MyEssays from "./pages/mahasiswa/essay/MyEssays";
+import SubmitEssay from "./pages/mahasiswa/essay/SubmitEssay";
+import ViewGraded from "./pages/mahasiswa/essay/ViewGraded";
+import InputEssay from "./pages/mahasiswa/essay/InputEssay";
 import Navbar from "./pages/navbar";
-import Profil from "./pages/profil/profil";
-import EditMyProfil from "./pages/profil/EditMyProfil";
-import EditPersonal from "./pages/profil/EditPersonal";
+import Profil from "./pages/mahasiswa/profil/Profil";
+import EditMyProfil from "./pages/mahasiswa/profil/EditMyProfil";
+import EditPersonal from "./pages/mahasiswa/profil/EditPersonal";
 import Footer from "./pages/footer"; 
 
 import NavbarDosen from "./pages/NavbarDosen";
@@ -22,7 +22,7 @@ function MainLayout() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <Navbar />
-      <main className="flex-grow pt-20">
+      <main className="flex-grow">
         <Outlet />
       </main>
       <Footer />

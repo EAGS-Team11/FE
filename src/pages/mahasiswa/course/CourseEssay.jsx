@@ -1,7 +1,7 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { dummyCourses } from "../../data/course/dummyCourses";
-import { courseEssays } from "../../data/course/courseEssay";
+import { dummyCourses } from "../../../data/mahasiswa/course/dummyCourses";
+import { courseEssays } from "../../../data/mahasiswa/course/courseEssay";
 
 export default function CourseEssayList() {
   const { courseId } = useParams();

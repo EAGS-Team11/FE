@@ -1,9 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import SubmitEssayTable from "../../components/essay/SubmitEssayTable";
-import { dummyCourses } from "../../data/course/dummyCourses";
-import { courseEssays } from "../../data/course/courseEssay";
-import myessays3 from "../../assets/myessays3.png";
+import SubmitEssayTable from "../../../components/mahasiswa/essay/SubmitEssayTable";
+import { dummyCourses } from "../../../data/mahasiswa/course/dummyCourses";
+import { courseEssays } from "../../../data/mahasiswa/course/courseEssay";
+import myessays3 from "../../../assets/myessays3.png";
 import { ArrowLeft } from "lucide-react";
 
 export default function SubmitEssay() {

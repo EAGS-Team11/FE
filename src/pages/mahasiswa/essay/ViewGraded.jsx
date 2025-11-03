@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import ViewGradedCard from "../../components/essay/ViewGradedCard";
-import LecturerFeedbackCard from "../../components/essay/LecturerFeedbackCard";
-import feedbackImg from "../../assets/feedback1.png";
+import ViewGradedCard from "../../../components/mahasiswa/essay/ViewGradedCard";
+import LecturerFeedbackCard from "../../../components/mahasiswa/essay/LecturerFeedbackCard";
+import feedbackImg from "../../../assets/feedback1.png";
 
 export default function ViewGraded() {
   const navigate = useNavigate();

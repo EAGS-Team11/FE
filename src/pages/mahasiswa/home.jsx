@@ -1,7 +1,7 @@
 import React from "react";
 import { FileText, BarChart2, Hourglass, MessageCircle } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Line } from "recharts";
-import homeImg from "../assets/home.png";
+import homeImg from "../../assets/home.png";
 
 const data = [
   { name: "AI Ethics", score: 85 },

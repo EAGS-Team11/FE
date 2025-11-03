@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Bold, Italic, Underline, Strikethrough, AlignLeft, AlignCenter, AlignRight, List, ListOrdered, Palette, Plus, Minus, ListTree } from "lucide-react";
-import { courseEssays } from "../../data/course/courseEssay";
+import { courseEssays } from "../../../data/mahasiswa/course/courseEssay";
 
 export default function InputEssay() {
   const { courseId, essayId } = useParams();
