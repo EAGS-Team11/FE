@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Outlet } from "react-router-dom";
+import React, { useState } from "react";
 import Login from "./pages/login";
 import Register from "./pages/register";
 import Home from "./pages/home";
@@ -22,7 +23,7 @@ function MainLayout() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <Navbar />
-      <main className="flex-grow pt-20">
+      <main className="flex-grow">
         <Outlet />
       </main>
       <Footer />
@@ -31,16 +32,34 @@ function MainLayout() {
 }
 
 function DosenLayout() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true); 
+  const activeMenu = "Courses"; 
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
-      <NavbarDosen />
-      <main className="flex-grow">
-        <Outlet />
-      </main>
-      <Footer />
+      <div className="flex flex-grow">
+        {/* Sidebar + Navbar */}
+        <NavbarDosen
+          isSidebarOpen={isSidebarOpen}
+          setIsSidebarOpen={setIsSidebarOpen}
+          activeMenu={activeMenu}
+        />
+
+        {/* Konten utama */}
+        <main
+          className={`flex-grow transition-all duration-300 pt-20 px-10`}
+          style={{ marginLeft: isSidebarOpen ? 256 : 0 }} 
+        >
+          <Outlet />
+        </main>
+      </div>
+
+      {/* Footer */}
+      <Footer isSidebarOpen={isSidebarOpen} />
     </div>
   );
 }
+
 
 
 export default function App() {
