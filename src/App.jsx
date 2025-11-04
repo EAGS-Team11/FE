@@ -34,7 +34,7 @@ function DosenLayout() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <NavbarDosen />
-      <main className="flex-grow pt-20">
+      <main className="flex-grow">
         <Outlet />
       </main>
       <Footer />

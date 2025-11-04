@@ -12,7 +12,7 @@ export default function Course() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gray-50 py-10">
 
       <main className="flex-grow px-10 ">
         <div className="flex justify-between items-center mb-8">
