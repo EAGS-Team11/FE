@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { ChevronDown, Search } from "lucide-react";
-import myessays1 from "../../assets/myessays1.png";
-import myessays2 from "../../assets/myessays2.png";
-import EssayTable from "../../components/essay/EssayTable";
-import EssayStat from "../../components/essay/EssayStat"; 
-import { essays } from "../../data/essay/essayData";
+import myessays1 from "../../../assets/myessays1.png";
+import myessays2 from "../../../assets/myessays2.png";
+import EssayTable from "../../../components/mahasiswa/essay/EssayTable";
+import EssayStat from "../../../components/mahasiswa/essay/EssayStat"; 
+import { essays } from "../../../data/mahasiswa/essay/essayData";
 import { useNavigate } from "react-router-dom";
 
 export default function MyEssays() {

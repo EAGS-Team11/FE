@@ -1,8 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import CourseCard from "../../components/course/CourseCard";
-import { dummyCourses } from "../../data/course/dummyCourses";
-import courseImg from "../../assets/course1.png";
+import CourseCard from "../../../components/mahasiswa/course/CourseCard";
+import { dummyCourses } from "../../../data/mahasiswa/course/dummyCourses";
+import courseImg from "../../../assets/course1.png";
 
 const MyCourse = () => {
   const navigate = useNavigate();
