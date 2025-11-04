@@ -16,7 +16,8 @@ import EditPersonal from "./pages/mahasiswa/profil/EditPersonal";
 import Footer from "./pages/footer"; 
 
 import NavbarDosen from "./pages/NavbarDosen";
-import Course from "./pages/dosen/Course";
+import Course from "./pages/dosen/course/Course";
+import CourseDetail from "./pages/dosen/course/CourseDetail";
 import "./App.css";
 
 function MainLayout() {
@@ -46,10 +47,8 @@ function DosenLayout() {
         />
 
         {/* Konten utama */}
-        <main
-          className={`flex-grow transition-all duration-300 pt-20 px-10`}
-          style={{ marginLeft: isSidebarOpen ? 256 : 0 }} 
-        >
+       <main className={`flex-grow transition-all duration-300 pt-28 px-10`} 
+          style={{ marginLeft: isSidebarOpen ? 256 : 0 }}>
           <Outlet />
         </main>
       </div>
@@ -87,7 +86,8 @@ export default function App() {
 
           {/* Layout untuk dosen */}
         <Route element={<DosenLayout />}>
-          <Route path="/Course" element={<Course />} />
+          <Route path="/dosen/course" element={<Course />} />
+          <Route path="/dosen/course/:courseId" element={<CourseDetail />} />
         </Route>
       </Routes>
     </Router>
