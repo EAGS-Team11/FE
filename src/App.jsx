@@ -22,6 +22,9 @@ import CreateEssay from "./pages/dosen/course/CreateEssay";
 import AddQuestion from "./pages/dosen/course/AddQuestion";
 import CheckAnswer from "./pages/dosen/course/CheckAnswer";
 import EssayDetail from "./pages/dosen/course/EssayDetail";
+import AiGrading1 from "./pages/dosen/ai/AiGrading1";
+import AiGrading2 from "./pages/dosen/ai/AiGrading2";
+import AiGrading3 from "./pages/dosen/ai/AiGrading3";
 import "./App.css";
 
 function MainLayout() {
@@ -43,7 +46,6 @@ function DosenLayout() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <div className="flex flex-grow">
-        {/* Sidebar + Navbar */}
         <NavbarDosen
           isSidebarOpen={isSidebarOpen}
           setIsSidebarOpen={setIsSidebarOpen}
@@ -97,6 +99,9 @@ export default function App() {
           <Route path="/dosen/course/:courseId/essay/:essayId" element={<EssayDetail />} />
           <Route path="/dosen/course/:courseId/edit-essay/:essayId" element={<CreateEssay />} />
           <Route path="/dosen/check-answer" element={<CheckAnswer />} />
+          <Route path="/dosen/AiGrading1" element={<AiGrading1/>} />
+          <Route path="/dosen/AiGrading2" element={<AiGrading2/>} />
+          <Route path="/dosen/AiGrading3" element={<AiGrading3/>} />
         </Route>
       </Routes>
     </Router>
