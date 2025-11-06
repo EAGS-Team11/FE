@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 export default function CourseCard({ course }) {
   const navigate = useNavigate();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const handleClick = () => {
     navigate(`/dosen/course/${course.id}`);
@@ -15,8 +16,19 @@ export default function CourseCard({ course }) {
     setIsEditModalOpen(true);
   };
 
+  const handleDeleteClick = (e) => {
+    e.stopPropagation();
+    setIsDeleteModalOpen(true);
+  };
+
   const handleCloseModal = () => {
     setIsEditModalOpen(false);
+    setIsDeleteModalOpen(false);
+  };
+
+  const handleDeleteConfirm = () => {
+    console.log("Course deleted:", course.id);
+    setIsDeleteModalOpen(false);
   };
 
   return (
@@ -42,18 +54,19 @@ export default function CourseCard({ course }) {
           <p className="text-sm font-medium">{course.title}</p>
           <button
             className="text-red-500 hover:text-red-600"
-            onClick={(e) => e.stopPropagation()}
+            onClick={handleDeleteClick}
           >
             <Trash2 size={16} />
           </button>
         </div>
       </div>
 
-      {/* Edit Modal */}
+      {/* ===================== */}
+      {/* EDIT MODAL */}
+      {/* ===================== */}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl shadow-lg w-full max-w-md p-5 relative">
-            {/* Close Button */}
             <button
               onClick={handleCloseModal}
               className="absolute top-3 right-3 text-red-500 hover:text-red-700"
@@ -65,7 +78,6 @@ export default function CourseCard({ course }) {
               Edit Course
             </h2>
 
-            {/* Form */}
             <form className="space-y-3 text-sm">
               <div>
                 <label className="block font-medium mb-1 text-left">
@@ -133,6 +145,43 @@ export default function CourseCard({ course }) {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ===================== */}
+      {/* DELETE MODAL */}
+      {/* ===================== */}
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl shadow-lg w-full max-w-md p-6 text-center relative">
+            {/* Icon */}
+            <div className="flex justify-center mb-4">
+              <div className="bg-[#E6ECF5] rounded-full p-4">
+                <Trash2 size={40} className="text-[#1E4F91]" />
+              </div>
+            </div>
+
+            {/* Text */}
+            <h3 className="text-base font-semibold mb-2">
+              Are you sure you want to delete this course?
+            </h3>
+
+            {/* Buttons */}
+            <div className="flex justify-center gap-3 mt-5">
+              <button
+                onClick={handleDeleteConfirm}
+                className="bg-[#1E4F91] text-white text-sm px-5 py-1.5 rounded-md hover:bg-[#163E74] transition"
+              >
+                Yes, delete
+              </button>
+              <button
+                onClick={handleCloseModal}
+                className="bg-gray-200 text-gray-700 text-sm px-5 py-1.5 rounded-md hover:bg-gray-300 transition"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}
