@@ -1,18 +1,22 @@
 import React, { useState } from "react";
-import { Clock, Hourglass, Users, Trash2, Pencil, X } from "lucide-react";
+import { Clock, Hourglass, Users, Trash2, X } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
 
-export default function EssayCard({ essay, onClick }) {
+export default function EssayCard({ essay }) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const navigate = useNavigate();
+  const { courseId } = useParams();
+
+  const handleCardClick = () => {
+    navigate(`/dosen/course/${courseId}/essay/${essay.id}`, { state: { essay } });
+  };
 
   const handleDeleteClick = (e) => {
     e.stopPropagation();
     setIsDeleteModalOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setIsDeleteModalOpen(false);
-  };
-
+  const handleCloseModal = () => setIsDeleteModalOpen(false);
   const handleDeleteConfirm = () => {
     console.log("Essay deleted:", essay.title);
     setIsDeleteModalOpen(false);
@@ -21,57 +25,64 @@ export default function EssayCard({ essay, onClick }) {
   return (
     <>
       <div
-        onClick={onClick}
-        className="w-[280px] bg-white rounded-[20px] shadow-md cursor-pointer overflow-hidden relative transition-transform hover:-translate-y-1 hover:shadow-lg"
+        onClick={handleCardClick}
+        className="w-full max-w-[360px] bg-white rounded-2xl shadow-md cursor-pointer overflow-hidden relative transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
       >
-        <div className="bg-gradient-to-r from-[#4A6FA5] to-[#5F799C] h-10 rounded-t-[20px] flex items-center justify-between px-4">
+        {/* Header bar */}
+        <div className="bg-gradient-to-r from-[#4A6FA5] to-[#5F799C] h-9 rounded-t-2xl flex items-center justify-between px-4">
           <button onClick={handleDeleteClick}>
-            <Trash2 className="text-white w-5 h-5 hover:text-gray-200 transition" />
-          </button>
-
-          <button className="flex items-center gap-1 bg-white text-gray-700 text-xs px-2 py-[2px] rounded-full shadow-sm hover:bg-gray-100 transition">
-            <span>Edit</span>
-            <Pencil className="w-3 h-3" />
+            <Trash2 className="text-white w-4 h-4 hover:text-gray-200 transition" />
           </button>
         </div>
 
-        <div className="p-4 text-sm">
-          <h3 className="text-center font-semibold text-[#1D2A57] text-[14px] mb-2 leading-tight">
-            {essay.title}
+        {/* Isi card */}
+        <div className="p-4 text-xs">
+          {/* Judul essay */}
+          <h3 className="text-center font-semibold text-[#1D2A57] text-[13px] mb-3 leading-snug break-words px-1">
+            {essay.assignmentName || "Untitled Essay"}
           </h3>
 
-          <hr className="border-gray-300 mb-3" />
+          <hr className="border-gray-200 mb-3" />
 
-          <div className="space-y-2 text-gray-600 text-[13px] text-left">
+          {/* Info detail */}
+          <div className="space-y-2 text-gray-600 text-[11.5px] text-left">
             <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-gray-500" />
-              <div className="flex w-full">
-                <span className="inline-block w-[110px]">Create on</span>
-                <span>: {essay.createdAt}</span>
+              <Clock className="w-3.5 h-3.5 text-gray-500 flex-shrink-0" />
+              <div className="flex justify-between w-full">
+                <span className="text-gray-700 w-[100px]">Created on</span>
+                <span className="text-gray-800 font-medium truncate">
+                  {essay.createdAt}
+                </span>
               </div>
             </div>
+
             <div className="flex items-center gap-2">
-              <Hourglass className="w-4 h-4 text-gray-500" />
-              <div className="flex w-full">
-                <span className="inline-block w-[110px]">Deadline</span>
-                <span>: {essay.deadline}</span>
+              <Hourglass className="w-3.5 h-3.5 text-gray-500 flex-shrink-0" />
+              <div className="flex justify-between w-full">
+                <span className="text-gray-700 w-[100px]">Deadline</span>
+                <span className="text-gray-800 font-medium truncate">
+                  {essay.deadline}
+                </span>
               </div>
             </div>
+
             <div className="flex items-center gap-2">
-              <Users className="w-4 h-4 text-gray-500" />
-              <div className="flex w-full">
-                <span className="inline-block w-[110px]">Total submitted</span>
-                <span>: {essay.totalSubmitted}</span>
+              <Users className="w-3.5 h-3.5 text-gray-500 flex-shrink-0" />
+              <div className="flex justify-between w-full">
+                <span className="text-gray-700 w-[100px]">Total submitted</span>
+                <span className="text-gray-800 font-medium truncate">
+                  {essay.totalSubmitted || "—"}
+                </span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
+      {/* Modal konfirmasi hapus */}
       {isDeleteModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl shadow-lg w-full max-w-md p-6 text-center relative">
-
             <button
               onClick={handleCloseModal}
               className="absolute top-3 right-3 text-red-500 hover:text-red-700"

@@ -39,8 +39,8 @@ export default function AddQuestion() {
   };
 
   return (
-    <div className="w-full bg-[#F9FAFB] min-h-screen p-8 flex justify-center">
-      <div className="w-full max-w-3xl">
+    <div className="w-full bg-[#F9FAFB] min-h-screen p-8 flex justify-center -mt-10">
+      <div className="w-full max-w-3xl scale-[0.9]">
         {/* Header */}
         <div className="flex items-center mb-6 ml-[-70px]">
           <img src={createEssayImg} alt="Create Essay" className="w-8 h-8 mr-3" />

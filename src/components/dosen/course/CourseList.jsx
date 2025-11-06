@@ -6,18 +6,17 @@ import { courses } from "../../../data/dosen/course/courseData";
 export default function CourseList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // ✅ Pastikan halaman selalu tampil dari atas
   useEffect(() => {
     window.scrollTo({
       top: 0,
-      behavior: "smooth", // atau "auto" jika tidak mau animasi
+      behavior: "smooth", 
     });
   }, []);
 
   return (
     <div className="flex flex-col">
       {/* Search + Button */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-10">
         <div className="relative w-1/3">
           <input
             type="text"
