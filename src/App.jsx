@@ -19,6 +19,8 @@ import NavbarDosen from "./pages/NavbarDosen";
 import Course from "./pages/dosen/course/Course";
 import CourseDetail from "./pages/dosen/course/CourseDetail";
 import CreateEssay from "./pages/dosen/course/CreateEssay";
+import AddQuestion from "./pages/dosen/course/AddQuestion";
+import CheckAnswer from "./pages/dosen/course/CheckAnswer";
 import "./App.css";
 
 function MainLayout() {
@@ -90,6 +92,8 @@ export default function App() {
           <Route path="/dosen/course" element={<Course />} />
           <Route path="/dosen/course/:courseId" element={<CourseDetail />} />
           <Route path="/dosen/course/:courseId/create-essay" element={<CreateEssay />} />
+          <Route path="/dosen/course/:courseId/add-question" element={<AddQuestion />} />
+          <Route path="/dosen/check-answer" element={<CheckAnswer />} />
         </Route>
       </Routes>
     </Router>

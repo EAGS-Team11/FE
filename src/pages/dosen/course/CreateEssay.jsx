@@ -26,6 +26,7 @@ export default function CreateEssay() {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(form);
+    navigate(`/dosen/course/${courseId}/add-question`);
   };
 
   const navigate = useNavigate();
@@ -47,7 +48,7 @@ export default function CreateEssay() {
           </h1>
         </div>
 
-        {/* Title section (di luar kotak putih) */}
+        {/* Title section */}
         <div className="mb-8">
           <h2 className="text-[#0B102DB3] font-bold text-base mb-1 font-inter text-left ml-[-20px]">
             Add Assignment / Essay
@@ -68,7 +69,7 @@ export default function CreateEssay() {
               <input
                 type="text"
                 name="assignmentName"
-                placeholder=""
+                placeholder="Masukkan judul essay"
                 value={form.assignmentName}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded-lg p-2.5 text-[#0B102D] font-inter text-sm focus:outline-none focus:ring-2 focus:ring-[#30326A]"
@@ -171,12 +172,12 @@ export default function CreateEssay() {
                 >
                   <div className="text-[#0B102DB3]">
                     Drag and drop an image, or{" "}
-                    <span className="text-[#30326A] underline">Browse</span>
+                    <span className="text-[#007BFF] underline">Browse</span>
                   </div>
                   <p className="text-xs text-gray-500 mt-1 leading-tight">
                     Allowed file types: PNG, JPEG, JPG, GIF, PDF, DOCX, HTML
                     <br />
-                    Maksimum file size 10MB
+                    Maksimum file size 1GB
                   </p>
                 </label>
               </div>
