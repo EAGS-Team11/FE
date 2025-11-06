@@ -1,10 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Search, ChevronLeft, ChevronRight, X } from "lucide-react";
 import CourseCard from "./CourseCard";
 import { courses } from "../../../data/dosen/course/courseData";
 
 export default function CourseList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // ✅ Pastikan halaman selalu tampil dari atas
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // atau "auto" jika tidak mau animasi
+    });
+  }, []);
 
   return (
     <div className="flex flex-col">
@@ -43,6 +51,7 @@ export default function CourseList() {
         </button>
       </div>
 
+      {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl shadow-lg w-full max-w-md p-5 relative">
