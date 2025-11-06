@@ -42,25 +42,25 @@ export default function EssayCard({ essay, onClick }) {
 
           <hr className="border-gray-300 mb-3" />
 
-          <div className="space-y-2 text-gray-600 text-[13px]">
+          <div className="space-y-2 text-gray-600 text-[13px] text-left">
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-gray-500" />
-              <div className="flex w-full justify-between">
-                <span>Create on</span>
+              <div className="flex w-full">
+                <span className="inline-block w-[110px]">Create on</span>
                 <span>: {essay.createdAt}</span>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <Hourglass className="w-4 h-4 text-gray-500" />
-              <div className="flex w-full justify-between">
-                <span>Deadline</span>
+              <div className="flex w-full">
+                <span className="inline-block w-[110px]">Deadline</span>
                 <span>: {essay.deadline}</span>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <Users className="w-4 h-4 text-gray-500" />
-              <div className="flex w-full justify-between">
-                <span>Total submitted</span>
+              <div className="flex w-full">
+                <span className="inline-block w-[110px]">Total submitted</span>
                 <span>: {essay.totalSubmitted}</span>
               </div>
             </div>
@@ -79,18 +79,15 @@ export default function EssayCard({ essay, onClick }) {
               <X size={20} />
             </button>
 
-
             <div className="flex justify-center mb-4">
               <div className="bg-[#E6ECF5] rounded-full p-4">
                 <Trash2 size={40} className="text-[#1E4F91]" />
               </div>
             </div>
 
-
             <h3 className="text-base font-semibold mb-2">
               Are you sure you want to delete this essay?
             </h3>
-
 
             <div className="flex justify-center gap-3 mt-5">
               <button
