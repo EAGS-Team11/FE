@@ -61,9 +61,6 @@ export default function CourseCard({ course }) {
         </div>
       </div>
 
-      {/* ===================== */}
-      {/* EDIT MODAL */}
-      {/* ===================== */}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl shadow-lg w-full max-w-md p-5 relative">
@@ -149,9 +146,7 @@ export default function CourseCard({ course }) {
         </div>
       )}
 
-      {/* ===================== */}
-      {/* DELETE MODAL */}
-      {/* ===================== */}
+
       {isDeleteModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl shadow-lg w-full max-w-md p-6 text-center relative">
