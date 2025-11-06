@@ -14,7 +14,6 @@ import Profil from "./pages/mahasiswa/profil/Profil";
 import EditMyProfil from "./pages/mahasiswa/profil/EditMyProfil";
 import EditPersonal from "./pages/mahasiswa/profil/EditPersonal";
 import Footer from "./pages/footer"; 
-
 import NavbarDosen from "./pages/NavbarDosen";
 import Course from "./pages/dosen/course/Course";
 import CourseDetail from "./pages/dosen/course/CourseDetail";
@@ -25,6 +24,7 @@ import EssayDetail from "./pages/dosen/course/EssayDetail";
 import AiGrading1 from "./pages/dosen/ai/AiGrading1";
 import AiGrading2 from "./pages/dosen/ai/AiGrading2";
 import AiGrading3 from "./pages/dosen/ai/AiGrading3";
+import EditEssay from "./pages/dosen/course/EditEssay";
 import "./App.css";
 
 function MainLayout() {
@@ -97,11 +97,12 @@ export default function App() {
           <Route path="/dosen/course/:courseId/create-essay" element={<CreateEssay />} />
           <Route path="/dosen/course/:courseId/add-question" element={<AddQuestion />} />
           <Route path="/dosen/course/:courseId/essay/:essayId" element={<EssayDetail />} />
-          <Route path="/dosen/course/:courseId/edit-essay/:essayId" element={<CreateEssay />} />
+          <Route path="/dosen/course/:courseId/edit-essay/:essayId" element={<EditEssay />} />
           <Route path="/dosen/check-answer" element={<CheckAnswer />} />
           <Route path="/dosen/AiGrading1" element={<AiGrading1/>} />
           <Route path="/dosen/AiGrading2" element={<AiGrading2/>} />
           <Route path="/dosen/AiGrading3" element={<AiGrading3/>} />
+          <Route path="/dosen/edit-essay" element={<EditEssay />} />
         </Route>
       </Routes>
     </Router>

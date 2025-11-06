@@ -8,12 +8,15 @@ export default function EssayDetail() {
   const { courseId, essayId } = useParams();
   const navigate = useNavigate();
 
-  // ambil essay berdasarkan ID
+  // Ambil essay berdasarkan ID
   const essay = essays.find((e) => e.id === Number(essayId));
 
   const handleBack = () => navigate(`/dosen/course/${courseId}`);
+  
   const handleEdit = () =>
-    navigate(`/dosen/course/${courseId}/create-essay/${essayId}`);
+    navigate(`/dosen/course/${courseId}/edit-essay/${essayId}`, {
+    state: { essay },
+  });
 
   if (!essay) {
     return (
@@ -35,7 +38,7 @@ export default function EssayDetail() {
             </h1>
           </div>
 
-          {/* Edit Icon */}
+          {/* Tombol Edit */}
           <button
             onClick={handleEdit}
             className="flex items-center text-[#30326A] hover:text-[#23245c] transition font-inter text-sm"
@@ -135,7 +138,6 @@ export default function EssayDetail() {
             />
           </div>
 
-          {/* Attachment */}
           <div>
             <label className="block text-[#0B102D] font-semibold text-sm mb-1 text-left">
               ATTACHMENT
@@ -148,7 +150,7 @@ export default function EssayDetail() {
             />
           </div>
 
-          {/* Questions Section */}
+          {/* Questions */}
           <div>
             <label className="block text-[#0B102D] font-semibold text-sm mb-3 text-left">
               QUESTIONS
