@@ -18,6 +18,7 @@ import Footer from "./pages/footer";
 import NavbarDosen from "./pages/NavbarDosen";
 import Course from "./pages/dosen/course/Course";
 import CourseDetail from "./pages/dosen/course/CourseDetail";
+import CreateEssay from "./pages/dosen/course/CreateEssay";
 import "./App.css";
 
 function MainLayout() {
@@ -88,6 +89,7 @@ export default function App() {
         <Route element={<DosenLayout />}>
           <Route path="/dosen/course" element={<Course />} />
           <Route path="/dosen/course/:courseId" element={<CourseDetail />} />
+          <Route path="/dosen/course/:courseId/create-essay" element={<CreateEssay />} />
         </Route>
       </Routes>
     </Router>

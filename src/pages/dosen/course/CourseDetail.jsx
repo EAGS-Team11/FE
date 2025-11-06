@@ -1,14 +1,14 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { essays } from "../../../data/dosen/course/essayData";
-import { courses } from "../../../data/dosen/course/courseData"; // import courses
+import { courses } from "../../../data/dosen/course/courseData"; 
 import EssayCard from "../../../components/dosen/course/EssayCard";
 
 export default function CourseDetail() {
   const { courseId } = useParams(); 
   const navigate = useNavigate();
 
-  const handleCreateAssignment = () => console.log("Create Assignment clicked");
+  const handleCreateAssignment = () => {navigate(`/dosen/course/${courseId}/create-essay`);};
   const handleGiveGrade = () => console.log("Give a grade clicked");
   const handleEssayClick = (essayId) => console.log("Essay clicked:", essayId);
   const handleBack = () => navigate("/dosen/course"); 
