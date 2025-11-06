@@ -40,7 +40,11 @@ export default function CourseDetail() {
         </button>
 
         <button
-          onClick={() => console.log("Give a grade clicked")}
+          onClick={() => 
+            navigate("/dosen/give-grade", {
+              state: { courseId: course.id, assignment: null }
+            })
+          }
           className="flex items-center gap-2 border border-gray-300 bg-white rounded-lg px-5 py-2.5 text-blue-600 text-sm font-semibold hover:bg-blue-50 transition"
         >
           <Download className="w-4 h-4" />

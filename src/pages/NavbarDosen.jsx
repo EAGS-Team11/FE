@@ -1,9 +1,20 @@
 import React, { useState } from "react";
-import { Menu, X, BookOpen, MessageSquare, BarChart2, ChevronDown, LogOut } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Menu, BookOpen, MessageSquare, BarChart2, ChevronDown, LogOut } from "lucide-react";
 import logo from "../assets/logo capstone.png";
 
-export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen, activeMenu }) {
+export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleNavigation = (menu) => {
+    if (menu === "Courses") navigate("/dosen/course");
+    if (menu === "AI Grading Review") navigate("/dosen/AiGrading1");
+    if (menu === "Class Analytics") navigate("/dosen/analytics");
+  };
+
+  const isActive = (path) => location.pathname.includes(path);
 
   return (
     <>
@@ -39,7 +50,6 @@ export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen, activeMen
         <div className="flex flex-col px-5 py-6 border-b border-white/20 relative">
           <div className="w-20 h-20 rounded-full bg-gray-300 mx-auto mb-3"></div>
 
-          {/* Nama + Dropdown */}
           <div className="relative flex items-center justify-center">
             <h3 className="font-semibold text-white">Jennifer Carter</h3>
             <ChevronDown
@@ -49,46 +59,57 @@ export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen, activeMen
             />
           </div>
 
-          {/* Lecturer */}
           <p className="text-sm text-gray-300 mt-1 mb-2 text-center">lecturer</p>
 
-          {/* Dropdown Log Out */}
           <div
             className={`overflow-hidden transition-all duration-300 mt-2 ${
               isDropdownOpen ? "max-h-10 opacity-100" : "max-h-0 opacity-0"
             }`}
           >
-            <div className="flex items-center space-x-2 pl-0">
+            <div className="flex items-center space-x-2 pl-0 cursor-pointer">
               <LogOut size={16} className="text-white/70" />
-              <span className="text-white text-sm cursor-pointer pl-5">Log Out</span>
+              <span className="text-white text-sm pl-5">Log Out</span>
             </div>
           </div>
         </div>
 
         {/* Menu */}
-        <div className="p-5 text-sm">
-          <div className="uppercase text-gray-300 text-xs mb-3 text-left">Main Menu</div>
-          <ul className="space-y-2">
+        <div className="p-3 text-sm">
+          <div className="uppercase text-gray-300 text-xs mb-3 text-left px-2">
+            Main Menu
+          </div>
+          <ul className="space-y-1">
             <li
-              className={`flex items-center space-x-3 py-2 rounded-md cursor-pointer ${
-                activeMenu === "Courses" ? "bg-gray-600" : "hover:bg-white/10"
+              onClick={() => handleNavigation("Courses")}
+              className={`flex items-center space-x-3 px-4 py-3 rounded-md cursor-pointer transition-all ${
+                isActive("/dosen/course")
+                  ? "bg-gray-500"
+                  : "hover:bg-white/10"
               }`}
             >
-              <BookOpen size={16} /> <span>Courses</span>
+              <BookOpen size={18} /> <span>Courses</span>
             </li>
+
             <li
-              className={`flex items-center space-x-3 py-2 rounded-md cursor-pointer ${
-                activeMenu === "AI Grading Review" ? "bg-gray-600" : "hover:bg-white/10"
+              onClick={() => handleNavigation("AI Grading Review")}
+              className={`flex items-center space-x-3 px-4 py-3 rounded-md cursor-pointer transition-all ${
+                isActive("/dosen/AiGrading1")
+                  ? "bg-gray-500"
+                  : "hover:bg-white/10"
               }`}
             >
-              <MessageSquare size={16} /> <span>AI Grading Review</span>
+              <MessageSquare size={18} /> <span>AI Grading Review</span>
             </li>
+
             <li
-              className={`flex items-center space-x-3 py-2 rounded-md cursor-pointer ${
-                activeMenu === "Class Analytics" ? "bg-gray-600" : "hover:bg-white/10"
+              onClick={() => handleNavigation("Class Analytics")}
+              className={`flex items-center space-x-3 px-4 py-3 rounded-md cursor-pointer transition-all ${
+                isActive("/dosen/analytics")
+                  ? "bg-gray-500"
+                  : "hover:bg-white/10"
               }`}
             >
-              <BarChart2 size={16} /> <span>Class Analytics</span>
+              <BarChart2 size={18} /> <span>Class Analytics</span>
             </li>
           </ul>
         </div>

@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const CheckAnswer = () => {
   const [expanded, setExpanded] = useState({});
   const [activeFeedback, setActiveFeedback] = useState(null); 
+  const navigate = useNavigate();
 
   const questions = [
     {
@@ -97,7 +99,9 @@ const CheckAnswer = () => {
 
         {/* Tombol Back */}
         <div className="mt-8 mb-10 text-left">
-          <button className="px-5 py-2 bg-[#5D6F81] text-white text-sm rounded-md hover:bg-[#4b5e6f] transition">
+          <button 
+             onClick={() => navigate("/dosen/give-grade")}
+              className="flex items-center gap-2 bg-[#2c59c0] text-white text-sm font-medium px-4 py-2 rounded-lg shadow hover:bg-[#204aa8] transition" >
             ← Back
           </button>
         </div>

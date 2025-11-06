@@ -14,6 +14,7 @@ import Profil from "./pages/mahasiswa/profil/Profil";
 import EditMyProfil from "./pages/mahasiswa/profil/EditMyProfil";
 import EditPersonal from "./pages/mahasiswa/profil/EditPersonal";
 import Footer from "./pages/footer"; 
+
 import NavbarDosen from "./pages/NavbarDosen";
 import Course from "./pages/dosen/course/Course";
 import CourseDetail from "./pages/dosen/course/CourseDetail";
@@ -21,6 +22,8 @@ import CreateEssay from "./pages/dosen/course/CreateEssay";
 import AddQuestion from "./pages/dosen/course/AddQuestion";
 import CheckAnswer from "./pages/dosen/course/CheckAnswer";
 import EssayDetail from "./pages/dosen/course/EssayDetail";
+import GiveGrade from "./pages/dosen/course/GiveGrade";
+
 import AiGrading1 from "./pages/dosen/ai/AiGrading1";
 import AiGrading2 from "./pages/dosen/ai/AiGrading2";
 import AiGrading3 from "./pages/dosen/ai/AiGrading3";
@@ -103,6 +106,7 @@ export default function App() {
           <Route path="/dosen/AiGrading2" element={<AiGrading2/>} />
           <Route path="/dosen/AiGrading3" element={<AiGrading3/>} />
           <Route path="/dosen/edit-essay" element={<EditEssay />} />
+          <Route path="/dosen/give-grade" element={<GiveGrade />} />
         </Route>
       </Routes>
     </Router>
