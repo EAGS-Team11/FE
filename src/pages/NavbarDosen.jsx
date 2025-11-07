@@ -111,6 +111,7 @@ export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
             >
               <BarChart2 size={18} /> <span>Class Analytics</span>
             </li>
+            
           </ul>
         </div>
       </div>
