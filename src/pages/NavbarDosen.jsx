@@ -11,7 +11,7 @@ export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
   const handleNavigation = (menu) => {
     if (menu === "Courses") navigate("/dosen/course");
     if (menu === "AI Grading Review") navigate("/dosen/AiGrading1");
-    if (menu === "Class Analytics") navigate("/dosen/analytics");
+    if (menu === "Class Analytics") navigate("/dosen/ClassAnalitik1");
   };
 
   const isActive = (path) => location.pathname.includes(path);
