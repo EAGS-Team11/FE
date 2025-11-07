@@ -28,6 +28,9 @@ import AiGrading1 from "./pages/dosen/ai/AiGrading1";
 import AiGrading2 from "./pages/dosen/ai/AiGrading2";
 import AiGrading3 from "./pages/dosen/ai/AiGrading3";
 import EditEssay from "./pages/dosen/course/EditEssay";
+
+import ClassAnalitik1 from "./pages/dosen/class/ClassAnalitik1";
+import ClassAnalitik2 from "./pages/dosen/class/ClassAnalitik2";
 import "./App.css";
 
 function MainLayout() {
@@ -107,6 +110,8 @@ export default function App() {
           <Route path="/dosen/AiGrading3" element={<AiGrading3/>} />
           <Route path="/dosen/edit-essay" element={<EditEssay />} />
           <Route path="/dosen/give-grade" element={<GiveGrade />} />
+          <Route path="/dosen/ClassAnalitik1" element={<ClassAnalitik1 />} />
+          <Route path="/dosen/ClassAnalitik2" element={<ClassAnalitik2 />} />
         </Route>
       </Routes>
     </Router>
