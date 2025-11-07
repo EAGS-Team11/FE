@@ -104,7 +104,7 @@ export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
             <li
               onClick={() => handleNavigation("Class Analytics")}
               className={`flex items-center space-x-3 px-4 py-3 rounded-md cursor-pointer transition-all ${
-                isActive("/dosen/analytics")
+                isActive("/dosen/ClassAnalitik1")
                   ? "bg-gray-500"
                   : "hover:bg-white/10"
               }`}
