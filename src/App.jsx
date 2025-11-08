@@ -18,6 +18,19 @@ import Footer from "./pages/footer";
 import NavbarDosen from "./pages/NavbarDosen";
 import Course from "./pages/dosen/course/Course";
 import CourseDetail from "./pages/dosen/course/CourseDetail";
+import CreateEssay from "./pages/dosen/course/CreateEssay";
+import AddQuestion from "./pages/dosen/course/AddQuestion";
+import CheckAnswer from "./pages/dosen/course/CheckAnswer";
+import EssayDetail from "./pages/dosen/course/EssayDetail";
+import GiveGrade from "./pages/dosen/course/GiveGrade";
+
+import AiGrading1 from "./pages/dosen/ai/AiGrading1";
+import AiGrading2 from "./pages/dosen/ai/AiGrading2";
+import AiGrading3 from "./pages/dosen/ai/AiGrading3";
+import EditEssay from "./pages/dosen/course/EditEssay";
+
+import ClassAnalitik1 from "./pages/dosen/class/ClassAnalitik1";
+import ClassAnalitik2 from "./pages/dosen/class/ClassAnalitik2";
 import "./App.css";
 
 function MainLayout() {
@@ -37,9 +50,8 @@ function DosenLayout() {
   const activeMenu = "Courses"; 
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
+    <div className="flex flex-col min-h-screen bg-[#F6F7FB]">
       <div className="flex flex-grow">
-        {/* Sidebar + Navbar */}
         <NavbarDosen
           isSidebarOpen={isSidebarOpen}
           setIsSidebarOpen={setIsSidebarOpen}
@@ -88,6 +100,18 @@ export default function App() {
         <Route element={<DosenLayout />}>
           <Route path="/dosen/course" element={<Course />} />
           <Route path="/dosen/course/:courseId" element={<CourseDetail />} />
+          <Route path="/dosen/course/:courseId/create-essay" element={<CreateEssay />} />
+          <Route path="/dosen/course/:courseId/add-question" element={<AddQuestion />} />
+          <Route path="/dosen/course/:courseId/essay/:essayId" element={<EssayDetail />} />
+          <Route path="/dosen/course/:courseId/edit-essay/:essayId" element={<EditEssay />} />
+          <Route path="/dosen/check-answer" element={<CheckAnswer />} />
+          <Route path="/dosen/AiGrading1" element={<AiGrading1/>} />
+          <Route path="/dosen/AiGrading2" element={<AiGrading2/>} />
+          <Route path="/dosen/AiGrading3" element={<AiGrading3/>} />
+          <Route path="/dosen/edit-essay" element={<EditEssay />} />
+          <Route path="/dosen/give-grade" element={<GiveGrade />} />
+          <Route path="/dosen/ClassAnalitik1" element={<ClassAnalitik1 />} />
+          <Route path="/dosen/ClassAnalitik2" element={<ClassAnalitik2 />} />
         </Route>
       </Routes>
     </Router>
