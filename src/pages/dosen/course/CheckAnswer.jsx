@@ -37,7 +37,7 @@ const CheckAnswer = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 relative font-sans">
+    <div className="min-h-screen bg-[#F6F7FB] relative font-sans">
       <div className="absolute top-0 left-0 w-full h-[45vh] bg-gradient-to-r from-[#A7C7E7] to-[#5D6F81] -z-10"></div>
 
       <div className="max-w-4xl mx-auto px-6 pt-8">
