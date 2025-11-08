@@ -1,20 +1,44 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CourseCard from "../../../components/mahasiswa/course/CourseCard";
 import { dummyCourses } from "../../../data/mahasiswa/course/dummyCourses";
 import courseImg from "../../../assets/course1.png";
+import { Plus, ChevronLeft, ChevronRight, X } from "lucide-react";
 
 const MyCourse = () => {
   const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
+  const [classCode, setClassCode] = useState("");
+
+  const handleSubmit = () => {
+    if (classCode.trim() === "") {
+      alert("Please enter a class code!");
+      return;
+    }
+    alert(`Class code "${classCode}" submitted! Waiting for lecturer approval.`);
+    setShowModal(false);
+    setClassCode("");
+  };
 
   return (
-    <div className="p-8 bg-[#F6F7FB] min-h-screen font-inter py-24">
+    <div className="p-8 bg-[#F6F7FB] min-h-screen font-inter py-24 relative">
       {/* Header */}
-      <div className="flex items-center gap-2 mb-6 mt-1 ml-8">
-        <div className="w-20 h-20 flex justify-center items-center rounded-[10px] mt-1">
-          <img src={courseImg} alt="Book" className="w-30 h-30" />
+      <div className="flex items-center justify-between mb-6 mt-1 ml-8 mr-10">
+        <div className="flex items-center gap-2">
+          <div className="w-20 h-20 flex justify-center items-center rounded-[10px] mt-1">
+            <img src={courseImg} alt="Book" className="w-30 h-30" />
+          </div>
+          <h1 className="text-[32px] font-bold">Courses</h1>
         </div>
-        <h1 className="text-[32px] font-bold">Courses</h1>
+
+        {/* Add Class Button */}
+        <button
+          onClick={() => setShowModal(true)}
+          className="flex items-center gap-2 bg-[#2f5f97] text-white px-4 py-2 rounded-[10px] hover:bg-[#a3a2b4] transition"
+        >
+          <Plus size={18} />
+          Add Class
+        </button>
       </div>
 
       {/* Search + Course Grid */}
@@ -60,7 +84,58 @@ const MyCourse = () => {
             </div>
           ))}
         </div>
+
+        {/* Pagination */}
+        <div className="flex justify-end items-center mt-6 space-x-2 w-full">
+          <button className="border border-gray-300 rounded-md p-1.5 hover:bg-gray-100">
+            <ChevronLeft size={14} />
+          </button>
+          <button className="border border-gray-300 rounded-md p-1.5 hover:bg-gray-100">
+            <ChevronRight size={14} />
+          </button>
+        </div>
       </div>
+
+      {/* Modal Add Class */}
+      {showModal && (
+        <div className="fixed inset-0 flex justify-center items-center bg-black/50 z-50">
+          <div className="bg-white rounded-[15px] p-6 w-[350px] shadow-lg relative">
+            <button
+              onClick={() => setShowModal(false)}
+              className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+            >
+              <X size={20} />
+            </button>
+
+            <h2 className="text-[20px] font-semibold mb-4 text-center text-[#2F2975]">
+              Join a Class
+            </h2>
+
+            <input
+              type="text"
+              value={classCode}
+              onChange={(e) => setClassCode(e.target.value)}
+              placeholder="Enter class code"
+              className="w-full border border-gray-300 rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-[#2F2975]/50"
+            />
+
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowModal(false)}
+                className="px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-100 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSubmit}
+                className="px-4 py-2 rounded-md bg-[#2F2975] text-white hover:bg-[#4039A5] transition"
+              >
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
