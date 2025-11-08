@@ -31,7 +31,7 @@ export default function GiveGrade() {
   };
 
   return (
-    <div className="p-4 bg-gray-50 min-h-screen flex justify-center">
+    <div className="p-4 bg-[#F6F7FB] min-h-screen flex justify-center">
       <div className="w-full max-w-5xl">
         {/* Header */}
         <h1 className="text-lg font-semibold text-[#173A64] flex items-center gap-1 mb-3">

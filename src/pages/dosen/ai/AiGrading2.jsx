@@ -47,7 +47,7 @@ export default function AiGrading2() {
   ];
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
+    <div className="p-8 bg-[#F6F7FB] min-h-screen">
       {/* Header */}
       <h1 className="text-2xl font-semibold text-[#173A64] flex items-center gap-2 mb-6">
         <FileText className="w-7 h-7 text-[#173A64]" />

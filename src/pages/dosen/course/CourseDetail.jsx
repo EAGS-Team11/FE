@@ -23,7 +23,7 @@ export default function CourseDetail() {
     navigate(`/dosen/course/${courseId}/create-essay`, { state: { course } });
 
   return (
-    <div className="min-h-screen bg-[#f8f9fc] flex flex-col px-8 py-6">
+    <div className="min-h-screen bg-[#F6F7FB] flex flex-col px-8 py-6">
       {/* Judul */}
       <h2 className="text-xl font-bold text-[#2c2f77] mb-6 text-center sm:text-left">
         {course?.title || "Course Detail"}

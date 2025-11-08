@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Clock, Hourglass, Users, Trash2, X } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
+import defaultEssayImage from "../../../assets/default-essay.png"; 
 
 export default function EssayCard({ essay }) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -28,23 +29,29 @@ export default function EssayCard({ essay }) {
         onClick={handleCardClick}
         className="w-full max-w-[360px] bg-white rounded-2xl shadow-md cursor-pointer overflow-hidden relative transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
       >
-        {/* Header bar */}
-        <div className="bg-gradient-to-r from-[#4A6FA5] to-[#5F799C] h-9 rounded-t-2xl flex items-center justify-between px-4">
-          <button onClick={handleDeleteClick}>
-            <Trash2 className="text-white w-4 h-4 hover:text-gray-200 transition" />
+        {/* Header image (default) */}
+        <div className="relative">
+          <img
+            src={defaultEssayImage}
+            alt="Default essay"
+            className="w-full h-24 object-cover"
+          />
+          <button
+            onClick={handleDeleteClick}
+            className="absolute top-2 right-2 bg-black/40 rounded-full p-1 hover:bg-black/60 transition"
+          >
+            <Trash2 className="text-white w-4 h-4" />
           </button>
         </div>
 
         {/* Isi card */}
         <div className="p-4 text-xs">
-          {/* Judul essay */}
           <h3 className="text-center font-semibold text-[#1D2A57] text-[13px] mb-3 leading-snug break-words px-1">
             {essay.assignmentName || "Untitled Essay"}
           </h3>
 
           <hr className="border-gray-200 mb-3" />
 
-          {/* Info detail */}
           <div className="space-y-2 text-gray-600 text-[11.5px] text-left">
             <div className="flex items-center gap-2">
               <Clock className="w-3.5 h-3.5 text-gray-500 flex-shrink-0" />

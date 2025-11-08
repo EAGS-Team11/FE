@@ -27,7 +27,7 @@ export default function EssayDetail() {
   }
 
   return (
-    <div className="w-full bg-[#F9FAFB] min-h-screen p-8 flex justify-center -mt-20">
+    <div className="w-full bg-[#F6F7FB] min-h-screen p-8 flex justify-center -mt-20">
       <div className="w-full max-w-4xl scale-[0.9]">
         {/* Header */}
         <div className="flex items-center justify-between mb-6 ml-[-70px]">

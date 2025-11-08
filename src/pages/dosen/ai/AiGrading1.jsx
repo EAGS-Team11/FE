@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 export default function AiGrading1() {
   const navigate = useNavigate();
 
-  // ✅ Scroll ke atas setiap kali halaman ini dimuat
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -42,7 +41,7 @@ export default function AiGrading1() {
   ];
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
+    <div className="p-8 bg-[#F6F7FB] min-h-screen">
       <h1 className="text-2xl font-semibold text-[#173A64] flex items-center gap-2 mb-6">
         <FileText className="w-7 h-7 text-[#173A64]" />
         AI Grading Review

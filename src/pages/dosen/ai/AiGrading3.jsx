@@ -7,7 +7,7 @@ export default function AiGrading3() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-6">
+    <div className="min-h-screen bg-[#F6F7FB] py-8 px-6">
       {/* Container utama */}
       <div className="max-w-3xl mx-auto space-y-6">
 

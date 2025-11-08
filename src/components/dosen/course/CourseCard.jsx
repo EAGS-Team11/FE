@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { Edit2, Trash2, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import defaultImage from "../../../assets/default-course.png";
 
 export default function CourseCard({ course }) {
   const navigate = useNavigate();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const imageSrc = course.image || defaultImage;
 
   const handleClick = () => {
     navigate(`/dosen/course/${course.id}`);
@@ -38,8 +40,13 @@ export default function CourseCard({ course }) {
         className="bg-white rounded-xl border border-gray-300 shadow-sm overflow-hidden cursor-pointer hover:shadow-lg transition"
         onClick={handleClick}
       >
-        <div className="relative bg-gradient-to-r from-[#7A8CA3] to-[#B7C5D9] h-28">
-          <span className="absolute top-2 left-2 bg-[#3D2CA1] text-white text-xs px-2 py-1 rounded-md">
+        <div className="relative">
+          <img
+            src={imageSrc}
+            alt={course.title}
+            className="w-full h-28 object-cover"
+          />
+          <span className="absolute top-2 left-2 bg-[#20184d] text-white text-xs px-2 py-1 rounded-md italic">
             {course.category}
           </span>
           <button

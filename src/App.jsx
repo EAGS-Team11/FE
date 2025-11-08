@@ -50,7 +50,7 @@ function DosenLayout() {
   const activeMenu = "Courses"; 
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
+    <div className="flex flex-col min-h-screen bg-[#F6F7FB]">
       <div className="flex flex-grow">
         <NavbarDosen
           isSidebarOpen={isSidebarOpen}
