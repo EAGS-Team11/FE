@@ -34,14 +34,12 @@ const colorMap = {
 
 export default function EssayAnalytics() {
   const navigate = useNavigate();
-
-  // ✅ Tambahkan efek untuk scroll ke atas saat halaman ini dibuka
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen flex flex-col justify-between">
+    <div className="p-8 bg-[#F6F7FB] min-h-screen flex flex-col justify-between">
       <div>
         {/* Header */}
         <div className="flex items-center gap-2 mb-6">
