@@ -31,6 +31,10 @@ import EditEssay from "./pages/dosen/course/EditEssay";
 
 import ClassAnalitik1 from "./pages/dosen/class/ClassAnalitik1";
 import ClassAnalitik2 from "./pages/dosen/class/ClassAnalitik2";
+
+import ProfilDosen from "./pages/dosen/profil/ProfilDosen";
+import EditProfilDosen from "./pages/dosen/profil/EditProfilDosen";
+import EditPersonalDosen from "./pages/dosen/profil/EditPersonalDosen";
 import "./App.css";
 
 function MainLayout() {
@@ -112,6 +116,9 @@ export default function App() {
           <Route path="/dosen/give-grade" element={<GiveGrade />} />
           <Route path="/dosen/ClassAnalitik1" element={<ClassAnalitik1 />} />
           <Route path="/dosen/ClassAnalitik2" element={<ClassAnalitik2 />} />
+          <Route path="/dosen/ProfilDosen" element={<ProfilDosen />} />
+          <Route path="/dosen/EditProfilDosen" element={<EditProfilDosen />} />
+          <Route path="/dosen/EditPersonalDosen" element={<EditPersonalDosen />} />
         </Route>
       </Routes>
     </Router>

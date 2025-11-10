@@ -48,14 +48,25 @@ export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
       >
         {/* Profil Dosen */}
         <div className="flex flex-col px-5 py-6 border-b border-white/20 relative">
-          <div className="w-20 h-20 rounded-full bg-gray-300 mx-auto mb-3"></div>
+          <div
+            className="w-20 h-20 rounded-full bg-gray-300 mx-auto mb-3 cursor-pointer hover:ring-2 hover:ring-white/40 transition"
+            onClick={() => navigate("/dosen/ProfilDosen")}
+          ></div>
 
-          <div className="relative flex items-center justify-center">
-            <h3 className="font-semibold text-white">Jennifer Carter</h3>
+          <div
+            className="relative flex items-center justify-center cursor-pointer select-none"
+            onClick={() => navigate("/dosen/ProfilDosen")}
+          >
+            <h3 className="font-semibold text-white hover:text-white/80 transition">
+              Jennifer Carter
+            </h3>
             <ChevronDown
               size={16}
               className="text-white/50 absolute right-0 cursor-pointer"
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsDropdownOpen(!isDropdownOpen);
+              }}
             />
           </div>
 
@@ -111,7 +122,6 @@ export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
             >
               <BarChart2 size={18} /> <span>Class Analytics</span>
             </li>
-            
           </ul>
         </div>
       </div>
