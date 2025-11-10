@@ -35,6 +35,7 @@ import ClassAnalitik2 from "./pages/dosen/class/ClassAnalitik2";
 import ProfilDosen from "./pages/dosen/profil/ProfilDosen";
 import EditProfilDosen from "./pages/dosen/profil/EditProfilDosen";
 import EditPersonalDosen from "./pages/dosen/profil/EditPersonalDosen";
+
 import "./App.css";
 
 function MainLayout() {
