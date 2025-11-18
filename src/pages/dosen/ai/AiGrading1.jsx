@@ -47,7 +47,7 @@ export default function AiGrading1() {
         AI Grading Review
       </h1>
 
-      {/* Info Cards */}
+      {/* Statistik atas */}
       <div className="grid grid-cols-4 gap-6 mb-8">
         <div className="bg-white shadow rounded-lg p-5 flex flex-col items-center justify-center">
           <FileText className="w-8 h-8 text-[#173A64] mb-2" />
@@ -71,7 +71,7 @@ export default function AiGrading1() {
         </div>
       </div>
 
-      {/* Assignment List */}
+      {/* Tabel daftar tugas */}
       <div className="bg-white shadow rounded-lg">
         <div className="flex items-center justify-between p-5 border-b">
           <h2 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
@@ -89,27 +89,38 @@ export default function AiGrading1() {
         </div>
 
         <div className="divide-y">
-          <div className="grid grid-cols-4 text-sm font-semibold text-gray-700 bg-gray-100 py-2 px-5">
-            <p>Assignment Name</p>
-            <p>Due Date</p>
-            <p>Submissions</p>
-            <p>Status</p>
+          {/* Header Tabel */}
+          <div className="grid grid-cols-[3fr_2fr_1.7fr_1.3fr] text-sm font-semibold text-gray-700 bg-gray-100 py-2 px-5">
+            <p className="text-left">Assignment Name</p>
+            <p className="text-left">Due Date</p>
+            <p className="text-left">Submissions</p>
+            <p className="text-left">Status</p>
           </div>
 
+          {/* Isi Tabel */}
           {assignments.map((a, i) => (
             <div
               key={i}
-              className="grid grid-cols-4 text-sm items-center py-3 px-5 hover:bg-gray-50 cursor-pointer transition"
+              className="grid grid-cols-[3fr_2fr_1.7fr_1.3fr] text-sm items-center py-3 px-5 hover:bg-gray-50 cursor-pointer transition"
               onClick={() => navigate("/dosen/AiGrading2")}
             >
-              <p className="text-[#173A64] font-medium hover:underline">{a.name}</p>
-              <p>
+              {/* Assignment Name */}
+              <p className="text-[#173A64] font-medium hover:underline text-left">
+                {a.name}
+              </p>
+
+              {/* Due Date */}
+              <p className="text-left text-gray-700">
                 {a.date}
                 <br />
                 {a.time}
               </p>
-              <p>{a.submissions}</p>
-              <div className="flex justify-center">
+
+              {/* Submissions */}
+              <p className="text-left pl-4 text-gray-700">{a.submissions}</p>
+
+              {/* Status */}
+              <div className="flex justify-start -ml-4">
                 <span
                   className={`px-3 py-1 rounded-md text-white text-xs font-semibold ${
                     a.status === "AI Graded"
