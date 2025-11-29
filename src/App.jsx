@@ -1,6 +1,7 @@
 /* src/App.jsx */
-import { BrowserRouter as Router, Routes, Route, Outlet } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Outlet, Navigate } from "react-router-dom";
 import React, { useState } from "react";
+import { AuthProvider, useAuth } from "./context/AuthContext"; 
 import Login from "./pages/login";
 import Register from "./pages/register";
 import Home from "./pages/mahasiswa/home";
@@ -39,6 +40,25 @@ import EditPersonalDosen from "./pages/dosen/profil/EditPersonalDosen";
 
 import "./App.css";
 
+
+// --- Protected Route Wrapper ---
+function ProtectedRoute({ allowedRoles }) {
+  const { isAuthenticated, user } = useAuth();
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // Cek Role
+  if (allowedRoles && !allowedRoles.includes(user?.role)) {
+    // Redirect ke home jika role tidak sesuai (misal Dosen mencoba masuk ke halaman Mahasiswa)
+    return <Navigate to="/home" replace />; 
+  }
+
+  return <Outlet />;
+}
+
+// --- MainLayout, DosenLayout (Tetap Sama) ---
 function MainLayout() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
@@ -76,53 +96,67 @@ function DosenLayout() {
     </div>
   );
 }
+// --- Akhir Layouts ---
 
 
 
 export default function App() {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+      <AuthProvider> {/* BUNGKUS SEMUA DENGAN AUTH PROVIDER */}
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<Login />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
 
-        {/* Halaman dengan Navbar dan Footer */}
-        <Route element={<MainLayout />}>
-          <Route path="/home" element={<Home />} />
-          <Route path="/my-course" element={<MyCourse />} />
-          <Route path="/course/:courseId" element={<CourseEssay />} />
-          <Route path="/my-essays" element={<MyEssays />} />
-          <Route path="/submit-essay" element={<SubmitEssay />} />
-          <Route path="/submit-essay/:courseId/:essayId" element={<InputEssay />} />
-          <Route path="/view-graded" element={<ViewGraded />} />
-          <Route path="/input-essay" element={<InputEssay />} />
-          <Route path="/profile" element={<Profil />} />
-          <Route path="/EditMyProfil" element={<EditMyProfil />} />
-          <Route path="/EditPersonal" element={<EditPersonal />} />
-        </Route>
+          {/* Protected Routes - MAHASISWA */}
+          <Route element={<ProtectedRoute allowedRoles={['mahasiswa']} />}>
+            <Route element={<MainLayout />}>
+              <Route path="/home" element={<Home />} />
+              <Route path="/my-course" element={<MyCourse />} />
+              <Route path="/course/:courseId" element={<CourseEssay />} />
+              <Route path="/my-essays" element={<MyEssays />} />
+              <Route path="/submit-essay" element={<SubmitEssay />} />
+              <Route path="/submit-essay/:courseId/:essayId" element={<InputEssay />} />
+              <Route path="/view-graded" element={<ViewGraded />} />
+              <Route path="/input-essay" element={<InputEssay />} />
+              <Route path="/profile" element={<Profil />} />
+              <Route path="/EditMyProfil" element={<EditMyProfil />} />
+              <Route path="/EditPersonal" element={<EditPersonal />} />
+            </Route>
+          </Route>
 
-          {/* Layout untuk dosen */}
-        <Route element={<DosenLayout />}>
-          <Route path="/dosen/course" element={<Course />} />
-          <Route path="/dosen/course/:courseId" element={<CourseDetail />} />
-          <Route path="/dosen/course/:courseId/create-essay" element={<CreateEssay />} />
-          <Route path="/dosen/course/:courseId/add-question" element={<AddQuestion />} />
-          <Route path="/dosen/course/:courseId/essay/:essayId" element={<EssayDetail />} />
-          <Route path="/dosen/course/:courseId/edit-essay/:essayId" element={<EditEssay />} />
-          <Route path="/dosen/check-answer" element={<CheckAnswer />} />
-          <Route path="/dosen/AiGrading1" element={<AiGrading1/>} />
-          <Route path="/dosen/AiGrading2" element={<AiGrading2/>} />
-          <Route path="/dosen/AiGrading3" element={<AiGrading3/>} />
-          <Route path="/dosen/edit-essay" element={<EditEssay />} />
-          <Route path="/dosen/give-grade" element={<GiveGrade />} />
-          <Route path="/dosen/ClassAnalitik1" element={<ClassAnalitik1 />} />
-          <Route path="/dosen/ClassAnalitik2" element={<ClassAnalitik2 />} />
-          <Route path="/dosen/ProfilDosen" element={<ProfilDosen />} />
-          <Route path="/dosen/EditProfilDosen" element={<EditProfilDosen />} />
-          <Route path="/dosen/EditPersonalDosen" element={<EditPersonalDosen />} />
-        </Route>
-      </Routes>
+
+          {/* Protected Routes - DOSEN */}
+          <Route element={<ProtectedRoute allowedRoles={['dosen']} />}>
+            <Route element={<DosenLayout />}>
+              <Route path="/dosen/course" element={<Course />} />
+              <Route path="/dosen/course/:courseId" element={<CourseDetail />} />
+              <Route path="/dosen/course/:courseId/create-essay" element={<CreateEssay />} />
+              <Route path="/dosen/course/:courseId/add-question" element={<AddQuestion />} />
+              <Route path="/dosen/course/:courseId/essay/:essayId" element={<EssayDetail />} />
+              <Route path="/dosen/course/:courseId/edit-essay/:essayId" element={<EditEssay />} />
+              <Route path="/dosen/check-answer" element={<CheckAnswer />} />
+              <Route path="/dosen/AiGrading1" element={<AiGrading1/>} />
+              <Route path="/dosen/AiGrading2" element={<AiGrading2/>} />
+              <Route path="/dosen/AiGrading3" element={<AiGrading3/>} />
+              <Route path="/dosen/edit-essay" element={<EditEssay />} />
+              <Route path="/dosen/give-grade" element={<GiveGrade />} />
+              <Route path="/dosen/ClassAnalitik1" element={<ClassAnalitik1 />} />
+              <Route path="/dosen/ClassAnalitik2" element={<ClassAnalitik2 />} />
+              <Route path="/dosen/ProfilDosen" element={<ProfilDosen />} />
+              <Route path="/dosen/EditProfilDosen" element={<EditProfilDosen />} />
+              <Route path="/dosen/EditPersonalDosen" element={<EditPersonalDosen />} />
+            </Route>
+          </Route>
+          
+          {/* Catch-all route for unhandled paths (optional) */}
+          <Route path="*" element={
+            <div className="flex items-center justify-center h-screen text-xl">404 Not Found</div>
+          } />
+        </Routes>
+      </AuthProvider>
     </Router>
   );
 }

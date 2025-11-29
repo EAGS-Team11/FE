@@ -1,19 +1,93 @@
-/* src/pages/register.jsx */
-
 import React, { useState } from "react";
-import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, User } from "lucide-react";
 import registerImg from "../assets/login1.png";
 import logoCapstone from "../assets/Logo capstone.png";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
+
+// Definisikan URL API Anda (GANTI JIKA DEPLOY)
+const API_BASE_URL = 'http://127.0.0.1:8000'; 
 
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
+  // State untuk data form
+  const [nama, setNama] = useState(""); 
+  const [nim_nip, setNimNip] = useState(""); 
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  
+  
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate(); // Hook untuk navigasi setelah sukses
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    setError(null);
+    setSuccess(null);
+
+    // 1. Validasi Password
+    if (password !== confirmPassword) {
+      setError("Error: Password dan Confirm Password tidak cocok.");
+      return;
+    }
+    
+    // Pastikan password tidak terlalu pendek (walaupun BE Anda memotong)
+    if (password.length < 6) {
+        setError("Error: Password minimal 6 karakter.");
+        return;
+    }
+
+    setLoading(true);
+
+    const registerData = {
+      nim_nip: nim_nip,
+      password: password,
+      nama: nama,
+      role: 'mahasiswa',
+      prodi: ''
+    };
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(registerData), 
+      });
+
+      setLoading(false);
+
+      if (!response.ok) {
+        // Tangani error dari server (misalnya 400 NIM/NIP sudah terdaftar)
+        const errorData = await response.json();
+        setError(errorData.detail || "Registration failed due to server error.");
+        return;
+      }
+
+      // >>> BERHASIL REGISTRASI <<<
+      setSuccess("Registration successful! Redirecting to login...");
+      
+      // Redirect ke halaman login setelah 2 detik
+      setTimeout(() => {
+          navigate("/login");
+      }, 2000);
+
+    } catch (err) {
+      setLoading(false);
+      setError("Failed to connect to the API server or network error.");
+      console.error(err);
+    }
+  };
 
   return (
     <div className="relative w-screen h-screen flex items-center justify-center font-[JetBrains_Mono] overflow-hidden">
-      {/* Background image full layar */}
       <img
         src={registerImg}
         alt="Register Background"
@@ -22,19 +96,16 @@ export default function Register() {
 
       <div className="absolute inset-0 bg-black/40"></div>
 
-      {/* Kotak register */}
       <motion.div
         initial={{ opacity: 0, scale: 0.6 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.9, ease: "easeOut" }}
-        className="relative z-10 bg-black/70 backdrop-blur-sm border border-gray-700 rounded-2xl shadow-[0_0_25px_rgba(0,0,0,0.6)] p-7 w-[85%] max-w-[420px]"
+        className="relative z-10 bg-black/70 backdrop-blur-sm border border-gray-700 rounded-2xl shadow-[0_0_25px_rgba(0,0,0,0.6)] p-7 w-[85%] max-w-[420px] max-h-[90vh] overflow-y-auto"
       >
-        {/* Judul */}
         <h2 className="text-[22px] font-bold text-center text-white mb-3 tracking-wide">
           Create Account
         </h2>
 
-        {/* Logo */}
         <div className="flex justify-center mb-5">
           <img
             src={logoCapstone}
@@ -43,33 +114,54 @@ export default function Register() {
           />
         </div>
 
-        <form className="space-y-5">
-          {/* Username */}
+        {/* Form Submission */}
+        <form className="space-y-5" onSubmit={handleSubmit}>
+          
+          {/* Status Message */}
+          {(error || success) && (
+             <div className={`text-sm p-3 rounded-lg border ${error ? 'bg-red-900/50 text-red-300 border-red-700' : 'bg-green-900/50 text-green-300 border-green-700'}`}>
+               {error || success}
+             </div>
+          )}
+
+          {/* Input Nama (Username) */}
           <div className="relative">
-            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
               type="text"
-              placeholder="Username"
+              placeholder="Nama Lengkap"
+              value={nama}
+              onChange={(e) => setNama(e.target.value)}
+              required
               className="w-full bg-[#1a1a1a] border border-gray-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4F8EF7] focus:border-transparent transition-all"
             />
           </div>
 
-          {/* NIM */}
+          {/* Input NIM/NIP */}
           <div className="relative">
             <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
               type="text"
-              placeholder="NIM"
+              placeholder="NIM / NIP"
+              value={nim_nip}
+              onChange={(e) => setNimNip(e.target.value)}
+              required
               className="w-full bg-[#1a1a1a] border border-gray-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4F8EF7] focus:border-transparent transition-all"
             />
           </div>
+          
+          {/* Removed Program Studi and role selection as requested */}
+          
 
           {/* Password */}
           <div className="relative">
             <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
               type={showPassword ? "text" : "password"}
-              placeholder="Password"
+              placeholder="Password (Min 6 Karakter)"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
               className="w-full bg-[#1a1a1a] border border-gray-700 rounded-lg pl-10 pr-9 py-2.5 text-sm text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4F8EF7] focus:border-transparent transition-all"
             />
             <button
@@ -87,6 +179,9 @@ export default function Register() {
             <input
               type={showConfirmPassword ? "text" : "password"}
               placeholder="Confirm Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
               className="w-full bg-[#1a1a1a] border border-gray-700 rounded-lg pl-10 pr-9 py-2.5 text-sm text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4F8EF7] focus:border-transparent transition-all"
             />
             <button
@@ -105,9 +200,10 @@ export default function Register() {
           {/* Tombol Register */}
           <button
             type="submit"
-            className="w-full bg-[#4F8EF7] text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-[#3a6edb] transition-all shadow-[0_0_10px_rgba(79,142,247,0.4)] hover:shadow-[0_0_20px_rgba(79,142,247,0.6)]"
+            disabled={loading}
+            className="w-full bg-[#4F8EF7] text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-[#3a6edb] transition-all shadow-[0_0_10px_rgba(79,142,247,0.4)] hover:shadow-[0_0_20px_rgba(79,142,247,0.6)] disabled:bg-gray-500"
           >
-            Register
+            {loading ? "Registering..." : "Register"}
           </button>
 
           {/* Link ke login */}
