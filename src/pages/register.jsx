@@ -5,8 +5,8 @@ import logoCapstone from "../assets/Logo capstone.png";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
 
-// Definisikan URL API Anda (GANTI JIKA DEPLOY)
-const API_BASE_URL = 'http://127.0.0.1:8000'; 
+// Use relative paths; Vite dev proxy forwards /auth to backend during development
+const API_BASE_URL = '';
 
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
@@ -54,7 +54,7 @@ export default function Register() {
     };
 
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/register`, {
+      const response = await fetch(`/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -65,9 +65,14 @@ export default function Register() {
       setLoading(false);
 
       if (!response.ok) {
-        // Tangani error dari server (misalnya 400 NIM/NIP sudah terdaftar)
-        const errorData = await response.json();
-        setError(errorData.detail || "Registration failed due to server error.");
+        let errMsg = `Request failed (${response.status})`;
+        try {
+          const errorData = await response.json();
+          errMsg = errorData.detail || JSON.stringify(errorData) || errMsg;
+        } catch (parseErr) {
+          // ignore
+        }
+        setError(errMsg);
         return;
       }
 

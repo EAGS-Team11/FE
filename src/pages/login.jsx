@@ -8,8 +8,8 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-// Definisikan URL API Anda (GANTI JIKA DEPLOY)
-const API_BASE_URL = 'http://127.0.0.1:8000'; 
+// Use relative paths; Vite dev proxy forwards /auth to backend during development
+const API_BASE_URL = '';
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -39,7 +39,7 @@ export default function Login() {
     };
 
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      const response = await fetch(`/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -50,8 +50,14 @@ export default function Login() {
       setLoading(false);
 
       if (!response.ok) {
-        const errorData = await response.json();
-        setError(errorData.detail || "Invalid NIM/NIP or Password.");
+        let errMsg = `Request failed (${response.status})`;
+        try {
+          const errorData = await response.json();
+          errMsg = errorData.detail || JSON.stringify(errorData) || errMsg;
+        } catch (parseErr) {
+          // ignore JSON parse error
+        }
+        setError(errMsg);
         return;
       }
 
