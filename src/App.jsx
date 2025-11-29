@@ -31,6 +31,13 @@ import EditEssay from "./pages/dosen/course/EditEssay";
 
 import ClassAnalitik1 from "./pages/dosen/class/ClassAnalitik1";
 import ClassAnalitik2 from "./pages/dosen/class/ClassAnalitik2";
+
+
+import DosenPage from "./pages/admin/lecturers/index";
+import AdminSidebar from "./pages/admin/AdminSidebar";
+import AdminNavbar from "./pages/admin/AdminNavbar";
+import AdminDashboard from "./pages/admin/dashboard/dashboard";
+import StudentsPage from "./pages/admin/students/index";
 import "./App.css";
 
 function MainLayout() {
@@ -71,7 +78,25 @@ function DosenLayout() {
   );
 }
 
-
+function AdminLayout() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  return (
+    <div className="min-h-screen flex flex-col bg-[#F6F7FB]">
+      <AdminSidebar isSidebarOpen={isSidebarOpen} />
+      <AdminNavbar
+        isSidebarOpen={isSidebarOpen}
+        setIsSidebarOpen={setIsSidebarOpen}
+      />
+      <main
+        className="flex-grow pt-24 px-10 transition-all duration-300"
+        style={{ marginLeft: isSidebarOpen ? 256 : 0 }}
+      >
+        <Outlet />
+      </main>
+      <Footer isSidebarOpen={isSidebarOpen} />
+    </div>
+  );
+}
 
 export default function App() {
   return (
@@ -112,6 +137,13 @@ export default function App() {
           <Route path="/dosen/give-grade" element={<GiveGrade />} />
           <Route path="/dosen/ClassAnalitik1" element={<ClassAnalitik1 />} />
           <Route path="/dosen/ClassAnalitik2" element={<ClassAnalitik2 />} />
+        </Route>
+
+        {/* Layout untuk admin */}
+        <Route element={<AdminLayout />}>
+          <Route path="/admin/dashboard" element={<AdminDashboard/>} />
+          <Route path="/admin/lecturers" element={<DosenPage />} />
+          <Route path="/admin/students" element={<StudentsPage />} />
         </Route>
       </Routes>
     </Router>
