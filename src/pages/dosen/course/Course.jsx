@@ -1,3 +1,5 @@
+/* src/pages/dosen/course/Course.jsx */
+
 import React from "react";
 import CourseList from "../../../components/dosen/course/CourseList";
 

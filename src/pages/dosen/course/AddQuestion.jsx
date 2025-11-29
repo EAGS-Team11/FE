@@ -1,3 +1,5 @@
+/* src/pages/dosen/course/AddQuestion.jsx */
+
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Trash2 } from "lucide-react";

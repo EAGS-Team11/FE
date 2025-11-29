@@ -1,3 +1,5 @@
+/* src/components/dosen/course/CourseCard.jsx */
+
 import React, { useState } from "react";
 import { Edit2, Trash2, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";

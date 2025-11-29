@@ -1,3 +1,5 @@
+/* src/components/mahasiswa/course/CourseCard.jsx */
+
 import React from "react";
 import defaultCourseImg from "../../../assets/default-course.png"; // 🔹 Gambar default
 

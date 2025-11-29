@@ -1,3 +1,5 @@
+/* src/pages/mahasiswa/essay/SubmitEssay.jsx */
+
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import SubmitEssayTable from "../../../components/mahasiswa/essay/SubmitEssayTable";

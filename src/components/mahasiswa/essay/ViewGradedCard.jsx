@@ -1,3 +1,5 @@
+/* src/components/mahasiswa/essay/ViewGradedCard.jsx */
+
 import React from "react";
 
 export default function ViewGradedCard({ score, status, feedback, onViewAnswer }) {

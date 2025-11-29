@@ -1,3 +1,5 @@
+/* src/components/mahasiswa/essay/EssayStat.jsx */
+
 import React from "react";
 
 export default function EssayStat({ label, value, staticShadow }) {

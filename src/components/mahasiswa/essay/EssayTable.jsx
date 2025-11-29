@@ -1,3 +1,5 @@
+/* src/components/mahasiswa/essay/EssayTable.jsx */
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 

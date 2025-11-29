@@ -1,3 +1,5 @@
+/* src/pages/dosen/class/ClassAnalitik1.jsx */
+
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";

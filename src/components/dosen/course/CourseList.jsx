@@ -1,3 +1,5 @@
+/* src/components/dosen/course/CourseList.jsx */
+
 import React, { useState, useEffect } from "react";
 import { Search, ChevronLeft, ChevronRight, X } from "lucide-react";
 import CourseCard from "./CourseCard";

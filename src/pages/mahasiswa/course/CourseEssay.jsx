@@ -1,3 +1,5 @@
+/* src/pages/mahasiswa/course/CourseEssay.jsx */
+
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { dummyCourses } from "../../../data/mahasiswa/course/dummyCourses";

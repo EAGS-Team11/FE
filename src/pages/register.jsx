@@ -1,3 +1,5 @@
+/* src/pages/register.jsx */
+
 import React, { useState } from "react";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import registerImg from "../assets/login1.png";

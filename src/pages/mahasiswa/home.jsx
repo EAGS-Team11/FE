@@ -1,3 +1,5 @@
+/* src/pages/mahasiswa/home.jsx */
+
 import React from "react";
 import { FileText, BarChart2, Hourglass, MessageCircle } from "lucide-react";
 import {

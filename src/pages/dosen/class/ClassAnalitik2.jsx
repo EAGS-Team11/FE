@@ -1,3 +1,5 @@
+/* src/pages/dosen/class/ClassAnalitik2.jsx */
+
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { BarChart3, Rewind } from "lucide-react";

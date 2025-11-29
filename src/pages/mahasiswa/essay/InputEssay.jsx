@@ -1,3 +1,5 @@
+/* src/pages/mahasiswa/essay/InputEssay.jsx */
+
 import React, { useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Bold, Italic, Underline, Strikethrough, AlignLeft, AlignCenter, AlignRight, List, ListOrdered, Palette, Plus, Minus, ListTree } from "lucide-react";

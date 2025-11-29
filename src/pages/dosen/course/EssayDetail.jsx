@@ -1,3 +1,5 @@
+/* src/pages/dosen/course/EssayDetail.jsx */
+
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Pencil } from "lucide-react";

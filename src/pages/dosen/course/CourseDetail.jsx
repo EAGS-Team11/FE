@@ -1,3 +1,5 @@
+/* src/pages/dosen/course/CourseDetail.jsx */
+
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { essays } from "../../../data/dosen/course/essayData";

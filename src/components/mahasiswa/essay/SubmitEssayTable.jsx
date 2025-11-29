@@ -1,3 +1,5 @@
+/* src/components/mahasiswa/essay/SubmitEssayTable.jsx */
+
 import React from "react";
 
 export default function SubmitEssayTable({ courses }) {

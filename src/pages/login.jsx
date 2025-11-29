@@ -1,3 +1,5 @@
+/* src/pages/login.jsx */
+
 import React, { useState } from "react";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import loginImg from "../assets/login1.png";

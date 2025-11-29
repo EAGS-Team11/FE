@@ -1,3 +1,5 @@
+/* src/pages/mahasiswa/essay/ViewGraded.jsx */
+
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import ViewGradedCard from "../../../components/mahasiswa/essay/ViewGradedCard";

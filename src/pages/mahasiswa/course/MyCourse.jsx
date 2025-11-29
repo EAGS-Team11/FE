@@ -1,3 +1,5 @@
+/* src/pages/mahasiswa/course/MyCourse.jsx */
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CourseCard from "../../../components/mahasiswa/course/CourseCard";

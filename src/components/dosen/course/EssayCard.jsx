@@ -1,3 +1,5 @@
+/* src/components/dosen/course/EssayCard.jsx */
+
 import React, { useState } from "react";
 import { Clock, Hourglass, Users, Trash2, X } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";

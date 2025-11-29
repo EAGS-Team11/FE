@@ -1,3 +1,4 @@
+/* src/App.jsx */
 import { BrowserRouter as Router, Routes, Route, Outlet } from "react-router-dom";
 import React, { useState } from "react";
 import Login from "./pages/login";
