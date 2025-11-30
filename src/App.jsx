@@ -38,6 +38,15 @@ import ProfilDosen from "./pages/dosen/profil/ProfilDosen";
 import EditProfilDosen from "./pages/dosen/profil/EditProfilDosen";
 import EditPersonalDosen from "./pages/dosen/profil/EditPersonalDosen";
 
+
+
+import DosenPage from "./pages/admin/lecturers/index";
+import AdminSidebar from "./pages/admin/AdminSidebar";
+import AdminNavbar from "./pages/admin/AdminNavbar";
+import AdminDashboard from "./pages/admin/dashboard/dashboard";
+import StudentsPage from "./pages/admin/students/index";
+import Faculties from "./pages/admin/faculties/Faculties";
+import DetailFaculties from "./pages/admin/faculties/DetailFaculties";
 import "./App.css";
 
 
@@ -96,9 +105,26 @@ function DosenLayout() {
     </div>
   );
 }
-// --- Akhir Layouts ---
 
-
+function AdminLayout() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  return (
+    <div className="min-h-screen flex flex-col bg-[#F6F7FB]">
+      <AdminSidebar isSidebarOpen={isSidebarOpen} />
+      <AdminNavbar
+        isSidebarOpen={isSidebarOpen}
+        setIsSidebarOpen={setIsSidebarOpen}
+      />
+      <main
+        className="flex-grow pt-24 px-10 transition-all duration-300"
+        style={{ marginLeft: isSidebarOpen ? 256 : 0 }}
+      >
+        <Outlet />
+      </main>
+      <Footer isSidebarOpen={isSidebarOpen} />
+    </div>
+  );
+}
 
 export default function App() {
   return (
@@ -155,7 +181,16 @@ export default function App() {
           <Route path="*" element={
             <div className="flex items-center justify-center h-screen text-xl">404 Not Found</div>
           } />
-        </Routes>
+  
+        {/* Layout untuk admin */}
+        <Route element={<AdminLayout />}>
+          <Route path="/admin/dashboard" element={<AdminDashboard/>} />
+          <Route path="/admin/lecturers" element={<DosenPage />} />
+          <Route path="/admin/students" element={<StudentsPage />} />
+          <Route path="/admin/faculties" element={<Faculties />} />
+          <Route path="/admin/faculties/:id" element={<DetailFaculties />} />
+        </Route>
+      </Routes>
       </AuthProvider>
     </Router>
   );
