@@ -1,26 +1,45 @@
+// src/components/admin/dosen/DosenCard.jsx
+
 import React, { useState } from "react";
-import { Edit2, Trash2, X } from "lucide-react";
+import { Edit2, Trash2, X, UserCircle } from "lucide-react"; // Import UserCircle
 
 export default function DosenCard({ dosen }) {
   const [isEdit, setIsEdit] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
+  
+  // Menggunakan data yang lebih sesuai dengan UserOut schema
+  const displayEmail = `${dosen.nip}@univ.ac.id`; 
+
+  const handleEditConfirm = (e) => {
+      e.preventDefault();
+      // Implementasi logic Edit API di sini
+      console.log("Saving changes for:", dosen.nip);
+      setIsEdit(false);
+  };
+  
+  const handleDeleteConfirm = () => {
+    // Implementasi logic Delete API di sini
+    console.log("Deleting Dosen:", dosen.nip);
+    setIsDelete(false);
+  };
+
 
   return (
     <>
       {/* Card */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-md p-4 hover:shadow-lg transition-all duration-200">
         <div className="flex justify-between items-start">
-          <div>
-            <p className="font-semibold text-sm">{dosen.name}</p>
-            <p className="text-xs text-gray-500">{dosen.email}</p>
-            <p className="text-xs">{dosen.nip}</p>
-            <p className="text-xs mt-1">{dosen.fakultas} - {dosen.prodi}</p>
-
+          <div className="text-left">
+            <UserCircle size={30} className="mb-2 text-gray-400" />
+            <p className="font-semibold text-base text-[#173A64]">{dosen.name}</p>
+            <p className="text-sm text-gray-700 font-medium mt-1">{dosen.nip}</p>
+            <p className="text-xs text-gray-500">{dosen.prodi}</p>
+            
             <span
-              className={`mt-2 inline-block px-2 py-1 text-xs rounded-md ${
+              className={`mt-3 inline-block px-3 py-1 text-xs rounded-full font-medium ${
                 dosen.status === "active"
-                  ? "bg-green-100 text-green-600"
-                  : "bg-red-100 text-red-600"
+                  ? "bg-green-100 text-green-700"
+                  : "bg-red-100 text-red-700"
               }`}
             >
               {dosen.status}
@@ -37,7 +56,7 @@ export default function DosenCard({ dosen }) {
 
             <button
               onClick={() => setIsDelete(true)}
-              className="text-red-500 hover:text-red-700 transition"
+              className="text-red-500 bg-gray-100 p-1.5 rounded-md hover:bg-red-100 transition"
             >
               <Trash2 size={16} />
             </button>
@@ -56,44 +75,41 @@ export default function DosenCard({ dosen }) {
               <X size={20} />
             </button>
 
-            <h2 className="text-center font-semibold mb-4 text-lg">
-              Edit Lecturer
+            <h2 className="text-center font-semibold mb-4 text-lg text-[#173A64]">
+              Edit Lecturer: {dosen.name}
             </h2>
 
-            <form className="space-y-3 text-sm">
-              <input
-                type="text"
-                defaultValue={dosen.name}
-                className="w-full border border-gray-300 rounded-md p-2"
-              />
-
-              <input
-                type="email"
-                defaultValue={dosen.email}
-                className="w-full border border-gray-300 rounded-md p-2"
-              />
-
+            <form onSubmit={handleEditConfirm} className="space-y-3 text-sm">
+              
+              {/* NIP (Read-Only) */}
+              <label className="block text-left text-xs font-medium text-gray-500">NIP (Read-Only)</label>
               <input
                 type="text"
                 defaultValue={dosen.nip}
-                className="w-full border border-gray-300 rounded-md p-2"
+                readOnly
+                className="w-full border border-gray-300 rounded-md p-2 bg-gray-100 text-gray-600"
               />
-
+              
+              {/* Nama */}
+              <label className="block text-left text-xs font-medium text-gray-500">Full Name</label>
               <input
                 type="text"
-                defaultValue={dosen.fakultas}
-                className="w-full border border-gray-300 rounded-md p-2"
+                defaultValue={dosen.name}
+                className="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#173A64] outline-none"
               />
 
+              {/* Prodi */}
+              <label className="block text-left text-xs font-medium text-gray-500">Study Program</label>
               <input
                 type="text"
                 defaultValue={dosen.prodi}
-                className="w-full border border-gray-300 rounded-md p-2"
+                className="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#173A64] outline-none"
               />
 
+
               <div className="pt-3 flex justify-center">
-                <button className="bg-[#173A64] text-white px-6 py-2 rounded-md hover:bg-[#123052] transition">
-                  Save
+                <button type="submit" className="bg-[#173A64] text-white px-6 py-2 rounded-md hover:bg-[#123052] transition">
+                  Save Changes
                 </button>
               </div>
             </form>
@@ -105,22 +121,22 @@ export default function DosenCard({ dosen }) {
       {isDelete && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl w-full max-w-md p-6 text-center relative shadow-lg">
-            <button
-              onClick={() => setIsDelete(false)}
-              className="absolute top-3 right-3 text-red-500"
-            >
-              <X size={20} />
-            </button>
+             <button onClick={() => setIsDelete(false)} className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition">
+                <X size={20} />
+             </button>
 
-            <Trash2 size={40} className="mx-auto text-[#173A64]" />
+            <Trash2 size={40} className="mx-auto text-red-600 mb-4" />
 
-            <p className="mt-4 text-sm">
-              Are you sure you want to delete this lecturer?
+            <p className="mt-2 text-base font-medium">
+              Are you sure you want to delete lecturer **{dosen.name}**?
+            </p>
+            <p className="text-sm text-gray-500 mb-6">
+              This action cannot be undone.
             </p>
 
             <div className="flex justify-center gap-3 mt-5 text-sm">
-              <button className="bg-[#173A64] text-white px-5 py-1.5 rounded-md hover:bg-[#123052]">
-                Yes, delete
+              <button onClick={handleDeleteConfirm} className="bg-red-600 text-white px-5 py-1.5 rounded-md hover:bg-red-700">
+                Yes, Delete
               </button>
 
               <button
