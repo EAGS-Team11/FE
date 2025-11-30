@@ -1,3 +1,5 @@
+// src/pages/admin/lecturers/index.jsx
+
 import React, { useState } from "react";
 import DosenList from "../../../components/admin/dosen/DosenList";
 

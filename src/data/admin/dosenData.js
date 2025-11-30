@@ -1,3 +1,5 @@
+// src/data/admin/dosen/dosenData.js
+
 export const dosenData = [
   {
     id: 1,
