@@ -67,7 +67,9 @@ export default function Login() {
       login(data.user, data.access_token);
       
       // 1. Cek Role dan Redirect
-      if (data.user.role === 'dosen' || data.user.role === 'admin') {
+      if (data.user.role === 'admin') {
+          navigate("/admin/dashboard"); // <-- REDIRECT KE HALAMAN ADMIN
+      } else if (data.user.role === 'dosen') {
           navigate("/dosen/course"); // Redirect ke halaman Dosen
       } else {
           navigate("/home"); // Redirect ke halaman Mahasiswa
