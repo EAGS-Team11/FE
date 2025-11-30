@@ -1,3 +1,5 @@
+// src/data/dosen/course/essayData.js
+
 export const essays = [
   // Capstone Project
   {

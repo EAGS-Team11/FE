@@ -1,3 +1,5 @@
+// src/data/mahasiswa/course/dummyCourses.js
+
 export const dummyCourses = [
   { id: 1, title: "Capstone Project - A2526", category: "Informatics" },
   { id: 2, title: "Pengembangan Aplikasi Perangkat Bergerak - A2526", category: "Informatics" },

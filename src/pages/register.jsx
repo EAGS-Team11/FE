@@ -1,9 +1,11 @@
+// src/pages/register.jsx
+
 import React, { useState } from "react";
-import { Mail, Lock, Eye, EyeOff, User } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, User, GraduationCap } from "lucide-react"; 
 import registerImg from "../assets/login1.png";
 import logoCapstone from "../assets/Logo capstone.png";
 import { motion } from "framer-motion";
-import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
+import { Link, useNavigate } from "react-router-dom"; 
 
 // Use relative paths; Vite dev proxy forwards /auth to backend during development
 const API_BASE_URL = '';
@@ -17,7 +19,10 @@ export default function Register() {
   const [nim_nip, setNimNip] = useState(""); 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [prodi, setProdi] = useState(""); 
   
+  // ROLE DIHAPUS DARI STATE DAN DISET DEFAULT MAHASISWA DI handleSubmit
+  const role = "mahasiswa"; 
   
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
@@ -49,8 +54,8 @@ export default function Register() {
       nim_nip: nim_nip,
       password: password,
       nama: nama,
-      role: 'mahasiswa',
-      prodi: ''
+      role: role,  // <-- DISET DEFAULT MAHASISWA
+      prodi: prodi 
     };
 
     try {
@@ -68,9 +73,10 @@ export default function Register() {
         let errMsg = `Request failed (${response.status})`;
         try {
           const errorData = await response.json();
-          errMsg = errorData.detail || JSON.stringify(errorData) || errMsg;
+          // Error detail dari FastAPI (e.g., NIM/NIP sudah terdaftar)
+          errMsg = errorData.detail || JSON.stringify(errorData) || errMsg; 
         } catch (parseErr) {
-          // ignore
+          // Jika response body tidak bisa di-parse sebagai JSON
         }
         setError(errMsg);
         return;
@@ -142,7 +148,7 @@ export default function Register() {
             />
           </div>
 
-          {/* Input NIM/NIP */}
+          {/* Input NIM */}
           <div className="relative">
             <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
@@ -155,7 +161,21 @@ export default function Register() {
             />
           </div>
           
-          {/* Removed Program Studi and role selection as requested */}
+          {/* Input Program Studi */}
+          <div className="relative">
+            <GraduationCap className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <input
+              type="text"
+              placeholder="Program Studi"
+              value={prodi}
+              onChange={(e) => setProdi(e.target.value)}
+              required
+              className="w-full bg-[#1a1a1a] border border-gray-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4F8EF7] focus:border-transparent transition-all"
+            />
+          </div>
+          
+          {/* Pilihan Role (Dihapus) */}
+          {/* Dihapus: Pilihan Role */}
           
 
           {/* Password */}

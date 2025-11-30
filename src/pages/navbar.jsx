@@ -1,22 +1,28 @@
-/* src/pages/navbar.jsx */
+// src/pages/navbar.jsx
 
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext"; // <-- IMPORT useAuth
 import {
   Home,
   FileText,
   MessageCircle,
-  User,
+  User, // Tetap diimpor jika ingin digunakan di tempat lain
   LogOut,
   UserCircle,
 } from "lucide-react";
 import logo from "../assets/logo capstone.png";
+
+// URL Avatar Default
+const DEFAULT_AVATAR = "https://cdn-icons-png.flaticon.com/512/219/219970.png";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const location = useLocation();
   const dropdownRef = useRef(null);
+  
+  const { user, logout } = useAuth(); 
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -33,10 +39,11 @@ export default function Navbar() {
 
 
   const handleLogout = () => {
-    console.log("User logged out");
-    localStorage.removeItem("token"); 
-    window.location.href = "/login";
+    logout();
   };
+
+  const userName = user?.nama?.split(' ')[0] || "Mahasiswa"; 
+
 
   return (
     <>
@@ -101,14 +108,20 @@ export default function Navbar() {
           <div className="relative mr-8" ref={dropdownRef}>
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="flex items-center space-x-1 text-gray-300 hover:text-white focus:outline-none"
+              className="flex items-center space-x-2 text-gray-300 hover:text-white focus:outline-none"
             >
-              <User size={18} />
-              <span>Hello, User</span>
+              {/* AVATAR DITAMBAHKAN DI SINI */}
+              <img
+                src={DEFAULT_AVATAR}
+                alt={`${userName} Avatar`}
+                className="w-8 h-8 rounded-full object-cover border border-gray-400"
+              />
+              {/* MENAMPILKAN NAMA ASLI USER */}
+              <span>Hello, {userName}</span> 
             </button>
 
             {isOpen && (
-              <div className="absolute right-0 mt-2 w-40 bg-white text-gray-700 rounded-md shadow-lg z-50">
+              <div className className="absolute right-0 mt-2 w-40 bg-white text-gray-700 rounded-md shadow-lg z-50">
                 <ul className="py-1">
                   <li>
                     <Link
@@ -135,7 +148,7 @@ export default function Navbar() {
         </div>
       </nav>
 
-
+      {/* Modal Logout */}
       {isLogoutOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-[999]">
           <div className="bg-white rounded-2xl shadow-lg w-80 p-6 text-center animate-fadeIn">

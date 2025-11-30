@@ -1,7 +1,7 @@
-/* src/pages/NavbarDosen.jsx */
-
+// src/pages/NavbarDosen.jsx
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext"; // Import useAuth
 import {
   Menu,
   BookOpen,
@@ -17,6 +17,7 @@ export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, logout } = useAuth(); // Ambil user dan logout function
 
   const handleNavigation = (menu) => {
     if (menu === "Courses") navigate("/dosen/course");
@@ -25,10 +26,12 @@ export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
   };
 
   const handleLogout = () => {
-    console.log("User logged out");
-    localStorage.removeItem("token");
-    window.location.href = "/login";
+    // Memanggil fungsi logout dari context
+    logout();
   };
+
+  const userName = user?.nama || "Lecturer";
+  const userRole = user?.role || "lecturer"; 
 
   const isActive = (path) => location.pathname.includes(path);
 
@@ -74,7 +77,7 @@ export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
             onClick={() => navigate("/dosen/ProfilDosen")}
           >
             <h3 className="font-semibold text-white hover:text-white/80 transition">
-              Jennifer Carter
+              {userName}
             </h3>
             <ChevronDown
               size={16}
@@ -86,7 +89,7 @@ export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
             />
           </div>
 
-          <p className="text-sm text-gray-300 mt-1 mb-2 text-center">lecturer</p>
+          <p className="text-sm text-gray-300 mt-1 mb-2 text-center">{userRole}</p>
 
 
           <div
@@ -95,7 +98,7 @@ export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
             }`}
           >
             <div
-              onClick={() => setIsLogoutOpen(true)} // 🔹 buka modal logout
+              onClick={() => setIsLogoutOpen(true)} 
               className="flex items-center space-x-2 pl-0 cursor-pointer hover:text-gray-300 transition"
             >
               <LogOut size={16} className="text-white/70" />

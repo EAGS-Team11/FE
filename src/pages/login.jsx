@@ -1,4 +1,4 @@
-/* src/pages/login.jsx */
+// src/pages/login.jsx 
 
 import React, { useState } from "react";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";

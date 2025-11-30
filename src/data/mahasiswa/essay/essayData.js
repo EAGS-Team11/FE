@@ -1,3 +1,4 @@
+// src/data/mahasiswa/essay/essayData.js
 export const stats = [
   { label: "Total Essay Submitted", value: 12 },
   { label: "Pending Review", value: 2 },
