@@ -40,6 +40,7 @@ import AdminDashboard from "./pages/admin/dashboard/dashboard";
 import StudentsPage from "./pages/admin/students/index";
 import Faculties from "./pages/admin/faculties/Faculties";
 import DetailFaculties from "./pages/admin/faculties/DetailFaculties";
+import DetailProgram from "./pages/admin/faculties/DetailProgram";
 import "./App.css";
 
 function MainLayout() {
@@ -148,6 +149,7 @@ export default function App() {
           <Route path="/admin/students" element={<StudentsPage />} />
           <Route path="/admin/faculties" element={<Faculties />} />
           <Route path="/admin/faculties/:id" element={<DetailFaculties />} />
+          <Route path="/admin/faculties/:facultyId/program/:programId" element={<DetailProgram />} />
         </Route>
       </Routes>
     </Router>

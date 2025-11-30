@@ -12,8 +12,6 @@ export default function Faculties() {
     setFaculties(facultiesData);
   }, []);
 
-  // Modal state etc. (Add/Edit/Delete) bisa dipertahankan sama seperti sebelumnya
-
   const filteredList = faculties.filter(
     (x) =>
       x.name.toLowerCase().includes(search.toLowerCase()) ||

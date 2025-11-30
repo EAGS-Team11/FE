@@ -16,18 +16,12 @@ export default function AdminSidebar({ isSidebarOpen }) {
 
   // STATE UNTUK DROPDOWN
   const [openUserMgmt, setOpenUserMgmt] = useState(false);
-  const [openMasterData, setOpenMasterData] = useState(false);
   const [openLog, setOpenLog] = useState(false);
 
   // MENU GROUPS
   const userManagement = [
     { name: "Lecturers", path: "/admin/lecturers" },
     { name: "Students", path: "/admin/students" }
-  ];
-
-  const masterData = [
-    { name: "Faculties", path: "/admin/faculties" },
-    { name: "Study Programs", path: "/admin/programs" }
   ];
 
   const logMonitoring = [
@@ -91,36 +85,16 @@ export default function AdminSidebar({ isSidebarOpen }) {
             </ul>
           )}
         </li>
-
-        {/* UNIVERSITY MASTER DATA DROPDOWN */}
-        <li>
-          <div
-            onClick={() => setOpenMasterData(!openMasterData)}
-            className="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-white/10 rounded-md"
-          >
-            <div className="flex items-center space-x-3">
-              <BookOpen size={18} />
-              <span>University Master Data</span>
-            </div>
-            {openMasterData ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-          </div>
-
-          {openMasterData && (
-            <ul className="ml-10 mt-1 space-y-1">
-              {masterData.map((m) => (
-                <li
-                  key={m.path}
-                  onClick={() => navigate(m.path)}
-                  className={`px-3 py-2 rounded cursor-pointer
-                    ${location.pathname.includes(m.path)
-                      ? "bg-gray-500"
-                      : "hover:bg-white/10"}`}
-                >
-                  {m.name}
-                </li>
-              ))}
-            </ul>
-          )}
+        
+        <li
+          onClick={() => navigate("/admin/faculties")}
+          className={`flex items-center space-x-3 px-4 py-3 rounded-md cursor-pointer transition-all
+            ${location.pathname.includes("/admin/faculties")
+              ? "bg-gray-500"
+              : "hover:bg-white/10"}`}
+        >
+          <BookOpen size={18} />
+          <span>University Master Data</span>
         </li>
 
         {/* LOG & MONITORING DROPDOWN */}

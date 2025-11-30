@@ -1,172 +1,226 @@
 export const facultyDetails = [
+  // ================================================
+  // 1. Faculty of Science and Information Technology
+  // ================================================
   {
     id: 1,
-    code: "FT",
-    name: "Fakultas Teknik",
-    description: "Menaungi program studi Teknik Mesin, Sipil, Elektro, dan Arsitektur.",
+    code: "FSIT",
+    name: "Faculty of Science and Information Technology",
+    description:
+      "FSTI ITK is here to address the challenges of the industrial and technological era. Through its leading study programs, FSTI promotes collaboration, innovation, and real solutions for society.",
     status: "active",
-    stats: { programs: 4, lecturers: 60, students: 1500, essays: 3200 },
-    programs: [
-      { id: 1, name: "Teknik Mesin", level: "S1", lecturers: 20, students: 500 },
-      { id: 2, name: "Teknik Sipil", level: "S1", lecturers: 15, students: 400 },
-      { id: 3, name: "Teknik Elektro", level: "S1", lecturers: 15, students: 400 },
-      { id: 4, name: "Arsitektur", level: "S1", lecturers: 10, students: 200 },
+
+    stats: { programs: 9, lecturers: 0, students: 0, essays: 0 },
+
+    departments: [
+      {
+        name: "Department of Data Science and Analytics",
+        programs: [
+          {
+            id: 1,
+            name: "Mathematics",
+            akreditasi: "Good",
+            gelar: "S.Math",
+          },
+          {
+            id: 2,
+            name: "Actuarial Science",
+            akreditasi: "Good",
+            gelar: "S.Aktr",
+          },
+          {
+            id: 3,
+            name: "Statistics",
+            akreditasi: "Good",
+            gelar: "S.Stat",
+          },
+          {
+            id: 4,
+            name: "Physics",
+            akreditasi: "Very Good",
+            gelar: "S.Si",
+          },
+        ],
+      },
+
+      {
+        name: "Department of Electrical Engineering, Informatics, and Business",
+        programs: [
+          {
+            id: 5,
+            name: "Informatics",
+            akreditasi: "Very Good and ASIIN",
+            gelar: "S.Kom",
+          },
+          {
+            id: 6,
+            name: "Information System",
+            akreditasi: "Very Good and ASIIN",
+            gelar: "S.Kom",
+          },
+          {
+            id: 7,
+            name: "Digital Business",
+            akreditasi: "Good",
+            gelar: "S.Bns",
+          },
+          {
+            id: 8,
+            name: "Electrical Engineering",
+            akreditasi: "Very Good and ASIIN",
+            gelar: "S.T",
+          },
+        ],
+      },
     ],
-    lecturers: [
-      { id: 1, name: "Dr. Budi", email: "budi@univ.ac.id", program: "Teknik Mesin", status: "active" },
-      { id: 2, name: "Siti, M.T.", email: "siti@univ.ac.id", program: "Teknik Sipil", status: "active" },
-    ],
-    activity: ["3 new courses added", "1 lecturer retired"],
+
+    lecturers: [],
+    activity: [],
   },
+
+  // ================================================
+  // 2. Faculty of Sustainable Development
+  // ================================================
   {
     id: 2,
-    code: "FIK",
-    name: "Fakultas Ilmu Komputer",
-    description: "Menaungi program studi Informatika, Sistem Informasi, dan Teknologi Informasi.",
+    code: "FSD",
+    name: "Faculty of Sustainable Development",
+    description:
+      "FPB ITK is the Faculty of Sustainable Development at the Kalimantan Institute of Technology (ITK). The faculty focuses on environmentally friendly and sustainable development through strong research and education.",
     status: "active",
-    stats: { programs: 3, lecturers: 45, students: 1200, essays: 3200 },
-    programs: [
-      { id: 1, name: "Informatika", level: "S1", lecturers: 20, students: 700 },
-      { id: 2, name: "Sistem Informasi", level: "S1", lecturers: 15, students: 400 },
-      { id: 3, name: "Teknologi Informasi", level: "D3", lecturers: 10, students: 100 },
+
+    stats: { programs: 7, lecturers: 0, students: 0, essays: 0 },
+
+    departments: [
+      {
+        name: "Department of Maritime Technology",
+        programs: [
+          {
+            id: 1,
+            name: "Naval Architecture",
+            akreditasi: "Very Good",
+            gelar: "S.T",
+          },
+          {
+            id: 2,
+            name: "Ocean Engineering",
+            akreditasi: "Good",
+            gelar: "S.T",
+          },
+          {
+            id: 3,
+            name: "Environmental Engineering",
+            akreditasi: "Very Good",
+            gelar: "S.T",
+          },
+        ],
+      },
+
+      {
+        name: "Department of Civil Engineering and Planning",
+        programs: [
+          {
+            id: 4,
+            name: "Civil Engineering",
+            akreditasi: "Very Good and ASIIN",
+            gelar: "S.T",
+          },
+          {
+            id: 5,
+            name: "Urban Regional Planning",
+            akreditasi: "Good and ASIIN",
+            gelar: "S.PWK",
+          },
+          {
+            id: 6,
+            name: "Architecture",
+            akreditasi: "Good",
+            gelar: "S.Ars",
+          },
+          {
+            id: 7,
+            name: "Visual Communication Design",
+            akreditasi: "Good",
+            gelar: "S.Ds",
+          },
+        ],
+      },
     ],
-    lecturers: [
-      { id: 1, name: "Dr. Ahmad", email: "ahmad@univ.ac.id", program: "Informatika", status: "active" },
-      { id: 2, name: "Siti Rahma, M.Kom", email: "siti@univ.ac.id", program: "Sistem Informasi", status: "active" },
-    ],
-    activity: ["5 AI-graded essays this week", "2 new lecturers added"],
+
+    lecturers: [],
+    activity: [],
   },
+
+  // ================================================
+  // 3. Faculty of Engineering and Industrial Technology
+  // ================================================
   {
     id: 3,
-    code: "FEB",
-    name: "Fakultas Ekonomi & Bisnis",
-    description: "Fakultas yang menaungi Manajemen, Akuntansi, dan Ekonomi Pembangunan.",
+    code: "FEIT",
+    name: "Faculty of Engineering and Industrial Technology",
+    description:
+      "The Faculty of Engineering and Industrial Technology (FRTI) at ITK focuses on industrial engineering, materials and metallurgy, mechanical engineering, and chemical engineering.",
     status: "active",
-    stats: { programs: 3, lecturers: 50, students: 1300, essays: 2800 },
-    programs: [
-      { id: 1, name: "Manajemen", level: "S1", lecturers: 20, students: 600 },
-      { id: 2, name: "Akuntansi", level: "S1", lecturers: 15, students: 400 },
-      { id: 3, name: "Ekonomi Pembangunan", level: "S1", lecturers: 15, students: 300 },
+
+    stats: { programs: 7, lecturers: 0, students: 0, essays: 0 },
+
+    departments: [
+      {
+        name: "Department of Industrial Technology",
+        programs: [
+          {
+            id: 1,
+            name: "Mechanical Engineering",
+            akreditasi: "Very Good and ASIIN",
+            gelar: "S.T",
+          },
+          {
+            id: 2,
+            name: "Industrial Engineering",
+            akreditasi: "Very Good",
+            gelar: "S.T",
+          },
+          {
+            id: 3,
+            name: "Logistic Engineering",
+            akreditasi: "Good",
+            gelar: "S.T",
+          },
+          {
+            id: 4,
+            name: "Materials and Metallurgy Engineering",
+            akreditasi: "Very Good and ASIIN",
+            gelar: "S.T",
+          },
+        ],
+      },
+
+      {
+        name: "Department of Industrial Engineering",
+        programs: [
+          {
+            id: 5,
+            name: "Food Technology",
+            akreditasi: "Good",
+            gelar: "S.TP",
+          },
+          {
+            id: 6,
+            name: "Chemical Engineering",
+            akreditasi: "Very Good and ASIIN",
+            gelar: "S.T",
+          },
+          {
+            id: 7,
+            name: "Safety Engineering",
+            akreditasi: "Good",
+            gelar: "S.T",
+          },
+        ],
+      },
     ],
-    lecturers: [
-      { id: 1, name: "Prof. Rina", email: "rina@univ.ac.id", program: "Manajemen", status: "active" },
-      { id: 2, name: "Andi, M.Ec.", email: "andi@univ.ac.id", program: "Akuntansi", status: "active" },
-    ],
-    activity: ["Program Akuntansi mendapat akreditasi A", "2 seminar nasional berhasil diselenggarakan"],
-  },
-  {
-    id: 4,
-    code: "FH",
-    name: "Fakultas Hukum",
-    description: "Fakultas yang menyediakan pendidikan hukum dan peradilan.",
-    status: "inactive",
-    stats: { programs: 2, lecturers: 30, students: 800, essays: 1200 },
-    programs: [
-      { id: 1, name: "Ilmu Hukum", level: "S1", lecturers: 20, students: 600 },
-      { id: 2, name: "Hukum Internasional", level: "S2", lecturers: 10, students: 200 },
-    ],
-    lecturers: [
-      { id: 1, name: "Dr. Laila", email: "laila@univ.ac.id", program: "Ilmu Hukum", status: "active" },
-    ],
-    activity: ["1 dosen pensiun", "Prodi Ilmu Hukum update kurikulum"],
-  },
-  {
-    id: 5,
-    code: "FIP",
-    name: "Fakultas Ilmu Pendidikan",
-    description: "Fakultas untuk pendidikan guru dan pedagogik.",
-    status: "active",
-    stats: { programs: 3, lecturers: 35, students: 900, essays: 1500 },
-    programs: [
-      { id: 1, name: "Pendidikan Matematika", level: "S1", lecturers: 15, students: 300 },
-      { id: 2, name: "Pendidikan Bahasa", level: "S1", lecturers: 10, students: 300 },
-      { id: 3, name: "Pendidikan IPA", level: "S1", lecturers: 10, students: 300 },
-    ],
-    lecturers: [
-      { id: 1, name: "Dr. Tania", email: "tania@univ.ac.id", program: "Pendidikan Matematika", status: "active" },
-    ],
-    activity: ["Kurikulum diperbarui", "1 dosen baru bergabung"],
-  },
-  {
-    id: 6,
-    code: "FK",
-    name: "Fakultas Kedokteran",
-    description: "Fakultas untuk pendidikan dokter umum dan spesialis.",
-    status: "active",
-    stats: { programs: 2, lecturers: 40, students: 1000, essays: 2000 },
-    programs: [
-      { id: 1, name: "Kedokteran Umum", level: "S1", lecturers: 25, students: 600 },
-      { id: 2, name: "Kedokteran Gigi", level: "S1", lecturers: 15, students: 400 },
-    ],
-    lecturers: [
-      { id: 1, name: "Dr. Agus", email: "agus@univ.ac.id", program: "Kedokteran Umum", status: "active" },
-    ],
-    activity: ["3 seminar kesehatan sukses", "Lab baru dibuka"],
-  },
-  {
-    id: 7,
-    code: "FP",
-    name: "Fakultas Psikologi",
-    description: "Fakultas psikologi klinis dan pendidikan.",
-    status: "active",
-    stats: { programs: 2, lecturers: 20, students: 500, essays: 800 },
-    programs: [
-      { id: 1, name: "Psikologi Klinis", level: "S1", lecturers: 10, students: 250 },
-      { id: 2, name: "Psikologi Pendidikan", level: "S1", lecturers: 10, students: 250 },
-    ],
-    lecturers: [
-      { id: 1, name: "Dr. Lina", email: "lina@univ.ac.id", program: "Psikologi Klinis", status: "active" },
-    ],
-    activity: ["Workshop psikologi anak berhasil diselenggarakan"],
-  },
-  {
-    id: 8,
-    code: "FS",
-    name: "Fakultas Seni",
-    description: "Fakultas seni rupa, musik, dan desain.",
-    status: "inactive",
-    stats: { programs: 3, lecturers: 25, students: 400, essays: 500 },
-    programs: [
-      { id: 1, name: "Seni Rupa", level: "S1", lecturers: 10, students: 150 },
-      { id: 2, name: "Seni Musik", level: "S1", lecturers: 8, students: 150 },
-      { id: 3, name: "Desain Grafis", level: "D3", lecturers: 7, students: 100 },
-    ],
-    lecturers: [
-      { id: 1, name: "Dr. Riko", email: "riko@univ.ac.id", program: "Seni Rupa", status: "inactive" },
-    ],
-    activity: ["Pameran seni tahunan selesai", "Program Desain Grafis diperbarui"],
-  },
-  {
-    id: 9,
-    code: "FAP",
-    name: "Fakultas Agama & Pendidikan",
-    description: "Fakultas pendidikan agama dan studi teologi.",
-    status: "active",
-    stats: { programs: 2, lecturers: 15, students: 300, essays: 400 },
-    programs: [
-      { id: 1, name: "Pendidikan Agama", level: "S1", lecturers: 10, students: 200 },
-      { id: 2, name: "Teologi", level: "S1", lecturers: 5, students: 100 },
-    ],
-    lecturers: [
-      { id: 1, name: "Dr. Yusuf", email: "yusuf@univ.ac.id", program: "Pendidikan Agama", status: "active" },
-    ],
-    activity: ["Seminar teologi diadakan", "1 dosen baru bergabung"],
-  },
-  {
-    id: 10,
-    code: "FIPSI",
-    name: "Fakultas Ilmu Politik & Sosial",
-    description: "Fakultas politik, hubungan internasional, dan sosiologi.",
-    status: "active",
-    stats: { programs: 3, lecturers: 30, students: 700, essays: 1000 },
-    programs: [
-      { id: 1, name: "Ilmu Politik", level: "S1", lecturers: 10, students: 250 },
-      { id: 2, name: "Hubungan Internasional", level: "S1", lecturers: 10, students: 250 },
-      { id: 3, name: "Sosiologi", level: "S1", lecturers: 10, students: 200 },
-    ],
-    lecturers: [
-      { id: 1, name: "Dr. Ani", email: "ani@univ.ac.id", program: "Ilmu Politik", status: "active" },
-    ],
-    activity: ["Kuliah tamu internasional", "2 workshop berhasil diselenggarakan"],
+
+    lecturers: [],
+    activity: [],
   },
 ];

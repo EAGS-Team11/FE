@@ -23,6 +23,32 @@ export default function DetailFaculties() {
     );
   }
 
+  // AUTO PICK IMAGE
+  const facultyImage = `/src/assets/faculties${detail.id}.png`;
+  const bgImage = `/src/assets/facultiesbg${detail.id}.png`;
+
+  // WARNA BERDASARKAN FAKULTAS
+  const cardColor =
+    detail.name === "Faculty of Sustainable Development"
+      ? "border-green-500 shadow-green-200"
+      : detail.name === "Faculty of Engineering and Industrial Technology"
+      ? "border-red-500 shadow-red-200"
+      : "border-blue-300 shadow-blue-100";
+
+  const titleColor =
+    detail.name === "Faculty of Sustainable Development"
+      ? "text-green-700"
+      : detail.name === "Faculty of Engineering and Industrial Technology"
+      ? "text-red-700"
+      : "text-blue-700";
+
+  const buttonColor =
+    detail.name === "Faculty of Sustainable Development"
+      ? "bg-green-600 hover:bg-green-700"
+      : detail.name === "Faculty of Engineering and Industrial Technology"
+      ? "bg-red-600 hover:bg-red-700"
+      : "bg-blue-600 hover:bg-blue-700";
+
   return (
     <div className="p-6">
       {/* BACK BUTTON */}
@@ -53,115 +79,90 @@ export default function DetailFaculties() {
         </div>
       </div>
 
-      {/* DESCRIPTION */}
-      <div className="bg-white rounded-lg shadow p-5 mb-6">
-        <h2 className="text-lg font-semibold mb-2">Faculty Description</h2>
-        <p className="text-gray-700">{detail.description}</p>
+      {/* DESCRIPTION + IMAGE */}
+      <div className="bg-white rounded-lg shadow p-5 mb-6 flex gap-6">
+        <img
+          src={facultyImage}
+          alt="faculty illustration"
+          className="w-56 h-auto rounded-xl object-cover"
+        />
 
-        <p className="mt-4">
-          Status:{" "}
-          <span
-            className={`px-2 py-1 rounded text-white text-sm ${
-              detail.status === "active" ? "bg-green-600" : "bg-red-600"
-            }`}
-          >
-            {detail.status}
-          </span>
-        </p>
+        <div>
+          <h2 className="text-lg font-semibold mb-2">Faculty Description</h2>
+          <p className="text-gray-700">{detail.description}</p>
+
+          <p className="mt-4">
+            Status:{" "}
+            <span
+              className={`px-2 py-1 rounded text-white text-sm ${
+                detail.status === "active" ? "bg-green-600" : "bg-red-600"
+              }`}
+            >
+              {detail.status}
+            </span>
+          </p>
+        </div>
       </div>
 
-      {/* STATISTICS */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
-        {[
-          { title: "Total Programs", value: detail.stats.programs },
-          { title: "Total Lecturers", value: detail.stats.lecturers },
-          { title: "Total Students", value: detail.stats.students },
-          { title: "AI-Evaluated Essays", value: detail.stats.essays },
-        ].map((stat, idx) => (
-          <div key={idx} className="bg-white rounded-xl shadow p-5 text-center">
-            <h3 className="text-gray-600">{stat.title}</h3>
-            <p className="text-3xl font-bold">{stat.value}</p>
-          </div>
-        ))}
-      </div>
+      {/* DEPARTMENTS / PROGRAMS */}
+      <div
+        className="relative rounded-lg p-5 mb-6 bg-cover bg-center"
+        style={{ backgroundImage: `url(${bgImage})` }}
+      >
+        {/* BLUR OVERLAY */}
+        <div className="absolute inset-0 bg-black/40 backdrop-blur-sm rounded-lg"></div>
 
-      {/* PROGRAM STUDIES */}
-      <div className="bg-white shadow rounded-lg p-5 mb-6">
-        <h2 className="text-xl font-semibold mb-3">Programs of Study</h2>
+        <div className="relative z-10">
+          <h2 className="text-2xl font-bold mb-5 text-white drop-shadow">
+            Departments & Programs
+          </h2>
 
-        <table className="w-full border-collapse">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="p-3 border">Program Name</th>
-              <th className="p-3 border">Level</th>
-              <th className="p-3 border">Lecturers</th>
-              <th className="p-3 border">Students</th>
-            </tr>
-          </thead>
+          {detail.departments.map((dept, index) => (
+            <div key={index} className="mb-10">
+              <h3 className="text-lg font-bold mb-4 text-white drop-shadow">
+                {dept.name}
+              </h3>
 
-          <tbody>
-            {detail.programs.map((prodi) => (
-              <tr key={prodi.id} className="hover:bg-gray-50">
-                <td className="p-3 border">{prodi.name}</td>
-                <td className="p-3 border">{prodi.level}</td>
-                <td className="p-3 border">{prodi.lecturers}</td>
-                <td className="p-3 border">{prodi.students}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* LECTURERS */}
-      <div className="bg-white shadow rounded-lg p-5 mb-6">
-        <h2 className="text-xl font-semibold mb-3">Lecturers</h2>
-
-        <table className="w-full border-collapse">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="p-3 border">Name</th>
-              <th className="p-3 border">Email</th>
-              <th className="p-3 border">Program</th>
-              <th className="p-3 border">Status</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {detail.lecturers.map((d) => (
-              <tr key={d.id} className="hover:bg-gray-50">
-                <td className="p-3 border">{d.name}</td>
-                <td className="p-3 border">{d.email}</td>
-                <td className="p-3 border">{d.program}</td>
-                <td className="p-3 border">
-                  <span
-                    className={`px-2 py-1 text-white rounded ${
-                      d.status === "active" ? "bg-green-600" : "bg-gray-500"
-                    }`}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                {dept.programs.map((p) => (
+                  <div
+                    key={p.id}
+                    className={`bg-white border ${cardColor} shadow-md rounded-2xl p-5 hover:shadow-xl transition`}
                   >
-                    {d.status}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                    <h3 className={`text-xl font-bold mb-2 ${titleColor}`}>
+                      {p.name}
+                    </h3>
 
-      {/* ACTIVITY LOG */}
-      <div className="bg-white shadow rounded-lg p-5">
-        <h2 className="text-xl font-semibold mb-3">Recent Activity</h2>
+                    <div className="text-gray-700 mb-3">
+                      <p>
+                        <span className="font-semibold">Akreditasi:</span>{" "}
+                        {p.akreditasi}
+                      </p>
+                      <p>
+                        <span className="font-semibold">Gelar:</span> {p.gelar}
+                      </p>
+                    </div>
 
-        {detail.activity.length === 0 ? (
-          <p className="text-gray-500">No activity recorded.</p>
-        ) : (
-          <ul className="space-y-2">
-            {detail.activity.map((log, i) => (
-              <li key={i} className="text-gray-700">
-                • {log}
-              </li>
-            ))}
-          </ul>
-        )}
+                    <div className="border-b border-gray-300 my-3"></div>
+
+                    <div className="flex justify-between items-center mt-3">
+                      <button className="font-semibold text-gray-700 hover:text-black">
+                        Kurikulum
+                      </button>
+
+                      <button
+                        onClick={() => navigate(`/admin/faculties/${detail.id}/program/${p.id}`)}
+                        className={`${buttonColor} text-white px-4 py-1 rounded-full text-sm flex items-center gap-1`}
+                      >
+                        Dapatkan <span>↗</span>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
