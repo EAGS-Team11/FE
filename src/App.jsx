@@ -32,7 +32,6 @@ import EditEssay from "./pages/dosen/course/EditEssay";
 import ClassAnalitik1 from "./pages/dosen/class/ClassAnalitik1";
 import ClassAnalitik2 from "./pages/dosen/class/ClassAnalitik2";
 
-
 import DosenPage from "./pages/admin/lecturers/index";
 import AdminSidebar from "./pages/admin/AdminSidebar";
 import AdminNavbar from "./pages/admin/AdminNavbar";
@@ -41,6 +40,8 @@ import StudentsPage from "./pages/admin/students/index";
 import Faculties from "./pages/admin/faculties/Faculties";
 import DetailFaculties from "./pages/admin/faculties/DetailFaculties";
 import DetailProgram from "./pages/admin/faculties/DetailProgram";
+import SistemLog from "./pages/admin/log/SistemLog";
+import AiMonitoring from "./pages/admin/log/AiMonitoring";
 import "./App.css";
 
 function MainLayout() {
@@ -150,6 +151,8 @@ export default function App() {
           <Route path="/admin/faculties" element={<Faculties />} />
           <Route path="/admin/faculties/:id" element={<DetailFaculties />} />
           <Route path="/admin/faculties/:facultyId/program/:programId" element={<DetailProgram />} />
+          <Route path="/admin/sistemlog" element={<SistemLog />} />
+          <Route path="/admin/aimonitoring" element={<AiMonitoring />} />
         </Route>
       </Routes>
     </Router>

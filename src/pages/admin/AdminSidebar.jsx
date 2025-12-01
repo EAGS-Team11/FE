@@ -25,8 +25,8 @@ export default function AdminSidebar({ isSidebarOpen }) {
   ];
 
   const logMonitoring = [
-    { name: "System Logs", path: "/admin/logs" },
-    { name: "AI Monitoring", path: "/admin/ai-monitoring" }
+    { name: "System Logs", path: "/admin/SistemLog" },
+    { name: "AI Monitoring", path: "/admin/AiMonitoring" }
   ];
 
   return (
