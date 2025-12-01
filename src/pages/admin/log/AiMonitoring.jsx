@@ -87,7 +87,7 @@ export default function AiMonitoringDashboard() {
   };
 
   return (
-    <div className="p-6 space-y-6 max-w-[1200px] mx-auto text-[15px]">
+    <div className="p-6 space-y-6 max-w-[1200px] mx-auto text-[15px] pb-20">
       {/* TITLE */}
       <div>
         <h1 className="text-2xl font-bold">AI Monitoring</h1>
@@ -150,7 +150,7 @@ export default function AiMonitoringDashboard() {
       </div>
 
 
-      <div className="bg-white rounded-xl shadow overflow-hidden">
+      <div className="bg-white rounded-xl shadow overflow-hidden mb-10">
         <table className="w-full text-[15px]">
           <thead className="bg-gray-100">
             <tr>
