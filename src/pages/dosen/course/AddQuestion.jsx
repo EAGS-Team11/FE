@@ -10,13 +10,13 @@ export default function AddQuestion() {
   const { courseId } = useParams();
 
   const [questions, setQuestions] = useState([
-    { number: 1, question: "", points: "" },
+    { number: 1, question: "", points: "", answerKey: "" },
   ]);
 
   const handleAddQuestion = () => {
     setQuestions([
       ...questions,
-      { number: questions.length + 1, question: "", points: "" },
+      { number: questions.length + 1, question: "", points: "", answerKey: "" },
     ]);
   };
 
@@ -80,7 +80,8 @@ export default function AddQuestion() {
               </div>
 
               {/* Table-like content */}
-              <div className="p-4 text-sm text-[#0B102D] font-inter">
+              <div className="p-4 text-sm text-[#0B102D] font-inter space-y-3">
+                {/* Question Number */}
                 <div className="grid grid-cols-3 border-b border-gray-200 py-2">
                   <span className="font-semibold col-span-1">Question Number:</span>
                   <input
@@ -91,6 +92,7 @@ export default function AddQuestion() {
                   />
                 </div>
 
+                {/* Question Text */}
                 <div className="grid grid-cols-3 border-b border-gray-200 py-2">
                   <span className="font-semibold col-span-1">The Question:</span>
                   <textarea
@@ -102,13 +104,26 @@ export default function AddQuestion() {
                   />
                 </div>
 
-                <div className="grid grid-cols-3 py-2">
+                {/* Points */}
+                <div className="grid grid-cols-3 border-b border-gray-200 py-2">
                   <span className="font-semibold col-span-1">Points:</span>
                   <input
                     type="number"
                     value={q.points}
                     onChange={(e) => handleChange(index, "points", e.target.value)}
                     placeholder="Masukkan poin"
+                    className="col-span-2 border border-gray-300 rounded-md p-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#30326A]"
+                  />
+                </div>
+
+                {/* Answer Key */}
+                <div className="grid grid-cols-3 py-2">
+                  <span className="font-semibold col-span-1">Answer Key:</span>
+                  <textarea
+                    value={q.answerKey}
+                    onChange={(e) => handleChange(index, "answerKey", e.target.value)}
+                    rows="2"
+                    placeholder="Masukkan kunci jawaban / deskripsi jawaban..."
                     className="col-span-2 border border-gray-300 rounded-md p-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#30326A]"
                   />
                 </div>
@@ -140,8 +155,8 @@ export default function AddQuestion() {
         <div className="mt-10">
           <button
             onClick={handleBack}
-            className="bg-[#30326A] text-white px-6 py-2 rounded-lg font-inter text-sm hover:bg-[#23245c] ml-[-800px]"
-          >
+             className="bg-[#30326A] text-white px-6 py-2 rounded-lg font-inter text-sm hover:bg-[#23245c]"
+            >
             ← Back
           </button>
         </div>

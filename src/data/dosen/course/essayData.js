@@ -15,8 +15,8 @@ export const essays = [
     attachment: "capstone_guide.pdf",
     totalSubmitted: 9,
     questions: [
-      { number: 1, question: "Explain the purpose of your project.", points: 10 },
-      { number: 2, question: "Describe your system architecture.", points: 10 },
+      { number: 1, question: "Explain the purpose of your project.", points: 10, answerKey: "BLABLABLA" },
+      { number: 2, question: "Describe your system architecture.", points: 10, answerKey: "BLABLABLA" },
     ],
   },
   {
@@ -32,8 +32,8 @@ export const essays = [
     attachment: null,
     totalSubmitted: 7,
     questions: [
-      { number: 1, question: "Explain your testing process.", points: 10 },
-      { number: 2, question: "What improvements are planned next?", points: 10 },
+      { number: 1, question: "Explain your testing process.", points: 10, answerKey: "BLABLABLA" },
+      { number: 2, question: "What improvements are planned next?", points: 10, answerKey: "BLABLABLAABLAAAAAAAAAAA" },
     ],
   },
   {
@@ -49,8 +49,8 @@ export const essays = [
     attachment: null,
     totalSubmitted: 5,
     questions: [
-      { number: 1, question: "What were the biggest challenges?", points: 10 },
-      { number: 2, question: "What lessons were learned?", points: 10 },
+      { number: 1, question: "What were the biggest challenges?", points: 10, answerKey: "" },
+      { number: 2, question: "What lessons were learned?", points: 10, answerKey: "" },
     ],
   },
 
@@ -68,7 +68,7 @@ export const essays = [
     attachment: "ui_guideline.pdf",
     totalSubmitted: 12,
     questions: [
-      { number: 1, question: "Describe your mobile UI design.", points: 10 },
+      { number: 1, question: "Describe your mobile UI design.", points: 10, answerKey: "" },
     ],
   },
   {
@@ -84,7 +84,7 @@ export const essays = [
     attachment: null,
     totalSubmitted: 8,
     questions: [
-      { number: 1, question: "Explain how your app handles API responses.", points: 10 },
+      { number: 1, question: "Explain how your app handles API responses.", points: 10, answerKey: "" },
     ],
   },
 
@@ -102,7 +102,7 @@ export const essays = [
     attachment: null,
     totalSubmitted: 10,
     questions: [
-      { number: 1, question: "What are the key ethical issues in AI?", points: 10 },
+      { number: 1, question: "What are the key ethical issues in AI?", points: 10, answerKey: "" },
     ],
   },
 
@@ -120,8 +120,8 @@ export const essays = [
     attachment: null,
     totalSubmitted: 15,
     questions: [
-      { number: 1, question: "Explain supervised learning with example.", points: 10 },
-      { number: 2, question: "Explain unsupervised learning with example.", points: 10 },
+      { number: 1, question: "Explain supervised learning with example.", points: 10, answerKey: "" },
+      { number: 2, question: "Explain unsupervised learning with example.", points: 10, answerKey: "" },
     ],
   },
   {
@@ -137,7 +137,7 @@ export const essays = [
     attachment: "ml_notes.pdf",
     totalSubmitted: 9,
     questions: [
-      { number: 1, question: "What is the purpose of gradient descent?", points: 10 },
+      { number: 1, question: "What is the purpose of gradient descent?", points: 10, answerKey: "" },
     ],
   },
 
@@ -155,7 +155,7 @@ export const essays = [
     attachment: null,
     totalSubmitted: 11,
     questions: [
-      { number: 1, question: "Why is preprocessing important?", points: 10 },
+      { number: 1, question: "Why is preprocessing important?", points: 10, answerKey: "" },
     ],
   },
   {
@@ -171,7 +171,7 @@ export const essays = [
     attachment: "dataset_example.csv",
     totalSubmitted: 6,
     questions: [
-      { number: 1, question: "Explain mean imputation.", points: 10 },
+      { number: 1, question: "Explain mean imputation.", points: 10, answerKey: "" },
     ],
   },
   {
@@ -187,7 +187,7 @@ export const essays = [
     attachment: null,
     totalSubmitted: 4,
     questions: [
-      { number: 1, question: "Give an example of good visualization.", points: 10 },
+      { number: 1, question: "Give an example of good visualization.", points: 10, answerKey: "" },
     ],
   },
 
@@ -205,7 +205,7 @@ export const essays = [
     attachment: "cloud_computing_guide.pdf",
     totalSubmitted: 7,
     questions: [
-      { number: 1, question: "Differentiate IaaS, PaaS, SaaS.", points: 10 },
+      { number: 1, question: "Differentiate IaaS, PaaS, SaaS.", points: 10, answerKey: "" },
     ],
   },
 ];

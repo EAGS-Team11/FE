@@ -46,7 +46,7 @@ export default function CourseCard({ course }) {
           <img
             src={imageSrc}
             alt={course.title}
-            className="w-full h-28 object-cover"
+            className="w-full h-36 object-cover"
           />
           <span className="absolute top-2 left-2 bg-[#20184d] text-white text-xs px-2 py-1 rounded-md italic">
             {course.category}

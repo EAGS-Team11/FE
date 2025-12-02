@@ -286,10 +286,9 @@ export default function EditEssay() {
                   </div>
 
                   <div className="p-4 text-sm">
+                    {/* Question Number */}
                     <div className="grid grid-cols-3 border-b py-2">
-                      <span className="font-semibold col-span-1">
-                        Question Number:
-                      </span>
+                      <span className="font-semibold col-span-1">Question Number:</span>
                       <input
                         type="text"
                         value={q.number}
@@ -298,6 +297,7 @@ export default function EditEssay() {
                       />
                     </div>
 
+                    {/* Question Text */}
                     <div className="grid grid-cols-3 border-b py-2">
                       <span className="font-semibold col-span-1">The Question:</span>
                       <textarea
@@ -311,7 +311,8 @@ export default function EditEssay() {
                       />
                     </div>
 
-                    <div className="grid grid-cols-3 py-2">
+                    {/* Points */}
+                    <div className="grid grid-cols-3 border-b py-2">
                       <span className="font-semibold col-span-1">Points:</span>
                       <input
                         type="number"
@@ -320,6 +321,20 @@ export default function EditEssay() {
                           handleQuestionChange(index, "points", e.target.value)
                         }
                         placeholder="Masukkan poin"
+                        className="col-span-2 border rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-[#30326A]"
+                      />
+                    </div>
+
+                    {/* Answer Key */}
+                    <div className="grid grid-cols-3 py-2">
+                      <span className="font-semibold col-span-1">Answer Key:</span>
+                      <input
+                        type="text"
+                        value={q.answerKey || ""}
+                        onChange={(e) =>
+                          handleQuestionChange(index, "answerKey", e.target.value)
+                        }
+                        placeholder="Masukkan jawaban kunci"
                         className="col-span-2 border rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-[#30326A]"
                       />
                     </div>
@@ -347,12 +362,13 @@ export default function EditEssay() {
           </>
         )}
 
+
         {/* Back Button */}
         <div className="mt-10">
           <button
             onClick={handleBack}
-            className="bg-[#30326A] text-white px-6 py-2 rounded-lg text-sm hover:bg-[#23245c] ml-[-800px]"
-          >
+            className="bg-[#30326A] text-white px-6 py-2 rounded-lg font-inter text-sm hover:bg-[#23245c]"
+            >
             ← Back
           </button>
         </div>

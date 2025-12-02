@@ -202,8 +202,8 @@ export default function CreateEssay() {
           <button
             type="button"
             onClick={handleBack}
-            className="bg-[#30326A] text-white px-6 py-2 rounded-lg font-inter text-sm hover:bg-[#23245c] ml-[-800px]"
-          >
+            className="bg-[#30326A] text-white px-6 py-2 rounded-lg font-inter text-sm hover:bg-[#23245c]"
+            >
             ← Back
           </button>
         </div>
