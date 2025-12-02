@@ -11,12 +11,16 @@ import {
   LogOut,
 } from "lucide-react";
 import logo from "../assets/logo capstone.png";
+import { useAuth } from "../context/AuthContext"; // <--- 1. IMPORT CONTEXT
 
 export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  
+  // 2. AMBIL DATA USER DARI CONTEXT
+  const { user, logout } = useAuth(); 
 
   const handleNavigation = (menu) => {
     if (menu === "Courses") navigate("/dosen/course");
@@ -26,6 +30,8 @@ export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
 
   const handleLogout = () => {
     console.log("User logged out");
+    // Gunakan fungsi logout dari context jika ada, atau manual seperti ini juga oke
+    if (logout) logout(); 
     localStorage.removeItem("token");
     window.location.href = "/login";
   };
@@ -34,7 +40,7 @@ export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
 
   return (
     <>
-
+    
       <nav
         className="bg-[#173A64] text-white flex items-center justify-between px-6 py-3 shadow-md fixed top-0 z-50 transition-all duration-300"
         style={{
@@ -56,7 +62,6 @@ export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
         </div>
       </nav>
 
-
       <div
         className={`fixed top-0 left-0 h-full w-64 bg-[#173A64] text-white z-50 transform transition-transform duration-300 py-5 ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
@@ -67,15 +72,22 @@ export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
           <div
             className="w-20 h-20 rounded-full bg-gray-300 mx-auto mb-3 cursor-pointer hover:ring-2 hover:ring-white/40 transition"
             onClick={() => navigate("/dosen/ProfilDosen")}
-          ></div>
+          >
+             {/* Avatar Placeholder (Bisa diganti image user jika ada) */}
+             <div className="w-full h-full flex items-center justify-center text-gray-600 font-bold text-2xl">
+                {user?.nama ? user.nama.charAt(0).toUpperCase() : "D"}
+             </div>
+          </div>
 
           <div
             className="relative flex items-center justify-center cursor-pointer select-none"
             onClick={() => navigate("/dosen/ProfilDosen")}
           >
-            <h3 className="font-semibold text-white hover:text-white/80 transition">
-              Jennifer Carter
+            {/* 3. TAMPILKAN NAMA ASLI DARI DATABASE */}
+            <h3 className="font-semibold text-white hover:text-white/80 transition text-center">
+              {user?.nama || "Dosen User"} 
             </h3>
+            
             <ChevronDown
               size={16}
               className="text-white/50 absolute right-0 cursor-pointer"
@@ -86,8 +98,10 @@ export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
             />
           </div>
 
-          <p className="text-sm text-gray-300 mt-1 mb-2 text-center">lecturer</p>
-
+          {/* TAMPILKAN ROLE ASLI */}
+          <p className="text-sm text-gray-300 mt-1 mb-2 text-center capitalize">
+            {user?.role || "Lecturer"}
+          </p>
 
           <div
             className={`overflow-hidden transition-all duration-300 mt-2 ${
@@ -95,7 +109,7 @@ export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
             }`}
           >
             <div
-              onClick={() => setIsLogoutOpen(true)} // 🔹 buka modal logout
+              onClick={() => setIsLogoutOpen(true)}
               className="flex items-center space-x-2 pl-0 cursor-pointer hover:text-gray-300 transition"
             >
               <LogOut size={16} className="text-white/70" />
@@ -103,7 +117,6 @@ export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
             </div>
           </div>
         </div>
-
 
         <div className="p-3 text-sm">
           <div className="uppercase text-gray-300 text-xs mb-3 text-left px-2">
@@ -139,7 +152,6 @@ export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
           </ul>
         </div>
       </div>
-
 
       {isLogoutOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-[999]">
