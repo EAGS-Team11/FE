@@ -1,195 +1,176 @@
 /* src/pages/dosen/course/CheckAnswer.jsx */
 
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { ArrowLeft, Save, Calendar, FileText } from "lucide-react";
+import { useAuth } from "../../../context/AuthContext";
 
 const CheckAnswer = () => {
-  const [expanded, setExpanded] = useState({});
-  const [activeFeedback, setActiveFeedback] = useState(null); 
   const navigate = useNavigate();
+  const location = useLocation();
+  const { token } = useAuth();
 
-  const questions = [
-    {
-      id: 1,
-      title: "Question 1",
-      question:
-        "Jelaskan konsep komunikasi antar node dalam sistem terdistribusi.",
-      answer:
-        "Komunikasi antar node dalam sistem terdistribusi melibatkan proses pengiriman pesan (message passing) antara node-node yang terpisah secara fisik, tetapi saling terhubung melalui jaringan. Komunikasi ini dapat bersifat sinkron atau asinkron, tergantung pada kebutuhan sistem. Biasanya digunakan protokol seperti TCP/IP atau gRPC untuk memastikan data dikirim dengan andal dan efisien. Mekanisme ini penting untuk koordinasi tugas, replikasi data, dan menjaga konsistensi antar node.",
-    },
-    {
-      id: 2,
-      title: "Question 2",
-      question:
-        "Sebutkan konsep komunikasi dalam hubungan sistem terdistribusi.",
-      answer:
-        "Konsep komunikasi dalam sistem terdistribusi meliputi remote procedure call (RPC), message queue, publish-subscribe, dan data streaming. RPC memungkinkan satu node mengeksekusi fungsi di node lain seolah-olah lokal. Message queue digunakan untuk komunikasi asinkron antar layanan. Publish-subscribe memungkinkan banyak subscriber menerima data dari satu publisher tanpa koneksi langsung. Sementara data streaming mendukung pengiriman data real-time antar komponen sistem.",
-    },
-    {
-      id: 3,
-      title: "Question 3",
-      question:
-        "A mutation in beetles causes a red phenotype that increases reproduction but also predation risk. What is the likely evolutionary outcome for the red allele over time?",
-      answer: "(Belum ada jawaban)",
-    },
-  ];
+  // Ambil data dari halaman GiveGrade
+  const submission = location.state?.submission;
+  const assignmentInfo = location.state?.assignment; // Data judul tugas dari props
 
-  const toggleExpand = (id) => {
-    setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
+  const [score, setScore] = useState(submission?.grading?.nilai || "");
+  const [feedback, setFeedback] = useState(submission?.grading?.feedback || "");
+  const [loading, setLoading] = useState(false);
+
+  // Jika data hilang (misal di-refresh), kembalikan ke list
+  if (!submission) {
+    return (
+        <div className="flex flex-col items-center justify-center h-screen bg-gray-50">
+            <p className="text-red-500 mb-4 font-semibold">Data tidak ditemukan.</p>
+            <button 
+                onClick={() => navigate("/dosen/course")} 
+                className="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700"
+            >
+                Kembali ke Dashboard
+            </button>
+        </div>
+    );
+  }
+
+  // --- FUNGSI SIMPAN NILAI ---
+  const handleSaveGrade = async () => {
+    if (score === "" || score < 0 || score > 100) {
+        alert("Harap masukkan nilai valid (0-100).");
+        return;
+    }
+
+    setLoading(true);
+    try {
+        const response = await fetch("http://127.0.0.1:8000/grading/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                id_submission: submission.id_submission,
+                nilai: parseInt(score),
+                feedback: feedback || "Dinilai oleh Dosen"
+            })
+        });
+
+        if (!response.ok) throw new Error("Gagal menyimpan nilai");
+
+        alert("✅ Nilai berhasil disimpan!");
+        navigate(-1); // Mundur ke halaman tabel
+
+    } catch (err) {
+        console.error(err);
+        alert("Gagal menyimpan: " + err.message);
+    } finally {
+        setLoading(false);
+    }
   };
 
+  // Safe Title Access (Agar tidak putih lagi)
+  const taskTitle = assignmentInfo?.title || submission.assignment?.judul || "Detail Jawaban";
+  const courseName = assignmentInfo?.courseName || "Tugas Mahasiswa";
+
   return (
-    <div className="min-h-screen bg-[#F6F7FB] relative font-sans">
-      <div className="absolute top-0 left-0 w-full h-[45vh] bg-gradient-to-r from-[#A7C7E7] to-[#5D6F81] -z-10"></div>
+    <div className="min-h-screen bg-[#F6F7FB] relative font-sans pb-20">
+      {/* Header Background */}
+      <div className="absolute top-0 left-0 w-full h-[30vh] bg-gradient-to-r from-[#173A64] to-[#2c59c0] -z-10"></div>
 
-      <div className="max-w-4xl mx-auto px-6 pt-8">
-        {/* Header */}
-        <div className="text-left text-black">
-          <h2 className="text-base font-semibold">Capstone Project</h2>
-          <div className="w-1/2 h-[1.5px] bg-black mt-1 mb-2 rounded-full"></div>
-          <h1 className="text-xl font-bold leading-snug">
-            UTS Sistem Paralel dan Terdistribusi — Implementasi Sistem
-            Terdistribusi
-          </h1>
-          <p className="mt-1 text-xs font-medium">Azzatul Nabila - 11221085</p>
-        </div>
-
-        {/* ===== Pertanyaan ===== */}
-        <div className="mt-8 flex flex-col gap-5 text-left">
-          {questions.map((item) => (
-            <div
-              key={item.id}
-              className="rounded-[10px] border border-gray-300 p-5 bg-transparent"
+      <div className="max-w-5xl mx-auto px-6 pt-8">
+        {/* Navigation & Title */}
+        <div className="mb-8 text-white">
+            <button 
+                onClick={() => navigate(-1)} 
+                className="flex items-center gap-2 text-sm opacity-80 hover:opacity-100 transition mb-4"
             >
-              <div className="flex justify-between items-start w-full">
-                <h3 className="font-semibold text-sm text-gray-700">
-                  {item.title}
-                </h3>
-
-                <button
-                  className="px-3 py-[2px] border border-[#5D6F81] text-[#5D6F81] italic text-xs rounded-[10px] hover:bg-[#5D6F81]/10 transition"
-                  onClick={() => setActiveFeedback(item.id)}
-                >
-                  + add feedback
-                </button>
-              </div>
-
-              <p className="mt-2 font-nunito font-bold text-gray-900 text-sm">
-                {item.question}
-              </p>
-
-              <div className="w-1/2 h-[1px] bg-gray-400 mt-2 mb-2 rounded-full"></div>
-
-              <div
-                className="text-sm text-gray-700 cursor-pointer select-none"
-                onClick={() => toggleExpand(item.id)}
-              >
-                {expanded[item.id]
-                  ? item.answer
-                  : item.answer.length > 150
-                  ? item.answer.slice(0, 150) + "..."
-                  : item.answer}
-                {item.answer.length > 150 && (
-                  <span className="text-[#5D6F81] italic ml-1 hover:underline">
-                    {expanded[item.id] ? "Show less" : "Read more"}
-                  </span>
-                )}
-              </div>
-            </div>
-          ))}
+                <ArrowLeft size={16} /> Back to Submission List
+            </button>
+            <h1 className="text-2xl font-bold">{taskTitle}</h1>
+            <p className="opacity-90 text-sm mt-1">{courseName}</p>
         </div>
 
-        {/* Tombol Back */}
-        <div className="mt-8 mb-10 text-left">
-          <button 
-             onClick={() => navigate("/dosen/give-grade")}
-              className="flex items-center gap-2 bg-[#2c59c0] text-white text-sm font-medium px-4 py-2 rounded-lg shadow hover:bg-[#204aa8] transition" >
-            ← Back
-          </button>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            {/* KOLOM KIRI: JAWABAN MAHASISWA */}
+            <div className="lg:col-span-2 space-y-6">
+                {/* Info Mahasiswa */}
+                <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center">
+                    <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-xl">
+                            {submission.mahasiswa?.nama?.charAt(0) || "M"}
+                        </div>
+                        <div>
+                            <h3 className="font-semibold text-gray-800 text-lg">{submission.mahasiswa?.nama}</h3>
+                            <p className="text-sm text-gray-500">{submission.mahasiswa?.nim_nip}</p>
+                        </div>
+                    </div>
+                    <div className="text-right text-xs text-gray-500">
+                        <p className="flex items-center gap-1 justify-end"><Calendar size={14}/> Submitted:</p>
+                        <p className="font-medium">{new Date(submission.waktu_submit).toLocaleString("id-ID")}</p>
+                    </div>
+                </div>
+
+                {/* Jawaban */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                        <h3 className="font-semibold text-gray-700 flex items-center gap-2">
+                            <FileText size={18}/> Student's Answer
+                        </h3>
+                    </div>
+                    
+                    <div className="p-8 min-h-[300px]">
+                        {/* Render HTML Jawaban */}
+                        <div 
+                            className="prose max-w-none text-gray-800 leading-relaxed"
+                            dangerouslySetInnerHTML={{ __html: submission.jawaban }}
+                        />
+                    </div>
+                </div>
+            </div>
+
+            {/* KOLOM KANAN: FORM PENILAIAN */}
+            <div className="lg:col-span-1">
+                <div className="bg-white p-6 rounded-xl shadow-lg border border-blue-100 sticky top-24">
+                    <h3 className="font-bold text-[#173A64] text-lg mb-4 border-b pb-2">Grading Form</h3>
+                    
+                    <div className="mb-4">
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">Score (0-100)</label>
+                        <input 
+                            type="number" 
+                            min="0" max="100"
+                            value={score}
+                            onChange={(e) => setScore(e.target.value)}
+                            className="w-full border border-gray-300 rounded-lg p-3 text-center text-3xl font-bold text-blue-600 focus:ring-2 focus:ring-blue-500 outline-none"
+                            placeholder="0"
+                        />
+                    </div>
+
+                    <div className="mb-6">
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">Feedback</label>
+                        <textarea 
+                            rows="4"
+                            value={feedback}
+                            onChange={(e) => setFeedback(e.target.value)}
+                            className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+                            placeholder="Berikan masukan untuk mahasiswa..."
+                        ></textarea>
+                    </div>
+
+                    <button 
+                        onClick={handleSaveGrade}
+                        disabled={loading}
+                        className={`w-full text-white py-3 rounded-lg font-semibold flex justify-center items-center gap-2 transition ${
+                            loading ? "bg-gray-400 cursor-not-allowed" : "bg-[#173A64] hover:bg-[#2c59c0]"
+                        }`}
+                    >
+                        {loading ? "Saving..." : <><Save size={18}/> Submit Grade</>}
+                    </button>
+                </div>
+            </div>
+
         </div>
       </div>
-
-      {/* ===== Modal Add Feedback ===== */}
-      {activeFeedback && (
-        <>
-          {/* Overlay */}
-          <div
-            className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
-            onClick={() => setActiveFeedback(null)}
-          ></div>
-
-          {/* Modal Box */}
-          <div className="fixed top-1/2 left-1/2 z-50 w-[420px] -translate-x-1/2 -translate-y-1/2 bg-white rounded-[10px] shadow-lg p-6">
-            <h3 className="text-base font-semibold mb-3">Add Feedback</h3>
-
-            {/* Tabs */}
-            <div className="flex gap-6 mb-3 text-sm font-medium">
-              <button className="text-gray-900 border-b-2 border-gray-900 pb-1">
-                Incorrect Answer
-              </button>
-              <button className="text-gray-500 hover:text-gray-800 pb-1">
-                Correct Answer
-              </button>
-            </div>
-
-            {/* Textarea */}
-            <textarea
-              placeholder="Enter Feedback"
-              className="w-full border border-gray-300 rounded-[6px] p-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#5D6F81]"
-              rows="3"
-            ></textarea>
-
-            {/* Icon Row */}
-            <div className="flex items-center gap-3 mt-3 border-t border-gray-200 pt-2 text-gray-600">
-              <button>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M13.828 10.172a4 4 0 010 5.656l-2.828 2.828a4 4 0 11-5.656-5.656l1.414-1.414m2.828-2.828a4 4 0 015.656 0"
-                  />
-                </svg>
-              </button>
-              <button>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M14.752 11.168l-4.596-2.65A1 1 0 009 9.32v5.36a1 1 0 001.156.802l4.596-2.65a1 1 0 000-1.664z"
-                  />
-                </svg>
-              </button>
-            </div>
-
-            {/* Buttons */}
-            <div className="flex justify-end gap-3 mt-4">
-              <button
-                onClick={() => setActiveFeedback(null)}
-                className="text-sm text-gray-600 hover:text-gray-800"
-              >
-                Cancel
-              </button>
-              <button className="px-4 py-1.5 bg-[#5D6F81] text-white text-sm rounded-md hover:bg-[#4b5e6f] transition">
-                Save
-              </button>
-            </div>
-          </div>
-        </>
-      )}
     </div>
   );
 };
