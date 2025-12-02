@@ -1,3 +1,5 @@
+// src/components/admin/students/StudentCard.jsx
+
 import React, { useState } from "react";
 import { Edit2, Trash2, X } from "lucide-react";
 

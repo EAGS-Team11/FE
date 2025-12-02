@@ -1,3 +1,5 @@
+// src/components/admin/students/StudentList.jsx
+
 import React, { useState, useEffect } from "react";
 import { Search, ChevronLeft, ChevronRight, X, UserPlus, Save } from "lucide-react";
 import StudentCard from "./StudentCard";

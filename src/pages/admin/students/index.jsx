@@ -1,3 +1,5 @@
+// src/pages/admin/students/index.jsx
+
 import React from "react";
 import StudentList from "../../../components/admin/students/StudentList";
 

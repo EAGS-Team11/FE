@@ -1,3 +1,5 @@
+// src/pages/admin/dashboard/dashboard.jsx
+
 import React from "react";
 import { Users, GraduationCap, BookOpen, Layers, Activity, Cpu, FileText } from "lucide-react";
 

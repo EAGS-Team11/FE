@@ -1,3 +1,5 @@
+// src/pages/admin/faculties/DetailProgram.jsx
+
 import React, { useState } from "react";
 import {
   ArrowLeft,

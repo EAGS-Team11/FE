@@ -1,3 +1,5 @@
+// src/pages/admin/faculties/Faculties.jsx
+
 import React, { useEffect, useState } from "react";
 import { Plus, Pencil, Trash, Search, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";

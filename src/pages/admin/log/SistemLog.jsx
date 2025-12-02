@@ -1,3 +1,5 @@
+// src/pages/admin/log/SistemLog.jsx
+
 import React, { useState } from "react";
 import { RefreshCw, X } from "lucide-react";
 

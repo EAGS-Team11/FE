@@ -1,3 +1,5 @@
+// src/components/admin/dosen/DosenList.jsx
+
 import React, { useState, useEffect } from "react";
 import { Search, ChevronLeft, ChevronRight, X, UserPlus, Save } from "lucide-react";
 import DosenCard from "./DosenCard";

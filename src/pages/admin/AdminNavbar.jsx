@@ -1,3 +1,5 @@
+// src/pages/admin/AdminNavbar.jsx
+
 import React from "react";
 import { Menu } from "lucide-react";
 

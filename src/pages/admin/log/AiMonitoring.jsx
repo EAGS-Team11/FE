@@ -1,3 +1,5 @@
+// src/pages/admin/log/AiMonitoring.jsx
+
 import React, { useState } from "react";
 import {
   Activity,
