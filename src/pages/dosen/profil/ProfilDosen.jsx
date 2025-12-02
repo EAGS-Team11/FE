@@ -1,24 +1,22 @@
-/* src/pages/dosen/profil/ProfilDosen.jsx */
 import React from "react";
 import { Edit2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../../context/AuthContext"; // Import useAuth
+import { useAuth } from "../../../context/AuthContext";
 
 export default function ProfilDosen() {
     const navigate = useNavigate();
-    const { user } = useAuth(); // Ambil data user dari context
-    
-    // Default data jika user belum dimuat atau null
+    const { user } = useAuth();
+
+    // Default data
     const displayNama = user?.nama || "User Dosen";
     const displayNIP = user?.nim_nip || "N/A";
     const displayProdi = user?.prodi || "N/A";
-    
-    // Asumsi: Kita membagi Nama menjadi First Name dan Last Name
-    const nameParts = displayNama.split(' ');
-    const firstName = nameParts[0];
-    const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '—';
-    const email = displayNIP !== 'N/A' ? `${displayNIP}@lecturer.itk.ac.id` : 'N/A';
 
+    // Split name
+    const nameParts = displayNama.split(" ");
+    const firstName = nameParts[0];
+    const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "—";
+    const email = displayNIP !== "N/A" ? `${displayNIP}@lecturer.itk.ac.id` : "N/A";
 
     return (
         <div className="max-w-5xl mx-auto py-15">
@@ -38,7 +36,6 @@ export default function ProfilDosen() {
                 </div>
 
                 <div className="flex items-center p-6">
-                    {/* Avatar */}
                     <div className="w-1/3 flex justify-center">
                         <img
                             src="https://cdn-icons-png.flaticon.com/512/219/219970.png"
@@ -46,18 +43,12 @@ export default function ProfilDosen() {
                             className="w-28 h-28 rounded-full border border-gray-300"
                         />
                     </div>
-
                     <div className="w-2/3 text-left">
-                        <h3 className="font-bold text-gray-800 mb-1">
-                            {displayNama}
-                        </h3>
+                        <h3 className="font-bold text-gray-800 mb-1">{displayNama}</h3>
                         <p className="text-base font-semibold text-gray-500 mb-1">
                             {displayNIP} ({displayProdi})
                         </p>
-                        <a
-                            href={`mailto:${email}`}
-                            className="text-blue-600 hover:underline"
-                        >
+                        <a href={`mailto:${email}`} className="text-blue-600 hover:underline">
                             {email}
                         </a>
                     </div>
@@ -90,11 +81,8 @@ export default function ProfilDosen() {
                     </div>
                     <div>
                         <p className="text-sm text-gray-500">Email Address</p>
-                        <p className="font-medium text-gray-800">
-                            {email}
-                        </p>
+                        <p className="font-medium text-gray-800">{email}</p>
                     </div>
-                    {/* Field dummy lainnya */}
                     <div>
                         <p className="text-sm text-gray-500">Program Studi</p>
                         <p className="font-medium text-gray-800">{displayProdi}</p>

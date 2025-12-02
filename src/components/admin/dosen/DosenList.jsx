@@ -1,28 +1,64 @@
-// src/components/admin/dosen/DosenList.jsx
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Search, ChevronLeft, ChevronRight, X, UserPlus, Save } from "lucide-react";
 import DosenCard from "./DosenCard";
-import { dosenData } from "../../../data/admin/dosenData";
 import { apiFetch } from "../../../services/apiService"; // Import service layer
 
+// Hapus import dosenData, kita akan fetch data live
+// import { dosenData } from "../../../data/admin/dosenData"; 
+
 export default function DosenList() {
+    // --- STATE DATA ---
+    const [dosenList, setDosenList] = useState([]); // Data live dari BE
+    const [loading, setLoading] = useState(true);
+    const [fetchError, setFetchError] = useState(null);
+    
+    // --- STATE MODAL & FORM ---
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [search, setSearch] = useState("");
-    const [loading, setLoading] = useState(false);
+    const [modalLoading, setModalLoading] = useState(false);
     const [modalError, setModalError] = useState(null);
     const [form, setForm] = useState({
         nama: "",
-        nim_nip: "", // NIP
+        nim_nip: "", 
         prodi: "",
         password: ""
     });
 
-    const filtered = dosenData.filter((dosen) =>
-        dosen.name.toLowerCase().includes(search.toLowerCase()) ||
-        dosen.email.toLowerCase().includes(search.toLowerCase())
-    );
+    // --- FUNGSIONALITAS FETCHING DATA DOSEN (GET /auth/users) ---
+    const fetchDosenList = async () => {
+        setLoading(true);
+        setFetchError(null);
+        try {
+            // Memanggil endpoint Admin untuk mendapatkan list semua user
+            const rawUsers = await apiFetch("/auth/users", "GET");
+            
+            // Filter hanya role Dosen/Lecturer untuk ditampilkan
+            const dosen = rawUsers
+                .filter(u => u.role === 'dosen')
+                .map(u => ({
+                    // Mapping ke format yang dibutuhkan DosenCard
+                    id: u.id_user,
+                    name: u.nama,
+                    nip: u.nim_nip,
+                    email: `${u.nim_nip}@univ.ac.id`, // Dummy email
+                    prodi: u.prodi,
+                    status: 'active' // Asumsi user yang terdaftar aktif
+                }));
 
+            setDosenList(dosen);
+        } catch (err) {
+            console.error("Error fetching Dosen:", err);
+            setFetchError(err.message || "Gagal mengambil data dosen.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchDosenList();
+    }, []); // Panggil saat komponen pertama kali dimuat
+
+    // --- FUNGSIONALITAS TAMBAH DOSEN ---
     const handleFormChange = (e) => {
         const { name, value } = e.target;
         setForm(prev => ({ ...prev, [name]: value }));
@@ -31,34 +67,39 @@ export default function DosenList() {
     const handleAddDosen = async (e) => {
         e.preventDefault();
         setModalError(null);
-        setLoading(true);
+        setModalLoading(true);
 
         const newDosen = {
             nim_nip: form.nim_nip,
             password: form.password,
             nama: form.nama,
-            role: 'dosen', // Ditentukan secara hardcode di FE
+            role: 'dosen', // Hardcode role dosen untuk registrasi dari Admin Panel ini
             prodi: form.prodi
         };
 
         try {
             // Memanggil endpoint baru: /auth/register/admin
-            const data = await apiFetch("/auth/register/admin", "POST", newDosen);
-            
-            console.log("Dosen berhasil terdaftar:", data);
-
-            // TODO: Setelah sukses, tambahkan data ke state lokal atau refresh list
+            const data = await apiFetch("/auth/register", "POST", newDosen);
             
             alert(`✅ Dosen ${data.nama} berhasil didaftarkan!`);
+            
+            // Refresh list data setelah sukses
+            fetchDosenList(); 
+
             setIsModalOpen(false);
-            setForm({ nama: "", nim_nip: "", prodi: "", password: "" });
+            setForm({ nama: "", nim_nip: "", prodi: "", password: "" }); // Reset form
 
         } catch (err) {
             setModalError(err.message || "Gagal mendaftarkan dosen. Cek koneksi atau NIP.");
         } finally {
-            setLoading(false);
+            setModalLoading(false);
         }
     };
+
+    const filteredDosen = dosenList.filter((dosen) =>
+        dosen.name.toLowerCase().includes(search.toLowerCase()) ||
+        dosen.nip.toLowerCase().includes(search.toLowerCase())
+    );
 
 
     return (
@@ -77,7 +118,7 @@ export default function DosenList() {
                 </div>
 
                 <button
-                    onClick={() => setIsModalOpen(true)}
+                    onClick={() => { setIsModalOpen(true); setModalError(null); setForm({ nama: "", nim_nip: "", prodi: "", password: "" }); }}
                     className="bg-[#1E4F91] text-white text-sm px-4 py-1.5 rounded-md hover:bg-[#163E74] transition flex items-center gap-2"
                 >
                     <UserPlus size={16} />
@@ -85,12 +126,27 @@ export default function DosenList() {
                 </button>
             </div>
 
-            {/* Grid List */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
-                {filtered.map((dosen) => (
-                    <DosenCard key={dosen.id} dosen={dosen} />
-                ))}
-            </div>
+            {/* LOGIKA TAMPILAN: Loading / Error / Data */}
+            {loading ? (
+                <div className="flex justify-center py-20">
+                    <p className="text-blue-600 font-bold animate-pulse">Loading data...</p>
+                </div>
+            ) : fetchError ? (
+                <div className="text-center text-red-500 py-10 font-bold bg-red-50 rounded-lg border border-red-200">
+                    Error: {fetchError}
+                </div>
+            ) : filteredDosen.length === 0 ? (
+                <div className="text-center text-gray-500 py-10">
+                    {search ? "Dosen tidak ditemukan." : "Belum ada data Dosen dalam sistem."}
+                </div>
+            ) : (
+                /* Courses Grid - DATA REAL */
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
+                    {filteredDosen.map((dosen) => (
+                        <DosenCard key={dosen.id} dosen={dosen} />
+                    ))}
+                </div>
+            )}
 
             {/* Pagination Dummy */}
             <div className="flex justify-end items-center mt-6 space-x-2">
@@ -172,11 +228,11 @@ export default function DosenList() {
                             <div className="pt-3 flex justify-center">
                                 <button
                                     type="submit"
-                                    disabled={loading}
+                                    disabled={modalLoading}
                                     className="bg-[#1E4F91] text-white text-sm px-6 py-2 rounded-md hover:bg-[#163E74] transition disabled:bg-gray-400 flex items-center gap-2"
                                 >
                                     <Save size={16}/>
-                                    {loading ? "Saving..." : "Save Lecturer"}
+                                    {modalLoading ? "Saving..." : "Save Lecturer"}
                                 </button>
                             </div>
 

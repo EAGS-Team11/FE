@@ -1,30 +1,62 @@
 /* src/pages/mahasiswa/essay/InputEssay.jsx */
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Bold, Italic, Underline, Strikethrough, AlignLeft, AlignCenter, AlignRight, List, ListOrdered, Palette, Plus, Minus, ListTree } from "lucide-react";
-import { courseEssays } from "../../../data/mahasiswa/course/courseEssay";
+import { Bold, Italic, Underline, Strikethrough, AlignLeft, AlignCenter, AlignRight, List, ListOrdered, Plus, Minus, ListTree, Loader2 } from "lucide-react";
+// 1. IMPORT AUTH
+import { useAuth } from "../../../context/AuthContext";
 
 export default function InputEssay() {
-  const { courseId, essayId } = useParams();
+  const { courseId, essayId } = useParams(); // essayId disini adalah assignmentId dari database
   const navigate = useNavigate();
   const editorRef = useRef(null);
+  const { token } = useAuth();
 
-  const selectedEssay =
-    courseEssays[courseId]?.find((e) => e.id === parseInt(essayId)) || {};
+  // STATE DATA REAL
+  const [assignmentData, setAssignmentData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const essayQuestions = [
-    { id: 1, questionTitle: "Describe your understanding of this topic.", questionDesc: "Explain what you know about this essay subject in detail." },
-    { id: 2, questionTitle: "Explain the process involved.", questionDesc: "Discuss the main stages and challenges in implementing this concept." },
-    { id: 3, questionTitle: "Give a practical example.", questionDesc: "Provide one real-life example that relates to the topic." },
-  ];
-
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [answers, setAnswers] = useState(essayQuestions.map(() => ""));
-  const [checked, setChecked] = useState(essayQuestions.map(() => false));
+  // STATE EDITOR (Kita set default array 1 elemen karena backend cuma 1 soal)
+  const [answers, setAnswers] = useState([""]); 
+  const [checked, setChecked] = useState([false]);
+  
+  // Styling State
+  const [currentIndex, setCurrentIndex] = useState(0); // Selalu 0 (karena cuma 1 soal)
   const [fontSize, setFontSize] = useState(14);
   const [fontColor, setFontColor] = useState("#000000");
 
+  // --- 1. FETCH DATA ASSIGNMENT DARI BACKEND ---
+  useEffect(() => {
+    const fetchAssignment = async () => {
+      try {
+        // Kita fetch list assignment dari course ini, lalu cari yang ID-nya cocok
+        const response = await fetch(`http://127.0.0.1:8000/assignment/course/${courseId}`, {
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            const target = data.find(a => a.id_assignment === Number(essayId));
+            
+            if (target) {
+                setAssignmentData(target);
+            } else {
+                alert("Tugas tidak ditemukan!");
+                navigate(-1);
+            }
+        }
+      } catch (err) {
+        console.error("Error fetching assignment:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (token && courseId) fetchAssignment();
+  }, [courseId, essayId, token, navigate]);
+
+
+  // --- EDITOR FUNCTIONS ---
   const handleInput = () => {
     const updated = [...answers];
     updated[currentIndex] = editorRef.current.innerHTML;
@@ -39,7 +71,8 @@ export default function InputEssay() {
   const changeFontSize = (change) => {
     const newSize = Math.max(10, Math.min(36, fontSize + change));
     setFontSize(newSize);
-    applyCommand("fontSize", "4");
+    applyCommand("fontSize", "4"); 
+    // Hack untuk execCommand fontSize
     const fontElements = document.getElementsByTagName("font");
     for (let i = 0; i < fontElements.length; i++) {
       if (fontElements[i].size === "4") {
@@ -48,87 +81,88 @@ export default function InputEssay() {
       }
     }
   };
-
-  const handleNavigation = (direction) => {
-    handleInput();
-    if (direction === "next" && currentIndex < essayQuestions.length - 1)
-      setCurrentIndex(currentIndex + 1);
-    if (direction === "prev" && currentIndex > 0)
-      setCurrentIndex(currentIndex - 1);
-  };
-
+  
   const handleCheck = (index) => {
     const updated = [...checked];
     updated[index] = !updated[index];
     setChecked(updated);
   };
 
-  const handleSubmit = (e) => {
+  // --- 2. LOGIKA SUBMIT KE BACKEND ---
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const incomplete = checked.some((c, i) => !c || answers[i].trim() === "");
-    if (incomplete) {
-      alert("⚠️ Some answers are incomplete. Please review them before submitting.");
+
+    // Validasi sederhana
+    if (!checked[0] || answers[0].trim() === "") {
+      alert("⚠️ Harap isi jawaban dan centang konfirmasi 'Finalized' sebelum mengirim.");
       return;
     }
 
-    const newEssay = {
-      title: selectedEssay.title || "Untitled Essay",
-      status: "In Review",
-      score: "-",
-      feedbackAI: "-",
-      feedbackLecturer: "-",
-      date: new Date().toLocaleDateString("en-GB"),
-      action: "View",
-    };
+    try {
+        // Payload sesuai Schema SubmissionCreate Backend
+        const payload = {
+            id_assignment: Number(essayId),
+            jawaban: answers[0] // Kita ambil jawaban pertama saja
+        };
 
-    const storedEssays = JSON.parse(localStorage.getItem("submittedEssays")) || [];
-    localStorage.setItem("submittedEssays", JSON.stringify([...storedEssays, newEssay]));
+        const response = await fetch("http://127.0.0.1:8000/submission/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify(payload)
+        });
 
-    alert(`✅ Essay "${selectedEssay.title}" berhasil dikirim!`);
-    navigate("/myessays");
+        if (!response.ok) {
+            throw new Error("Gagal mengirim jawaban");
+        }
+
+        alert(`✅ Jawaban untuk "${assignmentData.judul}" berhasil dikirim!`);
+        // Redirect kembali ke halaman list tugas atau halaman sukses
+        navigate(`/course/${courseId}`);
+
+    } catch (err) {
+        console.error(err);
+        alert("Gagal mengirim jawaban: " + err.message);
+    }
   };
+
+  if (loading) return <div className="p-20 text-center font-bold text-blue-600">Memuat Soal...</div>;
+  if (!assignmentData) return null;
 
   return (
     <div className="min-h-screen bg-white flex font-[Inter] py-20">
-      {/* Sidebar Soal */}
+      
+      {/* Sidebar Soal (Disederhanakan jadi 1 Soal) */}
       <div className="w-[150px] bg-white border-r border-gray-200 flex flex-col items-center py-8">
         <h2 className="text-[#222] font-semibold text-lg mb-6">Soal</h2>
-        <div className="grid grid-cols-2 gap-3">
-          {essayQuestions.map((q, index) => {
-            const filled = answers[index].trim() !== "";
-            const checkedQ = checked[index];
-            const color = checkedQ
-              ? "bg-green-500 text-white"
-              : filled
-              ? "bg-[#3D73B4] text-white"
-              : "bg-gray-200 text-gray-700";
-            return (
-              <button
-                key={q.id}
-                onClick={() => setCurrentIndex(index)}
-                className={`w-10 h-10 rounded-lg font-semibold ${color} transition-all ${
-                  currentIndex === index ? "ring-2 ring-[#3D73B4]" : ""
+        <div className="grid grid-cols-1 gap-3">
+            <button
+                className={`w-10 h-10 rounded-lg font-semibold transition-all ${
+                    checked[0] ? "bg-green-500 text-white" : "bg-[#3D73B4] text-white ring-2 ring-[#3D73B4]"
                 }`}
-              >
-                {q.id}
-              </button>
-            );
-          })}
+            >
+                1
+            </button>
         </div>
       </div>
 
       {/* Main Area */}
       <div className="flex-1 px-14 py-10">
         <div className="max-w-3xl mx-auto">
+          {/* Judul Tugas dari Backend */}
           <h1 className="text-[22px] font-bold text-gray-900 mb-6 border-b pb-2">
-            {selectedEssay.title || "Serba-serbi mahasiswa"}
+            {assignmentData.judul}
           </h1>
 
-          <p className="text-gray-800 font-medium mb-3">
-            {essayQuestions[currentIndex].questionDesc}
-          </p>
+          {/* Deskripsi Soal dari Backend */}
+          <div className="bg-blue-50 p-4 rounded-md border border-blue-100 mb-6 text-gray-800 font-medium">
+            <h3 className="text-sm text-blue-600 font-bold mb-1">SOAL:</h3>
+            {assignmentData.deskripsi}
+          </div>
 
-          {/* Toolbar */}
+          {/* Toolbar Editor */}
           <div className="flex flex-wrap gap-3 mb-4 p-2 bg-gray-100 rounded-md border border-gray-300">
             <button onClick={() => applyCommand("bold")} title="Bold"><Bold className="w-5 h-5" /></button>
             <button onClick={() => applyCommand("italic")} title="Italic"><Italic className="w-5 h-5" /></button>
@@ -149,69 +183,52 @@ export default function InputEssay() {
                 setFontColor(e.target.value);
                 applyCommand("foreColor", e.target.value);
               }}
-              title="Font Color"
+
               className="w-6 h-6 cursor-pointer"
             />
           </div>
 
-          {/* Editable area */}
+          {/* Area Ketik Jawaban */}
           <div
             ref={editorRef}
             contentEditable
             onInput={handleInput}
-            className="w-full min-h-[220px] border border-gray-300 rounded-md p-4 bg-white focus:outline-[#3D73B4] text-left"
+            className="w-full min-h-[300px] border border-gray-300 rounded-md p-4 bg-white focus:outline-[#3D73B4] text-left"
             style={{
               fontSize: `${fontSize}px`,
               color: fontColor,
-              direction: "ltr",
-              textAlign: "left",
-              unicodeBidi: "plaintext",
+
             }}
-            dangerouslySetInnerHTML={{ __html: answers[currentIndex] }}
+
           ></div>
 
-          {/* Checkbox */}
-          <div className="flex items-center gap-3 mt-4">
+          {/* Checkbox Konfirmasi */}
+          <div className="flex items-center gap-3 mt-4 bg-yellow-50 p-3 rounded-md border border-yellow-100">
             <input
               type="checkbox"
-              checked={checked[currentIndex]}
-              onChange={() => handleCheck(currentIndex)}
+              checked={checked[0]}
+              onChange={() => handleCheck(0)}
               className="w-5 h-5 accent-[#3D73B4]"
             />
-            <label className="text-gray-700">
-              I have reviewed and finalized this answer.
+            <label className="text-gray-700 text-sm">
+              Saya telah meninjau jawaban dan siap untuk mengirimkannya. (Tidak bisa diedit setelah dikirim)
             </label>
           </div>
 
-          {/* Navigation */}
-          <div className="flex justify-between mt-10">
+          {/* Tombol Submit */}
+          <div className="flex justify-end mt-10">
             <button
-              onClick={() => handleNavigation("prev")}
-              disabled={currentIndex === 0}
-              className={`px-6 py-2 rounded-lg font-medium ${
-                currentIndex === 0
-                  ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                  : "bg-gray-300 hover:bg-gray-400 text-gray-800"
-              }`}
+                onClick={handleSubmit}
+                className={`px-8 py-3 text-white rounded-lg font-bold transition shadow-lg ${
+                    checked[0] 
+                    ? "bg-green-600 hover:bg-green-700 hover:scale-105" 
+                    : "bg-gray-400 cursor-not-allowed"
+                }`}
+                disabled={!checked[0]}
             >
-              Previous
+                Submit Essay
             </button>
 
-            {currentIndex < essayQuestions.length - 1 ? (
-              <button
-                onClick={() => handleNavigation("next")}
-                className="px-6 py-2 bg-[#3D73B4] text-white rounded-lg hover:bg-[#2c5a90]"
-              >
-                Next
-              </button>
-            ) : (
-              <button
-                onClick={handleSubmit}
-                className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-              >
-                Submit
-              </button>
-            )}
           </div>
         </div>
       </div>
