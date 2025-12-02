@@ -11,7 +11,6 @@ import {
   LogOut,
 } from "lucide-react";
 import logo from "../assets/logo capstone.png";
-import { useAuth } from "../context/AuthContext"; // <--- 1. IMPORT CONTEXT
 
 export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -37,7 +36,6 @@ export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
   };
 
   const userName = user?.nama || "Lecturer";
-  const userRole = user?.role || "lecturer";
 
   const isActive = (path) => location.pathname.includes(path);
 
