@@ -46,18 +46,29 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(false);
     navigate('/login');
   };
-
+  
+  // --- SOLUSI 1: FUNGSI BARU UNTUK UPDATE USER DI CONTEXT ---
+  const updateUser = (newUserData) => {
+      // Pastikan token dan data user lama ada sebelum update
+      if (token && user) {
+          const updatedUser = { ...user, ...newUserData };
+          setUser(updatedUser);
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+          // Catatan: Jika token baru juga dikirim, Anda perlu memperbarui token di sini.
+      }
+  };
   const contextValue = {
-    user,
-    token,
-    isAuthenticated,
-    login,
-    logout,
+      user,
+      token,
+      isAuthenticated,
+      login,
+      logout,
+      updateUser, // <-- TAMBAHKAN KE CONTEXT VALUE
   };
 
   return (
-    <AuthContext.Provider value={contextValue}>
-      {children}
-    </AuthContext.Provider>
+      <AuthContext.Provider value={contextValue}>
+          {children}
+      </AuthContext.Provider>
   );
 };
