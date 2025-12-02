@@ -71,21 +71,6 @@ export default function StudentCard({ student, refreshList }) {
                     </div>
 
                     <div className="flex gap-2">
-                        <button
-                            onClick={() => { setIsEdit(true); setEditForm({name: student.name, prodi: student.prodi, password: ""}); setError(null); }}
-                            className="bg-gray-100 p-1.5 rounded-md hover:bg-gray-200 transition"
-                            title="Edit Profile"
-                        >
-                            <Edit2 size={14} />
-                        </button>
-
-                        <button
-                            onClick={() => { setIsDelete(true); setError(null); }}
-                            className="text-red-500 bg-gray-100 p-1.5 rounded-md hover:bg-red-100 transition"
-                            title="Delete Account"
-                        >
-                            <Trash2 size={16} />
-                        </button>
                     </div>
                 </div>
             </div>
