@@ -1,227 +1,307 @@
-// src/pages/admin/AdminSidebar.jsx
-
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext"; // Import useAuth
+import { useAuth } from "../../context/AuthContext"; 
+
 import {
   Users,
   BookOpen,
   BarChart2,
   LogOut,
   ChevronDown,
-  ChevronRight,
   UserCircle,
-  X // Import X untuk tombol tutup modal
+  X
 } from "lucide-react";
+
 import logo from "../../assets/logo capstone.png";
 
 export default function AdminSidebar({ isSidebarOpen }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
-  
-  // STATE UNTUK LOGOUT MODAL
-  const [isLogoutOpen, setIsLogoutOpen] = useState(false); 
-  
-  // STATE UNTUK DROPDOWN
-  const [openUserMgmt, setOpenUserMgmt] = useState(false);
-  const [openMasterData, setOpenMasterData] = useState(false);
-  const [openLog, setOpenLog] = useState(false);
-  
+
   const userName = user?.nama || "Admin";
 
-  const handleLogout = () => {
-    // Memanggil fungsi logout dari context, yang akan menghapus token dan redirect ke /login
-    logout(); 
+  // STATE DROPDOWN
+  const [openDropdown, setOpenDropdown] = useState(null);
+  const [activeMenu, setActiveMenu] = useState("");
+  const [activeSubMenu, setActiveSubMenu] = useState("");
+
+  // STATE LOGOUT MODAL
+  const [isLogoutOpen, setIsLogoutOpen] = useState(false);
+
+  // FUNGSI DROPDOWN
+  const toggleDropdown = (name) => {
+    setOpenDropdown((prev) => (prev === name ? null : name));
+    setActiveMenu(name);
   };
 
-  // MENU GROUPS
-  const userManagement = [
-    { name: "Lecturers", path: "/admin/lecturers" },
-    { name: "Students", path: "/admin/students" }
-  ];
-  const masterData = [
-    { name: "Faculties", path: "/admin/faculties" },
-    { name: "Study Programs", path: "/admin/programs" }
-  ];
-  const logMonitoring = [
-    { name: "System Logs", path: "/admin/logs" },
-    { name: "AI Monitoring", path: "/admin/ai-monitoring" }
-  ];
+  const handleMenuClick = (menuName, path) => {
+    setActiveMenu(menuName);
+    setOpenDropdown(null);
+    navigate(path);
+  };
+
+  const handleChildClick = (parent, sub, path) => {
+    setActiveMenu(parent);
+    setActiveSubMenu(sub);
+    navigate(path);
+  };
+
+  const handleLogout = () => {
+    logout();
+  };
 
   return (
     <>
       <div
-        className={`fixed top-0 left-0 h-full w-64 bg-[#173A64] text-white z-50 transition-transform duration-300
-        ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+        className={`fixed top-0 left-0 h-full w-64 bg-[#173A64] text-white z-50 
+          shadow-xl border-r border-white/10 transition-transform duration-300
+          ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
-        {/* Header */}
-        <div className="flex flex-col items-center py-6 border-b border-white/20">
-          <img src={logo} className="w-20 mb-3" alt="Logo"/>
-          <h3 className="font-semibold text-white text-lg">Admin Panel</h3>
-          
-          {/* User Info */}
-          <div 
-             className="flex items-center space-x-2 mt-2 cursor-pointer hover:text-white/80 transition"
-             onClick={() => navigate("/admin/dashboard")}
-          >
-             <UserCircle size={18} />
-             <span className="text-sm">Hello, {userName.split(' ')[0]}</span>
-          </div>
+        {/* HEADER */}
+        <div className="flex flex-col items-center py-6 border-b border-white/10">
+          <img src={logo} className="w-20 mb-2" />
+          <h3 className="font-semibold text-white text-base tracking-wide">
+            Admin Panel
+          </h3>
 
+          {/* USER INFO */}
+          <div
+            className="flex items-center space-x-2 mt-2 cursor-pointer hover:text-white/80 transition"
+            onClick={() => navigate("/admin/dashboard")}
+          >
+            <UserCircle size={18} />
+            <span>Hello, {userName.split(" ")[0]}</span>
+          </div>
         </div>
 
-        {/* MENU LIST */}
+        {/* MENU */}
         <ul className="p-4 space-y-2 text-sm">
-
+          
           {/* DASHBOARD */}
           <li
-            onClick={() => navigate("/admin/dashboard")}
-            className={`flex items-center space-x-3 px-4 py-3 rounded-md cursor-pointer transition-all
-              ${location.pathname.includes("/admin/dashboard")
-                ? "bg-gray-500"
-                : "hover:bg-white/10"}`}
+            onClick={() => handleMenuClick("dashboard", "/admin/dashboard")}
+            className={`flex items-center space-x-3 px-4 py-3 cursor-pointer rounded-md transition-all
+              ${
+                location.pathname.includes("/admin/dashboard")
+                  ? "bg-white/20"
+                  : "hover:bg-white/10"
+              }`}
           >
-            <BarChart2 size={18} />
+            <BarChart2 size={17} />
             <span>Dashboard</span>
           </li>
 
-          {/* USER MANAGEMENT DROPDOWN */}
+          {/* USER MANAGEMENT */}
           <li>
             <div
-              onClick={() => setOpenUserMgmt(!openUserMgmt)}
-              className="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-white/10 rounded-md"
+              onClick={() => toggleDropdown("userMgmt")}
+              className={`flex items-center justify-between px-4 py-3 cursor-pointer rounded-md
+                ${
+                  openDropdown === "userMgmt"
+                    ? "bg-white/20"
+                    : "hover:bg-white/10"
+                } transition-all`}
             >
               <div className="flex items-center space-x-3">
-                <Users size={18} />
+                <Users size={17} />
                 <span>User Management</span>
               </div>
-              {openUserMgmt ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+
+              <ChevronDown
+                size={16}
+                className={`transition-transform duration-500 ${
+                  openDropdown === "userMgmt" ? "rotate-180" : ""
+                }`}
+              />
             </div>
 
-            {openUserMgmt && (
+            {/* CHILD MENU */}
+            <div
+              className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                openDropdown === "userMgmt" ? "max-h-40" : "max-h-0"
+              }`}
+            >
               <ul className="ml-10 mt-1 space-y-1">
-                {userManagement.map((m) => (
-                  <li
-                    key={m.path}
-                    onClick={() => navigate(m.path)}
-                    className={`px-3 py-2 rounded cursor-pointer
-                      ${location.pathname.includes(m.path)
-                        ? "bg-gray-500"
-                        : "hover:bg-white/10"}`}
-                  >
-                    {m.name}
-                  </li>
-                ))}
+                <li
+                  onClick={() =>
+                    handleChildClick("userMgmt", "lecturers", "/admin/lecturers")
+                  }
+                  className={`px-3 py-2 rounded cursor-pointer ${
+                    location.pathname.includes("/admin/lecturers")
+                      ? "bg-white/20"
+                      : "hover:bg-white/10"
+                  }`}
+                >
+                  Lecturers
+                </li>
+
+                <li
+                  onClick={() =>
+                    handleChildClick("userMgmt", "students", "/admin/students")
+                  }
+                  className={`px-3 py-2 rounded cursor-pointer ${
+                    location.pathname.includes("/admin/students")
+                      ? "bg-white/20"
+                      : "hover:bg-white/10"
+                  }`}
+                >
+                  Students
+                </li>
               </ul>
-            )}
+            </div>
           </li>
 
-          {/* UNIVERSITY MASTER DATA DROPDOWN */}
+          {/* UNIVERSITY MASTER DATA */}
           <li>
             <div
-              onClick={() => setOpenMasterData(!openMasterData)}
-              className="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-white/10 rounded-md"
+              onClick={() => toggleDropdown("masterData")}
+              className={`flex items-center justify-between px-4 py-3 cursor-pointer rounded-md
+                ${
+                  openDropdown === "masterData"
+                    ? "bg-white/20"
+                    : "hover:bg-white/10"
+                }`}
             >
               <div className="flex items-center space-x-3">
-                <BookOpen size={18} />
+                <BookOpen size={17} />
                 <span>University Master Data</span>
               </div>
-              {openMasterData ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+
+              <ChevronDown
+                size={16}
+                className={`transition-transform duration-500 ${
+                  openDropdown === "masterData" ? "rotate-180" : ""
+                }`}
+              />
             </div>
 
-            {openMasterData && (
+            <div
+              className={`overflow-hidden transition-all duration-500 ${
+                openDropdown === "masterData" ? "max-h-40" : "max-h-0"
+              }`}
+            >
               <ul className="ml-10 mt-1 space-y-1">
-                {masterData.map((m) => (
-                  <li
-                    key={m.path}
-                    onClick={() => navigate(m.path)}
-                    className={`px-3 py-2 rounded cursor-pointer
-                      ${location.pathname.includes(m.path)
-                        ? "bg-gray-500"
-                        : "hover:bg-white/10"}`}
-                  >
-                    {m.name}
-                  </li>
-                ))}
+                <li
+                  onClick={() => navigate("/admin/faculties")}
+                  className={`px-3 py-2 rounded cursor-pointer ${
+                    location.pathname.includes("/admin/faculties")
+                      ? "bg-white/20"
+                      : "hover:bg-white/10"
+                  }`}
+                >
+                  Faculties
+                </li>
+
+                <li
+                  onClick={() => navigate("/admin/programs")}
+                  className={`px-3 py-2 rounded cursor-pointer ${
+                    location.pathname.includes("/admin/programs")
+                      ? "bg-white/20"
+                      : "hover:bg-white/10"
+                  }`}
+                >
+                  Study Programs
+                </li>
               </ul>
-            )}
+            </div>
           </li>
 
-          {/* LOG & MONITORING DROPDOWN */}
+          {/* LOG & MONITORING */}
           <li>
             <div
-              onClick={() => setOpenLog(!openLog)}
-              className="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-white/10 rounded-md"
+              onClick={() => toggleDropdown("log")}
+              className={`flex items-center justify-between px-4 py-3 cursor-pointer rounded-md
+                ${
+                  openDropdown === "log"
+                    ? "bg-white/20"
+                    : "hover:bg-white/10"
+                }`}
             >
               <div className="flex items-center space-x-3">
-                <BarChart2 size={18} />
+                <BarChart2 size={17} />
                 <span>Log & Monitoring</span>
               </div>
-              {openLog ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+
+              <ChevronDown
+                size={16}
+                className={`transition-transform duration-500 ${
+                  openDropdown === "log" ? "rotate-180" : ""
+                }`}
+              />
             </div>
 
-            {openLog && (
+            <div
+              className={`overflow-hidden transition-all duration-500 ${
+                openDropdown === "log" ? "max-h-40" : "max-h-0"
+              }`}
+            >
               <ul className="ml-10 mt-1 space-y-1">
-                {logMonitoring.map((m) => (
-                  <li
-                    key={m.path}
-                    onClick={() => navigate(m.path)}
-                    className={`px-3 py-2 rounded cursor-pointer
-                      ${location.pathname.includes(m.path)
-                        ? "bg-gray-500"
-                        : "hover:bg-white/10"}`}
-                  >
-                    {m.name}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </li>
+                <li
+                  onClick={() => navigate("/admin/SistemLog")}
+                  className={`px-3 py-2 rounded cursor-pointer ${
+                    location.pathname.includes("/admin/SistemLog")
+                      ? "bg-white/20"
+                      : "hover:bg-white/10"
+                  }`}
+                >
+                  System Logs
+                </li>
 
+                <li
+                  onClick={() => navigate("/admin/AiMonitoring")}
+                  className={`px-3 py-2 rounded cursor-pointer ${
+                    location.pathname.includes("/admin/AiMonitoring")
+                      ? "bg-white/20"
+                      : "hover:bg-white/10"
+                  }`}
+                >
+                  AI Monitoring
+                </li>
+              </ul>
+            </div>
+          </li>
         </ul>
 
-        {/* Logout Button (Fixed Bottom) */}
-        <div 
-          className="absolute bottom-8 left-5 w-[85%] px-2 py-2 flex items-center justify-start space-x-3 cursor-pointer rounded-md hover:bg-red-700 transition duration-300"
+        {/* LOGOUT */}
+        <div
           onClick={() => setIsLogoutOpen(true)}
+          className="absolute bottom-8 left-5 flex items-center space-x-3 cursor-pointer hover:opacity-70 transition-all"
         >
-          <LogOut size={18} className="text-white" /> 
-          <span>Logout</span>
+          <LogOut size={16} /> <span>Logout</span>
         </div>
       </div>
-      
-      {/* ===== MODAL LOGOUT ===== */}
+
+      {/* LOGOUT MODAL */}
       {isLogoutOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-[999]">
-          <div className="bg-white rounded-2xl shadow-lg w-80 p-6 text-center relative">
-             {/* Close button */}
-             <button
-               onClick={() => setIsLogoutOpen(false)}
-               className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition"
-             >
-               <X size={20} />
-             </button>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[999]">
+          <div className="bg-white rounded-xl shadow-lg w-80 p-6 text-center relative">
+            <button
+              onClick={() => setIsLogoutOpen(false)}
+              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+            >
+              <X size={20} />
+            </button>
 
             <h2 className="text-lg font-semibold mb-2 text-gray-800 mt-4">
               Konfirmasi Logout
             </h2>
             <p className="text-gray-600 mb-6 text-sm">
-              Are you sure you want to log out? Your session will end.
+              Are you sure you want to log out?
             </p>
 
             <div className="flex justify-center gap-3">
               <button
                 onClick={() => setIsLogoutOpen(false)}
-                className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium transition"
+                className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700"
               >
                 Cancel
               </button>
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white font-medium transition"
+                className="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white"
               >
-                Log Out
+                Logout
               </button>
             </div>
           </div>
