@@ -1,7 +1,7 @@
 // src/pages/NavbarDosen.jsx
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "../context/AuthContext"; // Import useAuth
+import { useAuth } from "../context/AuthContext";
 import {
   Menu,
   BookOpen,
@@ -17,7 +17,7 @@ export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout } = useAuth(); // Ambil user dan logout function
+  const { user, logout } = useAuth();
 
   const handleNavigation = (menu) => {
     if (menu === "Courses") navigate("/dosen/course");
@@ -26,20 +26,19 @@ export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
   };
 
   const handleLogout = () => {
-    // Memanggil fungsi logout dari context
     logout();
   };
 
   const userName = user?.nama || "Lecturer";
-  const userRole = user?.role || "lecturer"; 
+  const userRole = user?.role || "lecturer";
 
   const isActive = (path) => location.pathname.includes(path);
 
   return (
     <>
-
+      {/* NAVBAR */}
       <nav
-        className="bg-[#173A64] text-white flex items-center justify-between px-6 py-3 shadow-md fixed top-0 z-50 transition-all duration-300"
+        className="bg-[#173A64] text-white flex items-center justify-between px-6 py-3 fixed top-0 z-50 transition-all duration-300"
         style={{
           left: isSidebarOpen ? 256 : 0,
           width: isSidebarOpen ? "calc(100% - 256px)" : "100%",
@@ -54,21 +53,19 @@ export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
           <h1 className="text-lg font-semibold">Dashboard</h1>
         </div>
 
-        <div className="flex items-center space-x-2">
-          <img src={logo} alt="Essay Grading Logo" className="h-14 w-auto mr-3" />
-        </div>
+        <img src={logo} alt="Logo" className="h-14 w-auto mr-3" />
       </nav>
 
-
+      {/* SIDEBAR */}
       <div
         className={`fixed top-0 left-0 h-full w-64 bg-[#173A64] text-white z-50 transform transition-transform duration-300 py-5 ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-
+        {/* PROFILE SECTION */}
         <div className="flex flex-col px-5 py-6 border-b border-white/20 relative">
           <div
-            className="w-20 h-20 rounded-full bg-gray-300 mx-auto mb-3 cursor-pointer hover:ring-2 hover:ring-white/40 transition"
+            className="w-20 h-20 rounded-full bg-gray-300 mx-auto mb-3 cursor-pointer transition"
             onClick={() => navigate("/dosen/ProfilDosen")}
           ></div>
 
@@ -76,12 +73,11 @@ export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
             className="relative flex items-center justify-center cursor-pointer select-none"
             onClick={() => navigate("/dosen/ProfilDosen")}
           >
-            <h3 className="font-semibold text-white hover:text-white/80 transition">
-              {userName}
-            </h3>
+            <h3 className="font-semibold text-white">{userName}</h3>
+
             <ChevronDown
               size={16}
-              className="text-white/50 absolute right-0 cursor-pointer"
+              className="text-white/60 absolute right-0 cursor-pointer"
               onClick={(e) => {
                 e.stopPropagation();
                 setIsDropdownOpen(!isDropdownOpen);
@@ -91,51 +87,64 @@ export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
 
           <p className="text-sm text-gray-300 mt-1 mb-2 text-center">{userRole}</p>
 
-
+          {/* DROPDOWN */}
           <div
             className={`overflow-hidden transition-all duration-300 mt-2 ${
               isDropdownOpen ? "max-h-10 opacity-100" : "max-h-0 opacity-0"
             }`}
           >
             <div
-              onClick={() => setIsLogoutOpen(true)} 
-              className="flex items-center space-x-2 pl-0 cursor-pointer hover:text-gray-300 transition"
+              onClick={() => setIsLogoutOpen(true)}
+              className="flex items-center space-x-2 cursor-pointer transition hover:text-gray-200"
             >
-              <LogOut size={16} className="text-white/70" />
-              <span className="text-white text-sm pl-5">Log Out</span>
+              <LogOut size={16} className="text-white/80" />
+              <span className="text-white text-sm pl-4">Log Out</span>
             </div>
           </div>
         </div>
 
-
+        {/* MAIN MENU */}
         <div className="p-3 text-sm">
           <div className="uppercase text-gray-300 text-xs mb-3 text-left px-2">
             Main Menu
           </div>
+
           <ul className="space-y-1">
+            {/* Courses */}
             <li
               onClick={() => handleNavigation("Courses")}
-              className={`flex items-center space-x-3 px-4 py-3 rounded-md cursor-pointer transition-all ${
-                isActive("/dosen/course") ? "bg-gray-500" : "hover:bg-white/10"
-              }`}
+              className={`flex items-center space-x-3 px-4 py-3 cursor-pointer transition-all 
+                ${
+                  isActive("/dosen/course")
+                    ? "bg-white/20"
+                    : "hover:bg-white/10"
+                }`}
             >
               <BookOpen size={18} /> <span>Courses</span>
             </li>
 
+            {/* AI Grading Review */}
             <li
               onClick={() => handleNavigation("AI Grading Review")}
-              className={`flex items-center space-x-3 px-4 py-3 rounded-md cursor-pointer transition-all ${
-                isActive("/dosen/AiGrading1") ? "bg-gray-500" : "hover:bg-white/10"
-              }`}
+              className={`flex items-center space-x-3 px-4 py-3 cursor-pointer transition-all 
+                ${
+                  isActive("/dosen/AiGrading1")
+                    ? "bg-white/20"
+                    : "hover:bg-white/10"
+                }`}
             >
               <MessageSquare size={18} /> <span>AI Grading Review</span>
             </li>
 
+            {/* Class Analytics */}
             <li
               onClick={() => handleNavigation("Class Analytics")}
-              className={`flex items-center space-x-3 px-4 py-3 rounded-md cursor-pointer transition-all ${
-                isActive("/dosen/ClassAnalitik1") ? "bg-gray-500" : "hover:bg-white/10"
-              }`}
+              className={`flex items-center space-x-3 px-4 py-3 cursor-pointer transition-all 
+                ${
+                  isActive("/dosen/ClassAnalitik1")
+                    ? "bg-white/20"
+                    : "hover:bg-white/10"
+                }`}
             >
               <BarChart2 size={18} /> <span>Class Analytics</span>
             </li>
@@ -143,7 +152,7 @@ export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
         </div>
       </div>
 
-
+      {/* LOGOUT MODAL */}
       {isLogoutOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-[999]">
           <div className="bg-white rounded-2xl shadow-lg w-80 p-6 text-center animate-fadeIn">
