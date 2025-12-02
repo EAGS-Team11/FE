@@ -78,7 +78,7 @@ export default function StudentList() {
         };
 
         try {
-            const data = await apiFetch("/auth/register/admin", "POST", newStudent);
+            const data = await apiFetch("/auth/register", "POST", newStudent);
             
             alert(`✅ Mahasiswa ${data.nama} berhasil didaftarkan!`);
             
