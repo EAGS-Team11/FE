@@ -1,26 +1,18 @@
-/* src/pages/dosen/course/EditEssay.jsx */
-
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { Upload, Trash2 } from "lucide-react";
-import createEssayImg from "../../../assets/createessay.png";
-import { essays } from "../../../data/dosen/course/essayData";
+import { Upload, Trash2, FileText, ArrowLeft, Save } from "lucide-react";
 
 export default function EditEssay() {
   const navigate = useNavigate();
+  // Gunakan essayId untuk fetch, courseId hanya diambil jika tersedia
   const { courseId, essayId } = useParams();
-  const location = useLocation();
-
-  // Ambil essay yang sedang diedit dari state atau dari data essays
-  const existingEssay =
-    location.state?.essay ||
-    essays.find(
-      (essay) => essay.id === parseInt(essayId) && essay.courseId === parseInt(courseId)
-    );
-
+  
   const [showQuestions, setShowQuestions] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const [form, setForm] = useState({
+    id_course: null, // <<< INI TAMBAHAN PENTING
     assignmentName: "",
     description: "",
     taskType: "Essay",
@@ -31,23 +23,94 @@ export default function EditEssay() {
   });
 
   const [questions, setQuestions] = useState([]);
+  const [isSaving, setIsSaving] = useState(false);
 
-  // Prefill form dan pertanyaan dari data dummy
-  useEffect(() => {
-    if (existingEssay) {
-      setForm({
-        assignmentName: existingEssay.assignmentName || "",
-        description: existingEssay.description || "",
-        taskType: existingEssay.taskType || "Essay",
-        startDate: existingEssay.startDate || "",
-        timeDuration: existingEssay.timeDuration || "",
-        deadline: existingEssay.deadline || "",
-        attachment: existingEssay.attachment || null,
-      });
-
-      setQuestions(existingEssay.questions || []);
+  // Helper function untuk mengambil token
+  const getToken = () => {
+    const keys = ["authToken", "token", "access_token"];
+    for (const key of keys) {
+      const t = localStorage.getItem(key) || sessionStorage.getItem(key);
+      if (t) {
+        try {
+            const parsed = JSON.parse(t);
+            return parsed.token || parsed.access_token || parsed.authToken || t;
+        } catch (e) {
+            return t;
+        }
+      }
     }
-  }, [existingEssay]);
+    return null;
+  };
+
+  // --- STEP 1: FETCH DATA DARI API SAAT HALAMAN DIBUKA ---
+  useEffect(() => {
+    const fetchEssayDetail = async () => {
+      const token = getToken();
+      if (!token) {
+        setError("Token hilang atau sesi berakhir.");
+        setLoading(false);
+        navigate("/login"); 
+        return;
+      }
+      
+      try {
+        setLoading(true);
+        const response = await fetch(`http://127.0.0.1:8000/assignment/${essayId}`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+
+        if (response.status === 401) {
+             throw new Error("Sesi kadaluarsa (Unauthorized).");
+        }
+        if (!response.ok) {
+          throw new Error("Gagal mengambil data assignment");
+        }
+
+        const data = await response.json();
+        
+        const formatForInput = (isoString) => {
+            if (!isoString) return "";
+            const date = new Date(isoString);
+            date.setMinutes(date.getMinutes() - date.getTimezoneOffset()); 
+            return date.toISOString().slice(0, 16); 
+        };
+
+        setForm({
+          id_course: data.id_course, // <<< AMBIL ID COURSE DARI API
+          assignmentName: data.judul || "",
+          description: data.deskripsi || "",
+          taskType: "Essay", 
+          startDate: data.created_at ? formatForInput(data.created_at) : "",
+          timeDuration: "", 
+          deadline: data.deadline ? formatForInput(data.deadline) : "",
+          attachment: null,
+        });
+
+        const mappedQuestions = data.questions.map(q => ({
+          number: q.nomor_soal,
+          question: q.teks_soal,
+          referenceAnswer: q.kunci_jawaban, 
+          points: q.bobot.toString(),
+        }));
+        
+        setQuestions(mappedQuestions);
+
+      } catch (err) {
+        console.error("Error fetching data for edit:", err);
+        setError(err.message || "Gagal memuat detail tugas.");
+        if (err.message.includes("Unauthorized") || err.message.includes("kadaluarsa")) {
+             navigate("/login");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (essayId) {
+        fetchEssayDetail();
+    }
+  }, [essayId, navigate]);
+
 
   // Handle perubahan data form
   const handleFormChange = (e) => {
@@ -63,7 +126,12 @@ export default function EditEssay() {
   const handleAddQuestion = () => {
     setQuestions([
       ...questions,
-      { number: questions.length + 1, question: "", points: "" },
+      { 
+        number: questions.length + 1, 
+        question: "", 
+        referenceAnswer: "", 
+        points: "" 
+      },
     ]);
   };
 
@@ -74,37 +142,139 @@ export default function EditEssay() {
   };
 
   const handleDeleteQuestion = (index) => {
+    if (questions.length === 1) {
+      alert("Minimal harus ada satu soal.");
+      return;
+    }
     const updated = questions.filter((_, i) => i !== index);
     const renumbered = updated.map((q, i) => ({ ...q, number: i + 1 }));
     setQuestions(renumbered);
   };
 
   const handleNext = () => {
+    if (!form.assignmentName || !form.description || !form.deadline) {
+        alert("Mohon lengkapi Assignment Name, Description, dan Deadline sebelum melanjutkan.");
+        return;
+    }
     setShowQuestions(true);
   };
 
-  const handleSaveAssignment = () => {
-    const updatedEssay = { ...form, questions };
-    console.log("Updated Essay:", updatedEssay);
-    navigate(`/dosen/course/${courseId}/essay/${essayId}`);
+  // --- HANDLE SAVE (UPDATE) ---
+  const handleSaveAssignment = async () => {
+    // 1. Validasi Soal
+    for (const q of questions) {
+        if (!q.question || !q.referenceAnswer || !q.points) {
+            alert(`Mohon lengkapi Soal, Kunci Jawaban, dan Bobot untuk nomor ${q.number}`);
+            return;
+        }
+    }
+
+    const token = getToken();
+    if (!token) {
+        alert("Sesi tidak valid. Harap login ulang.");
+        navigate("/login");
+        return;
+    }
+    
+    // Validasi ID Course (Sekarang diambil dari state, bukan URL)
+    const courseIdInt = form.id_course; 
+    if (!courseIdInt || isNaN(courseIdInt)) {
+        alert("Fatal Error: ID Course tidak ditemukan atau tidak valid.");
+        return;
+    }
+
+    // Konversi string datetime-local ke ISO string yang diterima Pydantic
+    const formatDeadline = (dateString) => {
+        if (!dateString) return null; 
+        try {
+            return new Date(dateString).toISOString(); 
+        } catch (e) {
+            return null;
+        }
+    };
+
+    const formattedDeadline = formatDeadline(form.deadline);
+    if (!formattedDeadline) {
+        alert("Deadline harus diisi dengan format tanggal/waktu yang benar.");
+        return;
+    }
+
+    setIsSaving(true);
+
+    // 2. Bentuk Payload untuk Backend (PUT)
+    const payload = {
+        id_course: courseIdInt, // <<< MENGGUNAKAN ID DARI STATE
+        judul: form.assignmentName,
+        deskripsi: form.description,
+        deadline: formattedDeadline, 
+        questions: questions.map((q) => ({
+            nomor_soal: q.number,
+            teks_soal: q.question,
+            kunci_jawaban: q.referenceAnswer, 
+            bobot: parseInt(q.points) || 0,
+        })),
+    };
+
+    try {
+        const response = await fetch(`http://127.0.0.1:8000/assignment/${essayId}`, {
+            method: "PUT", 
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}` 
+            },
+            body: JSON.stringify(payload),
+        });
+
+        if (response.status === 401) {
+            throw new Error("Sesi kadaluarsa saat menyimpan.");
+        }
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Backend Error Detail:", errorData);
+            throw new Error(errorData.detail ? JSON.stringify(errorData.detail) : "Gagal memperbarui assignment (Lihat konsol untuk detail error).");
+        }
+
+        alert("Assignment berhasil diperbarui!");
+        // Redirect kembali ke halaman detail setelah update
+        // Kita gunakan ID Course dari state form agar path-nya utuh
+        navigate(`/dosen/course/${courseIdInt}/essay/${essayId}`);
+
+    } catch (error) {
+        console.error("Error updating assignment:", error);
+        alert(`Terjadi kesalahan saat menyimpan perubahan: ${error.message}`);
+        if (error.message.includes("kadaluarsa")) {
+             navigate("/login");
+        }
+    } finally {
+        setIsSaving(false);
+    }
   };
 
   const handleBack = () => {
     if (showQuestions) {
       setShowQuestions(false);
     } else {
-      navigate(`/dosen/course/${courseId}/essay/${essayId}`);
+      // Kembali ke halaman detail
+      navigate(`/dosen/assignment/${essayId}`);
     }
   };
+
+  if (loading) {
+    return <div className="text-center mt-20 text-gray-500">Loading data...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center mt-20 text-red-500">{error}</div>;
+  }
 
   return (
     <div className="w-full bg-[#F6F7FB] min-h-screen p-8 flex justify-center -mt-20">
       <div className="w-full max-w-3xl scale-[0.9]">
         {/* Header */}
         <div className="flex items-center mb-6 ml-[-70px]">
-          <img src={createEssayImg} alt="Edit Essay" className="w-8 h-8 mr-3" />
+          <FileText className="w-8 h-8 mr-3 text-[#30326A]" />
           <h1 className="text-[#30326A] font-bold text-xl font-inter text-left">
-            {showQuestions ? "Add Question" : "Edit Assignment / Essay"}
+            {showQuestions ? "Edit Questions" : "Edit Assignment / Essay"}
           </h1>
         </div>
 
@@ -174,12 +344,12 @@ export default function EditEssay() {
                   <label className="block text-[#0B102D] font-semibold mb-1 font-inter text-sm text-left">
                     * START DATE
                   </label>
+                  {/* Gunakan datetime-local agar widgetnya muncul */}
                   <input
-                    type="text"
+                    type="datetime-local"
                     name="startDate"
                     value={form.startDate}
                     onChange={handleFormChange}
-                    placeholder="15 November 2025"
                     className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#30326A]"
                   />
                 </div>
@@ -194,7 +364,7 @@ export default function EditEssay() {
                     name="timeDuration"
                     value={form.timeDuration}
                     onChange={handleFormChange}
-                    placeholder="13.00 – 17.00 WIB"
+                    placeholder="Durasi pengerjaan (misal: 2 Jam)"
                     className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#30326A]"
                   />
                 </div>
@@ -204,12 +374,12 @@ export default function EditEssay() {
                   <label className="block text-[#0B102D] font-semibold mb-1 font-inter text-sm text-left">
                     * DEADLINE
                   </label>
+                   {/* Gunakan datetime-local agar widgetnya muncul */}
                   <input
-                    type="text"
+                    type="datetime-local"
                     name="deadline"
                     value={form.deadline}
                     onChange={handleFormChange}
-                    placeholder="16 November 2025, 17.00 WIB"
                     className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#30326A]"
                   />
                 </div>
@@ -251,7 +421,7 @@ export default function EditEssay() {
                     onClick={handleNext}
                     className="bg-[#30326A] text-white px-8 py-2 rounded-lg text-sm hover:bg-[#23245c]"
                   >
-                    Next
+                    Next (Edit Questions) →
                   </button>
                 </div>
               </form>
@@ -259,69 +429,68 @@ export default function EditEssay() {
           </>
         )}
 
-        {/* --- STEP 2: ADD QUESTION --- */}
+        {/* --- STEP 2: EDIT QUESTION --- */}
         {showQuestions && (
           <>
             <div className="mb-8 ml-[-20px]">
               <h2 className="text-[#0B102DB3] font-bold text-base mb-1 font-inter text-left">
-                Add Question
+                Edit Questions
               </h2>
               <p className="text-[#0B102DB3] font-semibold text-sm font-inter text-left">
-                Please add question contents below.
+                Update question contents and reference answers below.
               </p>
             </div>
 
             <div className="bg-white shadow-md rounded-2xl p-6 space-y-6">
               {questions.map((q, index) => (
                 <div key={index} className="border border-gray-300 rounded-lg">
-                  <div className="flex justify-between items-center border-b border-gray-300 px-4 py-2">
-                    <span className="font-semibold text-sm">Question {q.number}</span>
+                  <div className="flex justify-between items-center bg-gray-50 border-b border-gray-300 px-4 py-2">
+                    <span className="font-bold text-[#30326A] text-sm">Question {q.number}</span>
                     <button
                       type="button"
                       onClick={() => handleDeleteQuestion(index)}
-                      className="text-gray-500 hover:text-red-500"
+                      className="text-gray-500 hover:text-red-500 p-1 rounded-full hover:bg-white"
                     >
                       <Trash2 className="w-5 h-5" />
                     </button>
                   </div>
 
-                  <div className="p-4 text-sm">
-                    <div className="grid grid-cols-3 border-b py-2">
-                      <span className="font-semibold col-span-1">
-                        Question Number:
-                      </span>
-                      <input
-                        type="text"
-                        value={q.number}
-                        readOnly
-                        className="col-span-2 border rounded-md p-1 bg-gray-50"
-                      />
+                  <div className="p-4 space-y-3">
+                    {/* Question Text */}
+                    <div>
+                        <label className="block text-sm font-semibold text-[#0B102D] mb-1">Pertanyaan:</label>
+                        <textarea
+                            value={q.question}
+                            onChange={(e) => handleQuestionChange(index, "question", e.target.value)}
+                            rows="2"
+                            placeholder="Tuliskan pertanyaan di sini..."
+                            className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-[#30326A]"
+                        />
                     </div>
-
-                    <div className="grid grid-cols-3 border-b py-2">
-                      <span className="font-semibold col-span-1">The Question:</span>
-                      <textarea
-                        value={q.question}
-                        onChange={(e) =>
-                          handleQuestionChange(index, "question", e.target.value)
-                        }
-                        rows="2"
-                        placeholder="Tuliskan pertanyaan di sini..."
-                        className="col-span-2 border rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-[#30326A]"
-                      />
+                    
+                    {/* Reference Answer */}
+                    <div>
+                        <label className="block text-sm font-semibold text-green-700 mb-1">Reference Answer (Kunci Jawaban):</label>
+                        <textarea
+                            value={q.referenceAnswer} 
+                            onChange={(e) => handleQuestionChange(index, "referenceAnswer", e.target.value)}
+                            rows="3"
+                            placeholder="Jawaban ideal untuk penilaian AI..."
+                            className="w-full border border-gray-300 rounded-md p-2 bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-600"
+                        />
                     </div>
-
-                    <div className="grid grid-cols-3 py-2">
-                      <span className="font-semibold col-span-1">Points:</span>
-                      <input
-                        type="number"
-                        value={q.points}
-                        onChange={(e) =>
-                          handleQuestionChange(index, "points", e.target.value)
-                        }
-                        placeholder="Masukkan poin"
-                        className="col-span-2 border rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-[#30326A]"
-                      />
+                    
+                    {/* Points */}
+                    <div className="w-32">
+                        <label className="block text-sm font-semibold text-[#0B102D] mb-1">Points (Bobot):</label>
+                        <input
+                            type="number"
+                            min="1"
+                            value={q.points}
+                            onChange={(e) => handleQuestionChange(index, "points", e.target.value)}
+                            placeholder="10"
+                            className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-[#30326A]"
+                        />
                     </div>
                   </div>
                 </div>
@@ -330,17 +499,19 @@ export default function EditEssay() {
               <button
                 onClick={handleAddQuestion}
                 type="button"
-                className="w-full border border-gray-300 text-[#30326A] font-semibold text-sm rounded-lg py-2 hover:bg-gray-100"
+                className="w-full border-2 border-dashed border-[#30326A] text-[#30326A] font-semibold text-sm rounded-lg py-2 hover:bg-gray-100 flex justify-center items-center gap-2"
               >
                 + ADD QUESTION
               </button>
 
-              <div className="flex justify-center mt-4">
+              <div className="flex justify-end pt-4">
                 <button
                   onClick={handleSaveAssignment}
-                  className="bg-[#30326A] text-white px-8 py-2 rounded-lg text-sm hover:bg-[#23245c]"
+                  disabled={isSaving}
+                  className={`flex items-center gap-2 bg-[#30326A] text-white px-8 py-2 rounded-lg text-sm font-bold shadow-lg hover:bg-[#23245c] transition ${isSaving ? 'opacity-70 cursor-not-allowed' : ''}`}
                 >
-                  Save Changes
+                  <Save className="w-4 h-4" />
+                  {isSaving ? "Saving..." : "SAVE CHANGES"}
                 </button>
               </div>
             </div>
@@ -351,9 +522,10 @@ export default function EditEssay() {
         <div className="mt-10">
           <button
             onClick={handleBack}
-            className="bg-[#30326A] text-white px-6 py-2 rounded-lg text-sm hover:bg-[#23245c] ml-[-800px]"
+            className="flex items-center gap-2 text-gray-600 hover:text-[#30326A] transition font-inter text-sm ml-[-800px]"
           >
-            ← Back
+            <ArrowLeft className="w-5 h-5" />
+            Back
           </button>
         </div>
       </div>

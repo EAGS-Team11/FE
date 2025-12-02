@@ -1,4 +1,3 @@
-/* src/App.jsx */
 import { BrowserRouter as Router, Routes, Route, Outlet, Navigate } from "react-router-dom";
 import React, { useState } from "react";
 import { AuthProvider, useAuth } from "./context/AuthContext"; 
@@ -85,7 +84,7 @@ function DosenLayout() {
         />
 
         {/* Konten utama */}
-       <main className={`flex-grow transition-all duration-300 pt-28 px-10`} 
+        <main className={`flex-grow transition-all duration-300 pt-28 px-10`} 
           style={{ marginLeft: isSidebarOpen ? 256 : 0 }}>
           <Outlet />
         </main>
@@ -135,7 +134,14 @@ export default function App() {
               <Route path="/dosen/course/:courseId" element={<CourseDetail />} />
               <Route path="/dosen/course/:courseId/create-essay" element={<CreateEssay />} />
               <Route path="/dosen/course/:courseId/add-question" element={<AddQuestion />} />
+              
+              {/* --- ROUTE LAMA (Mungkin masih dipakai link lain) --- */}
               <Route path="/dosen/course/:courseId/essay/:essayId" element={<EssayDetail />} />
+              
+              {/* --- ROUTE BARU (Perbaikan untuk 404) --- */}
+              {/* Ini menangani link dari CourseDetail saat card diklik */}
+              <Route path="/dosen/assignment/:essayId" element={<EssayDetail />} />
+
               <Route path="/dosen/course/:courseId/edit-essay/:essayId" element={<EditEssay />} />
               <Route path="/dosen/check-answer" element={<CheckAnswer />} />
               <Route path="/dosen/AiGrading1" element={<AiGrading1/>} />
