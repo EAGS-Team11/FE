@@ -3,11 +3,13 @@
 import React from "react";
 
 export default function Footer({ isSidebarOpen }) {
+  const isMobile = window.innerWidth < 768;
+
   return (
     <footer
       className="bg-[#1a1a1a] py-4 transition-all duration-300"
       style={{
-        marginLeft: isSidebarOpen ? 256 : 0, 
+        marginLeft: isMobile ? 0 : isSidebarOpen ? 256 : 0,
       }}
     >
       <p className="text-center text-gray-300 text-sm">

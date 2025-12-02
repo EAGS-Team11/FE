@@ -97,7 +97,8 @@ function DosenLayout() {
 
         {/* Konten utama */}
        <main className={`flex-grow transition-all duration-300 pt-28 px-10`} 
-          style={{ marginLeft: isSidebarOpen ? 256 : 0 }}>
+          style={{ 
+            marginLeft: window.innerWidth < 768 ? 0 : isSidebarOpen ? 256 : 0 }}>
           <Outlet />
         </main>
       </div>

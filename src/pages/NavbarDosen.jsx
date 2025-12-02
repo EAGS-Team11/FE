@@ -1,5 +1,5 @@
 // src/pages/NavbarDosen.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {
@@ -23,6 +23,7 @@ export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
     if (menu === "Courses") navigate("/dosen/course");
     if (menu === "AI Grading Review") navigate("/dosen/AiGrading1");
     if (menu === "Class Analytics") navigate("/dosen/ClassAnalitik1");
+    if (isMobile) setIsSidebarOpen(false);
   };
 
   const handleLogout = () => {
@@ -33,15 +34,23 @@ export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
   const userRole = user?.role || "lecturer";
 
   const isActive = (path) => location.pathname.includes(path);
+  
 
   return (
     <>
       {/* NAVBAR */}
       <nav
-        className="bg-[#173A64] text-white flex items-center justify-between px-6 py-3 fixed top-0 z-50 transition-all duration-300"
+        className="bg-[#173A64] text-white flex items-center justify-between px-6 py-3 
+        fixed top-0 z-50 transition-all duration-300 w-full"
         style={{
-          left: isSidebarOpen ? 256 : 0,
-          width: isSidebarOpen ? "calc(100% - 256px)" : "100%",
+          left:
+            window.innerWidth >= 768 ? (isSidebarOpen ? 256 : 0) : 0,
+          width:
+            window.innerWidth >= 768
+              ? isSidebarOpen
+                ? "calc(100% - 256px)"
+                : "100%"
+              : "100%",
         }}
       >
         <div className="flex items-center space-x-3">
@@ -56,14 +65,23 @@ export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
         <img src={logo} alt="Logo" className="h-14 w-auto mr-3" />
       </nav>
 
+      {/* OVERLAY — klik luar sidebar untuk nutup */}
+      {isSidebarOpen && window.innerWidth < 768 && (
+        <div
+          className="fixed top-0 left-0 h-full w-full bg-black/40 z-40 pointer-events-auto"
+          onClick={() => setIsSidebarOpen(false)}
+        ></div>
+      )}
+
       {/* SIDEBAR */}
       <div
-        className={`fixed top-0 left-0 h-full w-64 bg-[#173A64] text-white z-50 transform transition-transform duration-300 py-5 ${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed top-0 left-0 h-full w-64 bg-[#173A64] text-white z-50 transform 
+        transition-transform duration-300 py-5
+        ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
+
         {/* PROFILE SECTION */}
-        <div className="flex flex-col px-5 py-6 border-b border-white/20 relative">
+        <div className="flex flex-col px-5 py-10 border-b border-white/20 relative">
           <div
             className="w-20 h-20 rounded-full bg-gray-300 mx-auto mb-3 cursor-pointer transition"
             onClick={() => navigate("/dosen/ProfilDosen")}
@@ -85,7 +103,9 @@ export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
             />
           </div>
 
-          <p className="text-sm text-gray-300 mt-1 mb-2 text-center">{userRole}</p>
+          <p className="text-sm text-gray-300 mt-1 mb-2 text-center">
+            {userRole}
+          </p>
 
           {/* DROPDOWN */}
           <div
@@ -110,41 +130,35 @@ export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
           </div>
 
           <ul className="space-y-1">
-            {/* Courses */}
             <li
               onClick={() => handleNavigation("Courses")}
-              className={`flex items-center space-x-3 px-4 py-3 cursor-pointer transition-all 
-                ${
-                  isActive("/dosen/course")
-                    ? "bg-white/20"
-                    : "hover:bg-white/10"
-                }`}
+              className={`flex items-center space-x-3 px-4 py-3 cursor-pointer transition-all ${
+                isActive("/dosen/course")
+                  ? "bg-white/20"
+                  : "hover:bg-white/10"
+              }`}
             >
               <BookOpen size={18} /> <span>Courses</span>
             </li>
 
-            {/* AI Grading Review */}
             <li
               onClick={() => handleNavigation("AI Grading Review")}
-              className={`flex items-center space-x-3 px-4 py-3 cursor-pointer transition-all 
-                ${
-                  isActive("/dosen/AiGrading1")
-                    ? "bg-white/20"
-                    : "hover:bg-white/10"
-                }`}
+              className={`flex items-center space-x-3 px-4 py-3 cursor-pointer transition-all ${
+                isActive("/dosen/AiGrading1")
+                  ? "bg-white/20"
+                  : "hover:bg-white/10"
+              }`}
             >
               <MessageSquare size={18} /> <span>AI Grading Review</span>
             </li>
 
-            {/* Class Analytics */}
             <li
               onClick={() => handleNavigation("Class Analytics")}
-              className={`flex items-center space-x-3 px-4 py-3 cursor-pointer transition-all 
-                ${
-                  isActive("/dosen/ClassAnalitik1")
-                    ? "bg-white/20"
-                    : "hover:bg-white/10"
-                }`}
+              className={`flex items-center space-x-3 px-4 py-3 cursor-pointer transition-all ${
+                isActive("/dosen/ClassAnalitik1")
+                  ? "bg-white/20"
+                  : "hover:bg-white/10"
+              }`}
             >
               <BarChart2 size={18} /> <span>Class Analytics</span>
             </li>
