@@ -1,54 +1,55 @@
 import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext"; 
-
 import {
   Users,
   BookOpen,
   BarChart2,
   LogOut,
-  ChevronDown,
-  UserCircle,
-  X
+  ChevronDown
 } from "lucide-react";
-
 import logo from "../../assets/logo capstone.png";
+import { useNavigate } from "react-router-dom";
 
 export default function AdminSidebar({ isSidebarOpen }) {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { user, logout } = useAuth();
 
-  const userName = user?.nama || "Admin";
-
-  // STATE DROPDOWN
+  // State dropdown & active menu
   const [openDropdown, setOpenDropdown] = useState(null);
-  const [activeMenu, setActiveMenu] = useState("");
+  const [activeMenu, setActiveMenu] = useState("dashboard");
   const [activeSubMenu, setActiveSubMenu] = useState("");
 
-  // STATE LOGOUT MODAL
-  const [isLogoutOpen, setIsLogoutOpen] = useState(false);
+  // Modal state
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-  // FUNGSI DROPDOWN
   const toggleDropdown = (name) => {
     setOpenDropdown((prev) => (prev === name ? null : name));
     setActiveMenu(name);
+    setActiveSubMenu("");
   };
 
   const handleMenuClick = (menuName, path) => {
     setActiveMenu(menuName);
+    setActiveSubMenu("");
     setOpenDropdown(null);
     navigate(path);
   };
 
-  const handleChildClick = (parent, sub, path) => {
-    setActiveMenu(parent);
-    setActiveSubMenu(sub);
+  const handleChildClick = (parentMenu, subMenu, path) => {
+    setActiveMenu(parentMenu);
+    setActiveSubMenu(subMenu);
     navigate(path);
   };
 
   const handleLogout = () => {
-    logout();
+    setShowLogoutModal(true);
+  };
+
+  const confirmLogout = () => {
+    setShowLogoutModal(false);
+    navigate("/login"); // arahkan ke halaman login
+  };
+
+  const cancelLogout = () => {
+    setShowLogoutModal(false);
   };
 
   return (
@@ -60,33 +61,18 @@ export default function AdminSidebar({ isSidebarOpen }) {
       >
         {/* HEADER */}
         <div className="flex flex-col items-center py-6 border-b border-white/10">
-          <img src={logo} className="w-20 mb-2" />
+          <img src={logo} className="w-16 mb-2" />
           <h3 className="font-semibold text-white text-base tracking-wide">
             Admin Panel
           </h3>
-
-          {/* USER INFO */}
-          <div
-            className="flex items-center space-x-2 mt-2 cursor-pointer hover:text-white/80 transition"
-            onClick={() => navigate("/admin/dashboard")}
-          >
-            <UserCircle size={18} />
-            <span>Hello, {userName.split(" ")[0]}</span>
-          </div>
         </div>
 
         {/* MENU */}
         <ul className="p-4 space-y-2 text-sm">
-          
-          {/* DASHBOARD */}
           <li
             onClick={() => handleMenuClick("dashboard", "/admin/dashboard")}
-            className={`flex items-center space-x-3 px-4 py-3 cursor-pointer rounded-md transition-all
-              ${
-                location.pathname.includes("/admin/dashboard")
-                  ? "bg-white/20"
-                  : "hover:bg-white/10"
-              }`}
+            className={`flex items-center space-x-3 px-4 py-2 cursor-pointer transition-all 
+              ${activeMenu === "dashboard" ? "bg-white/20 shadow-md" : "hover:bg-white/10"}`}
           >
             <BarChart2 size={17} />
             <span>Dashboard</span>
@@ -96,55 +82,34 @@ export default function AdminSidebar({ isSidebarOpen }) {
           <li>
             <div
               onClick={() => toggleDropdown("userMgmt")}
-              className={`flex items-center justify-between px-4 py-3 cursor-pointer rounded-md
-                ${
-                  openDropdown === "userMgmt"
-                    ? "bg-white/20"
-                    : "hover:bg-white/10"
-                } transition-all`}
+              className={`flex items-center justify-between px-4 py-2 cursor-pointer 
+                ${activeMenu === "userMgmt" ? "bg-white/20 shadow-md" : "hover:bg-white/10"} transition-all`}
             >
               <div className="flex items-center space-x-3">
                 <Users size={17} />
                 <span>User Management</span>
               </div>
-
               <ChevronDown
                 size={16}
-                className={`transition-transform duration-500 ${
-                  openDropdown === "userMgmt" ? "rotate-180" : ""
-                }`}
+                className={`transition-transform duration-500 ${openDropdown === "userMgmt" ? "rotate-180" : ""}`}
               />
             </div>
 
-            {/* CHILD MENU */}
-            <div
-              className={`overflow-hidden transition-all duration-500 ease-in-out ${
-                openDropdown === "userMgmt" ? "max-h-40" : "max-h-0"
-              }`}
+            <div className={`overflow-hidden transition-all duration-500 ease-in-out
+              ${openDropdown === "userMgmt" ? "max-h-40" : "max-h-0"}`}
             >
               <ul className="ml-10 mt-1 space-y-1">
                 <li
-                  onClick={() =>
-                    handleChildClick("userMgmt", "lecturers", "/admin/lecturers")
-                  }
-                  className={`px-3 py-2 rounded cursor-pointer ${
-                    location.pathname.includes("/admin/lecturers")
-                      ? "bg-white/20"
-                      : "hover:bg-white/10"
-                  }`}
+                  onClick={() => handleChildClick("userMgmt", "lecturer", "/admin/lecturers")}
+                  className={`px-3 py-2 cursor-pointer text-sm rounded
+                    ${activeSubMenu === "lecturer" ? "bg-white/20 shadow-md text-white" : "hover:bg-white/10"}`}
                 >
                   Lecturers
                 </li>
-
                 <li
-                  onClick={() =>
-                    handleChildClick("userMgmt", "students", "/admin/students")
-                  }
-                  className={`px-3 py-2 rounded cursor-pointer ${
-                    location.pathname.includes("/admin/students")
-                      ? "bg-white/20"
-                      : "hover:bg-white/10"
-                  }`}
+                  onClick={() => handleChildClick("userMgmt", "student", "/admin/students")}
+                  className={`px-3 py-2 cursor-pointer text-sm rounded
+                    ${activeSubMenu === "student" ? "bg-white/20 shadow-md text-white" : "hover:bg-white/10"}`}
                 >
                   Students
                 </li>
@@ -152,109 +117,48 @@ export default function AdminSidebar({ isSidebarOpen }) {
             </div>
           </li>
 
-          {/* UNIVERSITY MASTER DATA */}
-          <li>
-            <div
-              onClick={() => toggleDropdown("masterData")}
-              className={`flex items-center justify-between px-4 py-3 cursor-pointer rounded-md
-                ${
-                  openDropdown === "masterData"
-                    ? "bg-white/20"
-                    : "hover:bg-white/10"
-                }`}
-            >
-              <div className="flex items-center space-x-3">
-                <BookOpen size={17} />
-                <span>University Master Data</span>
-              </div>
-
-              <ChevronDown
-                size={16}
-                className={`transition-transform duration-500 ${
-                  openDropdown === "masterData" ? "rotate-180" : ""
-                }`}
-              />
-            </div>
-
-            <div
-              className={`overflow-hidden transition-all duration-500 ${
-                openDropdown === "masterData" ? "max-h-40" : "max-h-0"
-              }`}
-            >
-              <ul className="ml-10 mt-1 space-y-1">
-                <li
-                  onClick={() => navigate("/admin/faculties")}
-                  className={`px-3 py-2 rounded cursor-pointer ${
-                    location.pathname.includes("/admin/faculties")
-                      ? "bg-white/20"
-                      : "hover:bg-white/10"
-                  }`}
-                >
-                  Faculties
-                </li>
-
-                <li
-                  onClick={() => navigate("/admin/programs")}
-                  className={`px-3 py-2 rounded cursor-pointer ${
-                    location.pathname.includes("/admin/programs")
-                      ? "bg-white/20"
-                      : "hover:bg-white/10"
-                  }`}
-                >
-                  Study Programs
-                </li>
-              </ul>
-            </div>
+          {/* FACULTIES */}
+          <li
+            onClick={() => handleMenuClick("faculties", "/admin/faculties")}
+            className={`flex items-center space-x-3 px-4 py-2 cursor-pointer transition-all 
+              ${activeMenu === "faculties" ? "bg-white/20 shadow-md" : "hover:bg-white/10"}`}
+          >
+            <BookOpen size={17} />
+            <span>University Master Data</span>
           </li>
 
           {/* LOG & MONITORING */}
           <li>
             <div
               onClick={() => toggleDropdown("log")}
-              className={`flex items-center justify-between px-4 py-3 cursor-pointer rounded-md
-                ${
-                  openDropdown === "log"
-                    ? "bg-white/20"
-                    : "hover:bg-white/10"
-                }`}
+              className={`flex items-center justify-between px-4 py-2 cursor-pointer 
+                ${activeMenu === "log" ? "bg-white/20 shadow-md" : "hover:bg-white/10"} transition-all`}
             >
               <div className="flex items-center space-x-3">
                 <BarChart2 size={17} />
                 <span>Log & Monitoring</span>
               </div>
-
               <ChevronDown
                 size={16}
-                className={`transition-transform duration-500 ${
-                  openDropdown === "log" ? "rotate-180" : ""
-                }`}
+                className={`transition-transform duration-500 ${openDropdown === "log" ? "rotate-180" : ""}`}
               />
             </div>
 
-            <div
-              className={`overflow-hidden transition-all duration-500 ${
-                openDropdown === "log" ? "max-h-40" : "max-h-0"
-              }`}
+            <div className={`overflow-hidden transition-all duration-500 ease-in-out
+              ${openDropdown === "log" ? "max-h-40" : "max-h-0"}`}
             >
               <ul className="ml-10 mt-1 space-y-1">
                 <li
-                  onClick={() => navigate("/admin/SistemLog")}
-                  className={`px-3 py-2 rounded cursor-pointer ${
-                    location.pathname.includes("/admin/SistemLog")
-                      ? "bg-white/20"
-                      : "hover:bg-white/10"
-                  }`}
+                  onClick={() => handleChildClick("log", "systemLogs", "/admin/SistemLog")}
+                  className={`px-3 py-2 cursor-pointer text-sm rounded
+                    ${activeSubMenu === "systemLogs" ? "bg-white/20 shadow-md text-white" : "hover:bg-white/10"}`}
                 >
                   System Logs
                 </li>
-
                 <li
-                  onClick={() => navigate("/admin/AiMonitoring")}
-                  className={`px-3 py-2 rounded cursor-pointer ${
-                    location.pathname.includes("/admin/AiMonitoring")
-                      ? "bg-white/20"
-                      : "hover:bg-white/10"
-                  }`}
+                  onClick={() => handleChildClick("log", "aiMonitoring", "/admin/AiMonitoring")}
+                  className={`px-3 py-2 cursor-pointer text-sm rounded
+                    ${activeSubMenu === "aiMonitoring" ? "bg-white/20 shadow-md text-white" : "hover:bg-white/10"}`}
                 >
                   AI Monitoring
                 </li>
@@ -265,7 +169,7 @@ export default function AdminSidebar({ isSidebarOpen }) {
 
         {/* LOGOUT */}
         <div
-          onClick={() => setIsLogoutOpen(true)}
+          onClick={handleLogout}
           className="absolute bottom-8 left-5 flex items-center space-x-3 cursor-pointer hover:opacity-70 transition-all"
         >
           <LogOut size={16} /> <span>Logout</span>
@@ -273,35 +177,22 @@ export default function AdminSidebar({ isSidebarOpen }) {
       </div>
 
       {/* LOGOUT MODAL */}
-      {isLogoutOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[999]">
-          <div className="bg-white rounded-xl shadow-lg w-80 p-6 text-center relative">
-            <button
-              onClick={() => setIsLogoutOpen(false)}
-              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
-            >
-              <X size={20} />
-            </button>
-
-            <h2 className="text-lg font-semibold mb-2 text-gray-800 mt-4">
-              Konfirmasi Logout
-            </h2>
-            <p className="text-gray-600 mb-6 text-sm">
-              Are you sure you want to log out?
-            </p>
-
-            <div className="flex justify-center gap-3">
+      {showLogoutModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-md p-6 w-80 shadow-lg">
+            <h3 className="text-lg font-semibold mb-4">Are you sure you want to logout?</h3>
+            <div className="flex justify-end space-x-4">
               <button
-                onClick={() => setIsLogoutOpen(false)}
-                className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700"
+                onClick={cancelLogout}
+                className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300"
               >
                 Cancel
               </button>
               <button
-                onClick={handleLogout}
-                className="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white"
+                onClick={confirmLogout}
+                className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
               >
-                Logout
+                Yes
               </button>
             </div>
           </div>
