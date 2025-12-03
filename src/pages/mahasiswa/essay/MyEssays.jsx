@@ -1,60 +1,89 @@
 /* src/pages/mahasiswa/essay/MyEssays.jsx */
 
 import React, { useState, useEffect, useRef } from "react";
-import { ChevronDown, Search } from "lucide-react";
+import { ChevronDown, Search, Loader2 } from "lucide-react";
 import myessays1 from "../../../assets/myessays1.png";
 import myessays2 from "../../../assets/myessays2.png";
 import EssayTable from "../../../components/mahasiswa/essay/EssayTable";
 import EssayStat from "../../../components/mahasiswa/essay/EssayStat"; 
-import { essays } from "../../../data/mahasiswa/essay/essayData";
+
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../context/AuthContext";
 
 export default function MyEssays() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  
   const navigate = useNavigate();
+  const { token } = useAuth(); // Ambil token
 
+  // STATE DATA REAL
+  const [essays, setEssays] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // 1. FETCH DATA SUBMISSION DARI BACKEND
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setIsDropdownOpen(false);
-      }
+    const fetchMyEssays = async () => {
+        try {
+            const response = await fetch("http://127.0.0.1:8000/submission/my", {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+
+            if (!response.ok) throw new Error("Gagal mengambil data essay");
+
+            const data = await response.json();
+
+            // Mapping Data BE -> FE Table Format
+            const mappedData = data.map(item => ({
+                id: item.id_submission,
+                title: item.assignment?.judul || "Untitled Task",
+                status: item.grading ? "Graded" : "In Review", // Cek jika sudah dinilai
+                score: item.grading ? Number(item.grading.skor_dosen) : "-",
+                feedbackAI: item.grading?.feedback_ai || "-",
+                feedbackLecturer: item.grading?.feedback_dosen || "-",
+                date: new Date(item.waktu_submit).toLocaleDateString("en-GB"),
+                action: "View", // Tombol View di tabel
+                
+                // Simpan data mentah untuk dikirim ke halaman Detail
+                rawData: item 
+            }));
+
+            setEssays(mappedData);
+
+        } catch (err) {
+            console.error("Error fetching essays:", err);
+        } finally {
+            setLoading(false);
+        }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
-  // 🔹 Ambil essay tambahan dari localStorage
-  const storedEssays = JSON.parse(localStorage.getItem("submittedEssays")) || [];
-  const allEssays = [...essays, ...storedEssays];
+    if (token) fetchMyEssays();
+  }, [token]);
 
-  // 🔹 Filter essay
-  const filteredEssays = allEssays.filter((essay) => {
+
+  // 2. FILTER LOGIC
+  const filteredEssays = essays.filter((essay) => {
     const query = searchQuery.toLowerCase();
     const matchesSearch =
       essay.title.toLowerCase().includes(query) ||
-      essay.status.toLowerCase().includes(query) ||
-      essay.feedbackAI?.toLowerCase().includes(query) ||
-      essay.feedbackLecturer?.toLowerCase().includes(query);
+      essay.status.toLowerCase().includes(query);
     const matchesStatus =
       filterStatus === "All" ? true : essay.status === filterStatus;
     return matchesSearch && matchesStatus;
   });
 
-  // 🔹 Statistik berdasarkan allEssays
-  const totalSubmitted = allEssays.length;
-  const gradedEssays = allEssays.filter((e) => e.status === "Graded").length;
-  const pendingReview = allEssays.filter(
-    (e) => e.status === "Pending" || e.status === "In Review"
-  ).length;
-  const averageScore =
-    gradedEssays > 0
-      ? (
-          allEssays
-            .filter((e) => e.status === "Graded")
-            .reduce((sum, e) => sum + (e.score || 0), 0) / gradedEssays
+  // 3. STATISTIK REAL-TIME
+  const totalSubmitted = essays.length;
+  const gradedEssays = essays.filter((e) => e.status === "Graded").length;
+  const pendingReview = essays.filter((e) => e.status === "In Review").length;
+  
+  // Hitung Rata-rata Nilai
+  const averageScore = gradedEssays > 0
+      ? (essays
+          .filter((e) => e.status === "Graded")
+          .reduce((sum, e) => sum + (e.score || 0), 0) / gradedEssays
         ).toFixed(1)
       : 0;
 
@@ -64,6 +93,17 @@ export default function MyEssays() {
     { label: "Graded Essays", value: gradedEssays },
     { label: "Average Score", value: averageScore },
   ];
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <div className="relative w-full min-h-screen bg-[#F5F8FB] font-[Inter] overflow-hidden z-10 py-20">
@@ -76,7 +116,7 @@ export default function MyEssays() {
         <h1 className="text-[28px] font-bold text-black ml-14">My Essays</h1>
         <button 
           className="bg-[#3D73B4] text-white font-bold px-6 py-2 rounded-[7px] hover:bg-[#2f5f97] transition"
-          onClick={() => navigate("/submit-essay")}
+          onClick={() => navigate("/my-course")} // Arahkan ke catalog course
         >
           Submit New Essay
         </button>
@@ -111,7 +151,7 @@ export default function MyEssays() {
                   : "scale-y-0 opacity-0 mt-0"
               } `}
           >
-            {["All", "Graded", "In Review", "Pending"].map((status) => (
+            {["All", "Graded", "In Review"].map((status) => (
               <div
                 key={status}
                 onClick={() => {
@@ -149,7 +189,17 @@ export default function MyEssays() {
 
       {/* Essay Table */}
       <div className="relative z-10 px-12 mt-10 pb-16 min-h-[400px]">
-        <EssayTable essays={filteredEssays} />
+        {loading ? (
+            <div className="flex justify-center items-center h-40">
+                <p className="text-blue-600 font-bold animate-pulse">Memuat Data Essay...</p>
+            </div>
+        ) : (
+            // Kirim onRowClick agar bisa melihat detail nilai
+            <EssayTable 
+                essays={filteredEssays} 
+                onRowClick={(essay) => navigate("/view-graded", { state: { submission: essay.rawData } })}
+            />
+        )}
       </div>
     </div>
   );
