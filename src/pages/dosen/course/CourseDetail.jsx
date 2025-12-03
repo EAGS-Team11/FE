@@ -2,24 +2,22 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { FileText, ArrowLeft, PlusCircle } from "lucide-react"; // Hapus Loader2, tambah PlusCircle
-import { useAuth } from "../../../context/AuthContext"; // 1. Import Auth
+import { FileText, ArrowLeft, PlusCircle } from "lucide-react"; 
+import { useAuth } from "../../../context/AuthContext"; 
 
 export default function CourseDetail() {
   const { courseId } = useParams();
   const navigate = useNavigate();
-  const { token } = useAuth(); // Ambil token dosen
+  const { token } = useAuth(); 
 
-  // STATE DATA REAL
   const [course, setCourse] = useState(null);
-  const [assignments, setAssignments] = useState([]); // Ganti courseEssays jadi assignments
+  const [assignments, setAssignments] = useState([]); 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         // A. AMBIL INFO COURSE
-        // (Cara cepat: fetch all lalu find. Idealnya: GET /course/{id})
         const resCourse = await fetch("http://127.0.0.1:8000/course/");
         if (!resCourse.ok) throw new Error("Gagal mengambil data course");
         
@@ -28,7 +26,7 @@ export default function CourseDetail() {
         
         if (foundCourse) setCourse(foundCourse);
 
-        // B. AMBIL DAFTAR ASSIGNMENT (Supaya tombol Grade tahu ID-nya)
+        // B. AMBIL DAFTAR ASSIGNMENT
         const resAssign = await fetch(`http://127.0.0.1:8000/assignment/course/${courseId}`, {
             headers: { "Authorization": `Bearer ${token}` }
         });
@@ -51,7 +49,6 @@ export default function CourseDetail() {
   const handleCreateAssignment = () =>
     navigate(`/dosen/course/${courseId}/create-essay`, { state: { course } });
 
-  // TAMPILAN LOADING
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F6F7FB] flex justify-center items-center">
@@ -60,7 +57,6 @@ export default function CourseDetail() {
     );
   }
 
-  // TAMPILAN JIKA COURSE TIDAK KETEMU
   if (!course) {
     return (
       <div className="min-h-screen bg-[#F6F7FB] flex flex-col justify-center items-center">
@@ -104,7 +100,13 @@ export default function CourseDetail() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {assignments.length > 0 ? (
             assignments.map((assign) => (
-            <div key={assign.id_assignment} className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition relative group">
+            <div 
+                key={assign.id_assignment} 
+                // --- PERUBAHAN UTAMA: Tambahkan onClick di sini ---
+                // Saat card diklik, pindah ke halaman Detail Soal (EssayDetail.jsx)
+                onClick={() => navigate(`/dosen/assignment/${assign.id_assignment}`)}
+                className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition relative group cursor-pointer"
+            >
                 <div className="flex items-start justify-between mb-2">
                     <div className="bg-blue-100 p-2 rounded-lg text-blue-600">
                         <FileText size={24} />
@@ -126,18 +128,20 @@ export default function CourseDetail() {
                         Deadline: {new Date(assign.deadline).toLocaleDateString("id-ID")}
                     </span>
                     
-                    {/* TOMBOL GIVE GRADE YANG BENAR (Per Kartu) */}
+                    {/* TOMBOL GIVE GRADE */}
                     <button 
-                        onClick={() => navigate("/dosen/give-grade", {
-                            state: { 
-                                courseId: course.id_course, 
-                                // PENTING: Kirim objek assignment lengkap agar tidak error di halaman sebelah
-                                assignment: {
-                                    id: assign.id_assignment,
-                                    title: assign.judul
+                        onClick={(e) => {
+                            e.stopPropagation(); // --- PENTING: Mencegah klik tembus ke parent (agar tidak masuk ke detail soal)
+                            navigate("/dosen/give-grade", {
+                                state: { 
+                                    courseId: course.id_course, 
+                                    assignment: {
+                                        id: assign.id_assignment,
+                                        title: assign.judul
+                                    }
                                 }
-                            }
-                        })}
+                            });
+                        }}
                         className="text-xs bg-green-600 text-white px-3 py-1.5 rounded hover:bg-green-700 transition font-medium"
                     >
                         Grade This

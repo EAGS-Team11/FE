@@ -1,11 +1,11 @@
-/* src/pages/dosen/course/CreateEssay.jsx */
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Upload } from "lucide-react"; 
-import createEssayImg from "../../../assets/createessay.png";
+import { Upload, FileText } from "lucide-react"; 
 
 export default function CreateEssay() {
+  const navigate = useNavigate();
+  const { courseId } = useParams();
+
   const [form, setForm] = useState({
     assignmentName: "",
     description: "",
@@ -15,6 +15,33 @@ export default function CreateEssay() {
     deadline: "",
     attachment: null,
   });
+
+  // State untuk menyimpan nilai input waktu (Format HH:mm)
+  // Ini digunakan sebagai picker durasi (Jam : Menit)
+  const [durationValue, setDurationValue] = useState("");
+
+  // Update form.timeDuration setiap kali picker berubah
+  useEffect(() => {
+    if (durationValue) {
+      const [h, m] = durationValue.split(":").map(Number);
+      
+      let durationStr = "";
+      if (h > 0) durationStr += `${h} Jam `;
+      if (m > 0) durationStr += `${m} Menit`;
+      
+      // Jika user memilih 00:00, anggap kosong
+      if (h === 0 && m === 0) {
+         setForm((prev) => ({ ...prev, timeDuration: "" }));
+      } else {
+         setForm((prev) => ({
+            ...prev,
+            timeDuration: durationStr.trim()
+         }));
+      }
+    } else {
+       setForm((prev) => ({ ...prev, timeDuration: "" }));
+    }
+  }, [durationValue]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -27,24 +54,35 @@ export default function CreateEssay() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(form);
-    navigate(`/dosen/course/${courseId}/add-question`);
+    
+    // Validasi sederhana
+    if (!form.assignmentName || !form.description || !form.deadline || !form.timeDuration) {
+        alert("Mohon lengkapi Assignment Name, Description, Time Duration, dan Deadline.");
+        return;
+    }
+
+    const dataToSend = {
+        judul: form.assignmentName,
+        deskripsi: form.description,
+        deadline: form.deadline,
+        startDate: form.startDate,
+        taskType: form.taskType,
+        timeDuration: form.timeDuration 
+    };
+
+    navigate(`/dosen/course/${courseId}/add-question`, { state: dataToSend });
   };
 
-  const navigate = useNavigate();
-  const { courseId } = useParams();
-
   const handleBack = () => {
-  navigate(`/dosen/course/${courseId}`);
- };
-
+    navigate(`/dosen/course/${courseId}`);
+  };
 
   return (
     <div className="w-full bg-[#F6F7FB] min-h-screen p-8 flex justify-center -mt-20">
       <div className="w-full max-w-3xl scale-[0.9]">
         {/* Header */}
         <div className="flex items-center mb-6 ml-[-70px]">
-          <img src={createEssayImg} alt="Create Essay" className="w-8 h-8 mr-3" />
+          <FileText className="w-8 h-8 mr-3 text-[#30326A]" />
           <h1 className="text-[#30326A] font-bold text-xl font-inter text-left">
             Create Assignments / Essay
           </h1>
@@ -116,28 +154,30 @@ export default function CreateEssay() {
                 * START DATE
               </label>
               <input
-                type="text"
+                type="datetime-local" 
                 name="startDate"
-                placeholder="15 November 2025"
                 value={form.startDate}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded-lg p-2.5 text-[#0B102D] font-inter text-sm focus:outline-none focus:ring-2 focus:ring-[#30326A]"
               />
             </div>
 
-            {/* Time Duration */}
+            {/* Time Duration (Single Widget Input) */}
             <div>
               <label className="block text-[#0B102D] font-semibold mb-1 font-inter text-sm text-left">
-                * TIME DURATION
+                * TIME DURATION (Batas Waktu Pengerjaan)
               </label>
-              <input
-                type="text"
-                name="timeDuration"
-                placeholder="13.00 – 17.00 WIB"
-                value={form.timeDuration}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg p-2.5 text-[#0B102D] font-inter text-sm focus:outline-none focus:ring-2 focus:ring-[#30326A]"
-              />
+              <div className="relative">
+                <input
+                    type="time"
+                    value={durationValue}
+                    onChange={(e) => setDurationValue(e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg p-2.5 text-[#0B102D] font-inter text-sm focus:outline-none focus:ring-2 focus:ring-[#30326A]"
+                />
+                <p className="text-xs text-gray-400 mt-1">
+                    Pilih durasi (Jam : Menit)
+                </p>
+              </div>
             </div>
 
             {/* Deadline */}
@@ -146,9 +186,8 @@ export default function CreateEssay() {
                 * DEADLINE
               </label>
               <input
-                type="text"
+                type="datetime-local"
                 name="deadline"
-                placeholder="16 November 2025, 17.00 WIB"
                 value={form.deadline}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded-lg p-2.5 text-[#0B102D] font-inter text-sm focus:outline-none focus:ring-2 focus:ring-[#30326A]"
