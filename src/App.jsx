@@ -1,11 +1,18 @@
 import { BrowserRouter as Router, Routes, Route, Outlet, Navigate } from "react-router-dom";
 import React, { useState } from "react";
 import { AuthProvider, useAuth } from "./context/AuthContext"; 
+
+// --- PUBLIC PAGES ---
 import Login from "./pages/login";
 import Register from "./pages/register";
-import ForgotPassword from "./pages/forgotPassword"; // <-- BARU
+import ForgotPassword from "./pages/forgotPassword";
 import ResetPassword from "./pages/resetPassword";
 
+// --- GLOBAL COMPONENTS ---
+import Navbar from "./pages/navbar";
+import Footer from "./pages/footer"; 
+
+// --- MAHASISWA PAGES ---
 import Home from "./pages/mahasiswa/home";
 import MyCourse from "./pages/mahasiswa/course/MyCourse";
 import CourseEssay from "./pages/mahasiswa/course/CourseEssay";
@@ -13,12 +20,11 @@ import MyEssays from "./pages/mahasiswa/essay/MyEssays";
 import SubmitEssay from "./pages/mahasiswa/essay/SubmitEssay";
 import ViewGraded from "./pages/mahasiswa/essay/ViewGraded";
 import InputEssay from "./pages/mahasiswa/essay/InputEssay";
-import Navbar from "./pages/navbar";
 import Profil from "./pages/mahasiswa/profil/Profil";
 import EditMyProfil from "./pages/mahasiswa/profil/EditMyProfil";
 import EditPersonal from "./pages/mahasiswa/profil/EditPersonal";
-import Footer from "./pages/footer"; 
 
+// --- DOSEN PAGES ---
 import NavbarDosen from "./pages/NavbarDosen";
 import Course from "./pages/dosen/course/Course";
 import CourseDetail from "./pages/dosen/course/CourseDetail";
@@ -27,30 +33,29 @@ import AddQuestion from "./pages/dosen/course/AddQuestion";
 import CheckAnswer from "./pages/dosen/course/CheckAnswer";
 import EssayDetail from "./pages/dosen/course/EssayDetail";
 import GiveGrade from "./pages/dosen/course/GiveGrade";
-
 import AiGrading1 from "./pages/dosen/ai/AiGrading1";
 import AiGrading2 from "./pages/dosen/ai/AiGrading2";
 import AiGrading3 from "./pages/dosen/ai/AiGrading3";
 import EditEssay from "./pages/dosen/course/EditEssay";
-
 import ClassAnalitik1 from "./pages/dosen/class/ClassAnalitik1";
 import ClassAnalitik2 from "./pages/dosen/class/ClassAnalitik2";
-
 import ProfilDosen from "./pages/dosen/profil/ProfilDosen";
 import EditProfilDosen from "./pages/dosen/profil/EditProfilDosen";
 import EditPersonalDosen from "./pages/dosen/profil/EditPersonalDosen";
 
-
-import DosenPage from "./pages/admin/lecturers/index";
+// --- ADMIN PAGES ---
 import AdminSidebar from "./pages/admin/AdminSidebar";
 import AdminNavbar from "./pages/admin/AdminNavbar";
 import AdminDashboard from "./pages/admin/dashboard/dashboard";
+import AdminCourseList from "./pages/admin/course/AdminCourseList";
+import DosenPage from "./pages/admin/lecturers/index";
 import StudentsPage from "./pages/admin/students/index";
 import Faculties from "./pages/admin/faculties/Faculties";
 import DetailFaculties from "./pages/admin/faculties/DetailFaculties";
 import DetailProgram from "./pages/admin/faculties/DetailProgram";
 import SistemLog from "./pages/admin/log/SistemLog";
 import AiMonitoring from "./pages/admin/log/AiMonitoring";
+
 import "./App.css";
 
 
@@ -64,14 +69,15 @@ function ProtectedRoute({ allowedRoles }) {
 
   // Cek Role
   if (allowedRoles && !allowedRoles.includes(user?.role)) {
-    // Redirect ke home jika role tidak sesuai (misal Dosen mencoba masuk ke halaman Mahasiswa)
+    // Redirect ke home jika role tidak sesuai 
     return <Navigate to="/home" replace />; 
   }
 
   return <Outlet />;
 }
 
-// --- MainLayout, DosenLayout (Tetap Sama) ---
+// --- Layouts ---
+
 function MainLayout() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
@@ -130,20 +136,26 @@ function AdminLayout() {
   );
 }
 
+// --- Main App Component ---
+
 export default function App() {
   return (
     <Router>
-      <AuthProvider> {/* BUNGKUS SEMUA DENGAN AUTH PROVIDER */}
+      <AuthProvider>
         <Routes>
-          {/* Public Routes */}
+          
+          {/* ========================================= */}
+          {/* PUBLIC ROUTES                             */}
+          {/* ========================================= */}
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          {/* --- PUBLIC ROUTES LUPA PASSWORD BARU --- */}
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
 
-          {/* Protected Routes - MAHASISWA */}
+          {/* ========================================= */}
+          {/* PROTECTED ROUTES (MAHASISWA)              */}
+          {/* ========================================= */}
           <Route element={<ProtectedRoute allowedRoles={['mahasiswa']} />}>
             <Route element={<MainLayout />}>
               <Route path="/home" element={<Home />} />
@@ -161,7 +173,9 @@ export default function App() {
           </Route>
 
 
-          {/* Protected Routes - DOSEN */}
+          {/* ========================================= */}
+          {/* PROTECTED ROUTES (DOSEN)                  */}
+          {/* ========================================= */}
           <Route element={<ProtectedRoute allowedRoles={['dosen']} />}>
             <Route element={<DosenLayout />}>
               <Route path="/dosen/course" element={<Course />} />
@@ -169,11 +183,10 @@ export default function App() {
               <Route path="/dosen/course/:courseId/create-essay" element={<CreateEssay />} />
               <Route path="/dosen/course/:courseId/add-question" element={<AddQuestion />} />
               
-              {/* --- ROUTE LAMA (Mungkin masih dipakai link lain) --- */}
+              {/* ROUTE LAMA (Mungkin masih dipakai link lain) */}
               <Route path="/dosen/course/:courseId/essay/:essayId" element={<EssayDetail />} />
               
-              {/* --- ROUTE BARU (Perbaikan untuk 404) --- */}
-              {/* Ini menangani link dari CourseDetail saat card diklik */}
+              {/* ROUTE BARU (Perbaikan untuk 404) */}
               <Route path="/dosen/assignment/:essayId" element={<EssayDetail />} />
 
               <Route path="/dosen/course/:courseId/edit-essay/:essayId" element={<EditEssay />} />
@@ -191,23 +204,31 @@ export default function App() {
             </Route>
           </Route>
           
-          {/* Catch-all route for unhandled paths (optional) */}
+          
+          {/* ========================================= */}
+          {/* PROTECTED ROUTES (ADMIN)                  */}
+          {/* ========================================= */}
+          <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+            <Route element={<AdminLayout />}>
+              <Route path="/admin/dashboard" element={<AdminDashboard/>} />
+              <Route path="/admin/courses" element={<AdminCourseList />} />
+              <Route path="/admin/lecturers" element={<DosenPage />} />
+              <Route path="/admin/students" element={<StudentsPage />} />
+              <Route path="/admin/faculties" element={<Faculties />} />
+              <Route path="/admin/faculties/:id" element={<DetailFaculties />} />
+              <Route path="/admin/faculties/:facultyId/program/:programId" element={<DetailProgram />} />
+              <Route path="/admin/sistemlog" element={<SistemLog />} />
+              <Route path="/admin/aimonitoring" element={<AiMonitoring />} />
+            </Route>
+          </Route>
+          
+          
+          {/* Catch-all route for unhandled paths */}
           <Route path="*" element={
             <div className="flex items-center justify-center h-screen text-xl">404 Not Found</div>
           } />
-  
-        {/* Layout untuk admin */}
-        <Route element={<AdminLayout />}>
-          <Route path="/admin/dashboard" element={<AdminDashboard/>} />
-          <Route path="/admin/lecturers" element={<DosenPage />} />
-          <Route path="/admin/students" element={<StudentsPage />} />
-          <Route path="/admin/faculties" element={<Faculties />} />
-          <Route path="/admin/faculties/:id" element={<DetailFaculties />} />
-          <Route path="/admin/faculties/:facultyId/program/:programId" element={<DetailProgram />} />
-          <Route path="/admin/sistemlog" element={<SistemLog />} />
-          <Route path="/admin/aimonitoring" element={<AiMonitoring />} />
-        </Route>
-      </Routes>
+
+        </Routes>
       </AuthProvider>
     </Router>
   );

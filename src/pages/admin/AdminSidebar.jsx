@@ -1,4 +1,4 @@
-// src/pages/admin/AdminSidebar.jsx
+// src/pages/admin/AdminSidebar.jsx 
 
 import React, { useState } from "react";
 import {
@@ -6,7 +6,8 @@ import {
   BookOpen,
   BarChart2,
   LogOut,
-  ChevronDown
+  ChevronDown,
+  Layers, // Import Layers icon untuk Courses
 } from "lucide-react";
 import logo from "../../assets/logo capstone.png";
 import { useNavigate } from "react-router-dom";
@@ -46,8 +47,9 @@ export default function AdminSidebar({ isSidebarOpen }) {
   };
 
   const confirmLogout = () => {
+    // ASUMSI: Gunakan useAuth().logout() di App.jsx untuk menghapus token
     setShowLogoutModal(false);
-    navigate("/login"); // arahkan ke halaman login
+    navigate("/login"); 
   };
 
   const cancelLogout = () => {
@@ -118,6 +120,17 @@ export default function AdminSidebar({ isSidebarOpen }) {
               </ul>
             </div>
           </li>
+
+          {/* --- MENU BARU: COURSES --- */}
+          <li
+            onClick={() => handleMenuClick("courses", "/admin/courses")}
+            className={`flex items-center space-x-3 px-4 py-2 cursor-pointer transition-all 
+              ${activeMenu === "courses" ? "bg-white/20 shadow-md" : "hover:bg-white/10"}`}
+          >
+            <Layers size={17} />
+            <span>Courses</span>
+          </li>
+          {/* --- END MENU BARU --- */}
 
           {/* FACULTIES */}
           <li

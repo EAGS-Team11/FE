@@ -5,7 +5,7 @@ import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import loginImg from "../assets/login1.png";
 import logoCapstone from "../assets/Logo capstone.png";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom"; // Import Link
 import { useAuth } from "../context/AuthContext";
 
 // Use relative paths; Vite dev proxy forwards /auth to backend during development
@@ -149,12 +149,12 @@ export default function Login() {
 
           {/* Lupa password */}
           <div className="text-center">
-            <a
-              href="#"
+            <Link
+              to="/forgot-password" 
               className="text-[#4F8EF7] hover:underline text-xs font-medium"
             >
               Forgot your password?
-            </a>
+            </Link>
           </div>
 
           {/* Tombol login */}
@@ -166,16 +166,8 @@ export default function Login() {
             {loading ? "Logging In..." : "Log In"}
           </button>
           
-           {/* Teks daftar */}
-           <p className="text-center text-xs text-gray-400">
-             Don’t have an account?{" "}
-             <a
-               href="/register"
-               className="text-[#4F8EF7] font-medium hover:underline"
-             >
-               Sign Up
-             </a>
-           </p>
+          {/* Teks daftar (DIHAPUS) */}
+          
         </form>
       </motion.div>
     </div>
