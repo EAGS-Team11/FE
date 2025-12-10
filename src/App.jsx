@@ -3,6 +3,9 @@ import React, { useState } from "react";
 import { AuthProvider, useAuth } from "./context/AuthContext"; 
 import Login from "./pages/login";
 import Register from "./pages/register";
+import ForgotPassword from "./pages/forgotPassword"; // <-- BARU
+import ResetPassword from "./pages/resetPassword";
+
 import Home from "./pages/mahasiswa/home";
 import MyCourse from "./pages/mahasiswa/course/MyCourse";
 import CourseEssay from "./pages/mahasiswa/course/CourseEssay";
@@ -136,6 +139,9 @@ export default function App() {
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          {/* --- PUBLIC ROUTES LUPA PASSWORD BARU --- */}
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
 
           {/* Protected Routes - MAHASISWA */}
           <Route element={<ProtectedRoute allowedRoles={['mahasiswa']} />}>
