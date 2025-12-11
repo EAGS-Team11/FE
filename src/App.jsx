@@ -1,6 +1,9 @@
 import { BrowserRouter as Router, Routes, Route, Outlet, Navigate } from "react-router-dom";
 import React, { useState } from "react";
 import { AuthProvider, useAuth } from "./context/AuthContext"; 
+// Import Loader2 dari lucide-react jika ingin tampilan loading saat inisialisasi
+// import { Loader2 } from "lucide-react"; 
+
 
 // --- PUBLIC PAGES ---
 import Login from "./pages/login";
@@ -61,19 +64,28 @@ import "./App.css";
 
 // --- Protected Route Wrapper ---
 function ProtectedRoute({ allowedRoles }) {
-  const { isAuthenticated, user } = useAuth();
-  
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
+    const { isAuthenticated, user } = useAuth();
+    
+    if (!isAuthenticated) {
+        return <Navigate to="/login" replace />;
+    }
 
-  // Cek Role
-  if (allowedRoles && !allowedRoles.includes(user?.role)) {
-    // Redirect ke home jika role tidak sesuai 
-    return <Navigate to="/home" replace />; 
-  }
+    // 1. Cek Role: Jika user TIDAK memiliki role yang diizinkan untuk route ini
+    if (allowedRoles && !allowedRoles.includes(user?.role)) {
+        
+        // 2. Redirect ke DASHBOARD yang BENAR SESUAI ROLENYA
+        if (user.role === 'admin') {
+            return <Navigate to="/admin/dashboard" replace />;
+        } else if (user.role === 'dosen') {
+            // Arahkan Dosen ke halaman Course/Landing Page Dosen
+            return <Navigate to="/dosen/course" replace />; 
+        } else {
+            // Mahasiswa
+            return <Navigate to="/home" replace />; 
+        }
+    }
 
-  return <Outlet />;
+    return <Outlet />;
 }
 
 // --- Layouts ---
@@ -182,13 +194,8 @@ export default function App() {
               <Route path="/dosen/course/:courseId" element={<CourseDetail />} />
               <Route path="/dosen/course/:courseId/create-essay" element={<CreateEssay />} />
               <Route path="/dosen/course/:courseId/add-question" element={<AddQuestion />} />
-              
-              {/* ROUTE LAMA (Mungkin masih dipakai link lain) */}
               <Route path="/dosen/course/:courseId/essay/:essayId" element={<EssayDetail />} />
-              
-              {/* ROUTE BARU (Perbaikan untuk 404) */}
               <Route path="/dosen/assignment/:essayId" element={<EssayDetail />} />
-
               <Route path="/dosen/course/:courseId/edit-essay/:essayId" element={<EditEssay />} />
               <Route path="/dosen/check-answer" element={<CheckAnswer />} />
               <Route path="/dosen/AiGrading1" element={<AiGrading1/>} />

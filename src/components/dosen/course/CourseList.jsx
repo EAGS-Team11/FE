@@ -1,47 +1,86 @@
-// src/components/dosen/course/CourseList.jsx
+// src/components/dosen/course/CourseList.jsx 
+
 import React, { useState, useEffect, useCallback } from "react";
-import { Search, ChevronLeft, ChevronRight, X, Loader2 } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, Loader2, Plus } from "lucide-react"; 
 import CourseCard from "./CourseCard";
 import { apiFetch } from "../../../services/apiService"; 
-import { useAuth } from "../../../context/AuthContext"; // Import Auth
+import { useAuth } from "../../../context/AuthContext"; 
+import JoinCourseModalDosen from "../../../pages/dosen/course/JoinCourseModalDosen"; 
+
+// Helper untuk memetakan data
+const mapCourseData = (items) => {
+    return items.map(item => ({
+        ...item,
+        id: item.id_course,
+        title: item.nama_course,
+        code: item.kode_course,
+        description: "Deskripsi course dari database...",
+        category: "Informatics", // Placeholder
+        sks: 3,
+        totalStudents: 0
+    }));
+};
+
+// Gabungan unik data Course berdasarkan ID
+const getUniqueCourses = (arr1, arr2) => {
+    const combined = [...arr1, ...arr2];
+    const uniqueIds = new Set();
+    const uniqueCourses = [];
+    
+    for (const course of combined) {
+        if (!uniqueIds.has(course.id_course)) {
+            uniqueIds.add(course.id_course);
+            uniqueCourses.push(course);
+        }
+    }
+    return uniqueCourses;
+};
 
 export default function CourseList() {
-    const [isModalOpen, setIsModalOpen] = useState(false);
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
+
     const { token } = useAuth();
 
-    // Fungsi fetch khusus untuk Dosen: mengambil hanya course yang dibuatnya
+    // --- FUNGSI BARU: MENGAMBIL COURSE DIAMPU DAN COURSE DIIKUTI ---
     const fetchCourses = useCallback(async () => {
         setLoading(true);
         setError(null);
         try {
-            // Menggunakan endpoint khusus Dosen: GET /course/dosen
-            const response = await apiFetch("/course/dosen", "GET");
+            // 1. Fetch Course yang Dibuat/Diampu Dosen: GET /course/dosen
+            const promiseTaught = apiFetch("/course/dosen", "GET");
             
-            const mappedData = response.map(item => ({
-                ...item,
-                id: item.id_course,
-                title: item.nama_course,
-                code: item.kode_course,
-                description: "Deskripsi course dari database...",
-                category: "Informatics", // Placeholder
-                sks: 3,
-                totalStudents: 0
-            }));
-
+            // 2. Fetch Course yang Diikuti Dosen (via enrollment): GET /course/my
+            //    Endpoint ini akan bekerja karena kita hapus role check di BE /course/join
+            const promiseJoined = apiFetch("/course/my", "GET"); 
+            
+            const [taughtCoursesRaw, joinedCoursesRaw] = await Promise.all([promiseTaught, promiseJoined]);
+            
+            // 3. Gabungkan dan hapus duplikasi
+            const uniqueRawCourses = getUniqueCourses(taughtCoursesRaw, joinedCoursesRaw);
+            
+            const mappedData = mapCourseData(uniqueRawCourses);
             setCourses(mappedData);
+
         } catch (err) {
             console.error("Error fetching Dosen courses:", err);
-            setError(err.message || "Gagal memuat Course yang Anda ampu.");
+            setError(err.message || "Gagal memuat Course yang relevan.");
         } finally {
             setLoading(false);
         }
     }, [token]);
+    // -------------------------------------------------------------
+
+    const handleRefreshAfterJoin = () => {
+        fetchCourses(); // Re-fetch untuk memperbarui daftar
+        setIsJoinModalOpen(false); 
+    }
+
 
     useEffect(() => {
-        if(token) fetchCourses();
+        if (token) fetchCourses();
     }, [fetchCourses, token]);
 
     return (
@@ -56,17 +95,22 @@ export default function CourseList() {
                     />
                     <Search className="absolute left-2.5 top-2 text-gray-400" size={16} />
                 </div>
-                {/* 🛑 Tombol Create Course DIHAPUS dari halaman Dosen */}
-                <div className="text-sm text-gray-500 font-medium">
-                    Course Management via Admin Panel
-                </div>
+                
+                {/* Tombol Join Course */}
+                <button
+                    onClick={() => setIsJoinModalOpen(true)}
+                    className="bg-green-600 text-white text-sm px-4 py-1.5 rounded-md hover:bg-green-700 transition flex items-center gap-2"
+                >
+                    <Plus size={16} />
+                    Join New Course
+                </button>
             </div>
 
             {/* LOGIKA TAMPILAN: Loading / Error / Data */}
             {loading ? (
                  <div className="flex justify-center py-20">
                      <Loader2 size={24} className="animate-spin text-blue-600 mr-2"/>
-                     <p className="text-blue-600 font-bold">Sedang mengambil Course yang Anda ampu...</p>
+                     <p className="text-blue-600 font-bold">Sedang mengambil Course...</p>
                  </div>
             ) : error ? (
                 <div className="text-center text-red-500 py-10 font-bold bg-red-50 rounded-lg border border-red-200">
@@ -75,7 +119,7 @@ export default function CourseList() {
                 </div>
             ) : courses.length === 0 ? (
                 <div className="text-center text-gray-500 py-10">
-                    Belum ada Course yang Anda buat. Silakan minta Admin untuk membuatkannya.
+                    Belum ada Course yang Anda ampu atau ikuti.
                 </div>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
@@ -94,6 +138,14 @@ export default function CourseList() {
                     <ChevronRight size={14} />
                 </button>
             </div>
+            
+            {/* Modal Join Course */}
+            {isJoinModalOpen && (
+                <JoinCourseModalDosen 
+                    onClose={() => setIsJoinModalOpen(false)} 
+                    fetchMyCourses={handleRefreshAfterJoin}
+                />
+            )}
         </div>
     );
 }
