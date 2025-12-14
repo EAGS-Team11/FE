@@ -1,142 +1,154 @@
-/* src/pages/dosen/ai/AiGrading1.jsx */
-
-import React, { useEffect } from "react";
-import { FileText, Hourglass, Bot, CheckSquare, Search } from "lucide-react";
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  FileText,
+  Hourglass,
+  Bot,
+  CheckSquare,
+  Search,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { listEssay } from "../../../data/dosen/ai/listEssay";
 
 export default function AiGrading1() {
   const navigate = useNavigate();
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  const assignments = [
-    {
-      name: "Essay Sistem Terdistribusi I",
-      date: "1 November 2025",
-      time: "12.00 PM",
-      submissions: "45/50",
-      status: "AI Graded",
-    },
-    {
-      name: "Essay Sistem Terdistribusi II",
-      date: "1 November 2025",
-      time: "12.00 PM",
-      submissions: "45/50",
-      status: "AI Graded",
-    },
-    {
-      name: "Essay Sistem Terdistribusi III",
-      date: "1 November 2025",
-      time: "12.00 PM",
-      submissions: "45/50",
-      status: "Submitted",
-    },
-    {
-      name: "Essay Sistem Terdistribusi IV",
-      date: "1 November 2025",
-      time: "12.00 PM",
-      submissions: "45/50",
-      status: "Submitted",
-    },
-  ];
+  // =====================
+  // FILTER DATA
+  // =====================
+  const filteredEssay = useMemo(() => {
+    return listEssay.filter((a) =>
+      a.name.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [search]);
+
+  // =====================
+  // STATISTIK
+  // =====================
+  const stats = useMemo(() => {
+    const total = filteredEssay.length;
+    const pending = filteredEssay.filter(
+      (a) => a.status === "Submitted"
+    ).length;
+    const aiGrading = filteredEssay.filter(
+      (a) => a.status === "AI Graded"
+    ).length;
+    const completed = filteredEssay.filter(
+      (a) => a.status === "Completed"
+    ).length;
+
+    return { total, pending, aiGrading, completed };
+  }, [filteredEssay]);
 
   return (
-    <div className="p-8 bg-[#F6F7FB] min-h-screen">
-      <h1 className="text-2xl font-semibold text-[#173A64] flex items-center gap-2 mb-6">
-        <FileText className="w-7 h-7 text-[#173A64]" />
+    <div className="p-6 bg-[#F6F7FB] min-h-screen">
+      {/* HEADER */}
+      <h1 className="text-lg font-semibold text-[#173A64] flex items-center gap-2 mb-4">
+        <FileText className="w-5 h-5" />
         AI Grading Review
       </h1>
 
-      {/* Statistik atas */}
-      <div className="grid grid-cols-4 gap-6 mb-8">
-        <div className="bg-white shadow rounded-lg p-5 flex flex-col items-center justify-center">
-          <FileText className="w-8 h-8 text-[#173A64] mb-2" />
-          <p className="text-2xl font-bold text-[#173A64]">10</p>
-          <p className="text-gray-600 text-sm">Total Assignments</p>
-        </div>
-        <div className="bg-white shadow rounded-lg p-5 flex flex-col items-center justify-center">
-          <Hourglass className="w-8 h-8 text-[#173A64] mb-2" />
-          <p className="text-2xl font-bold text-[#173A64]">0</p>
-          <p className="text-gray-600 text-sm">Pending Review</p>
-        </div>
-        <div className="bg-white shadow rounded-lg p-5 flex flex-col items-center justify-center">
-          <Bot className="w-8 h-8 text-[#173A64] mb-2" />
-          <p className="text-2xl font-bold text-[#173A64]">2</p>
-          <p className="text-gray-600 text-sm">AI Grading</p>
-        </div>
-        <div className="bg-white shadow rounded-lg p-5 flex flex-col items-center justify-center">
-          <CheckSquare className="w-8 h-8 text-[#173A64] mb-2" />
-          <p className="text-2xl font-bold text-[#173A64]">4</p>
-          <p className="text-gray-600 text-sm">Completed</p>
-        </div>
+      {/* STAT CARD */}
+      <div className="grid grid-cols-4 gap-4 mb-5">
+        <StatCard icon={<FileText />} value={stats.total} label="Assignments" />
+        <StatCard icon={<Hourglass />} value={stats.pending} label="Pending" />
+        <StatCard icon={<Bot />} value={stats.aiGrading} label="AI Grading" />
+        <StatCard icon={<CheckSquare />} value={stats.completed} label="Completed" />
       </div>
 
-      {/* Tabel daftar tugas */}
-      <div className="bg-white shadow rounded-lg">
-        <div className="flex items-center justify-between p-5 border-b">
-          <h2 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
-            <FileText className="w-5 h-5 text-[#173A64]" />
+      {/* ASSIGNMENT LIST */}
+      <div className="bg-white rounded-xl shadow-sm">
+        <div className="flex items-center justify-between px-5 py-3 border-b">
+          <h2 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+            <FileText className="w-4 h-4" />
             Assignment List
           </h2>
+
+          {/* SEARCH */}
           <div className="relative">
+            <div className="absolute inset-y-0 left-3 flex items-center">
+              <Search className="w-4 h-4 text-gray-400" />
+            </div>
             <input
               type="text"
-              placeholder="Search Course"
-              className="border border-gray-300 rounded-md pl-10 pr-3 py-1.5 text-sm text-gray-600 focus:outline-none"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search assignment..."
+              className="border rounded-md pl-9 pr-3 py-1.5 text-xs focus:outline-none"
             />
-            <Search className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" />
           </div>
         </div>
 
-        <div className="divide-y">
-          {/* Header Tabel */}
-          <div className="grid grid-cols-[3fr_2fr_1.7fr_1.3fr] text-sm font-semibold text-gray-700 bg-gray-100 py-2 px-5">
-            <p className="text-left">Assignment Name</p>
-            <p className="text-left">Due Date</p>
-            <p className="text-left">Submissions</p>
-            <p className="text-left">Status</p>
-          </div>
+        {/* TABLE HEADER */}
+        <div className="grid grid-cols-[3fr_2fr_1.5fr_1.3fr] text-xs font-semibold text-gray-600 bg-gray-50 px-5 py-2">
+          <p>Assignment</p>
+          <p>Due Date</p>
+          <p className="text-center">Submissions</p>
+          <p className="text-center">Status</p>
+        </div>
 
-          {/* Isi Tabel */}
-          {assignments.map((a, i) => (
+        {/* TABLE BODY */}
+        {filteredEssay.length === 0 ? (
+          <p className="text-xs text-gray-500 text-center py-6">
+            No assignment found.
+          </p>
+        ) : (
+          filteredEssay.map((a) => (
             <div
-              key={i}
-              className="grid grid-cols-[3fr_2fr_1.7fr_1.3fr] text-sm items-center py-3 px-5 hover:bg-gray-50 cursor-pointer transition"
-              onClick={() => navigate("/dosen/AiGrading2")}
+              key={a.id_assignment}
+              onClick={() =>
+                navigate("/dosen/AiGrading2", { state: { assignment: a } })
+              }
+              className="grid grid-cols-[3fr_2fr_1.5fr_1.3fr] text-xs px-5 py-3 hover:bg-gray-50 cursor-pointer transition"
             >
-              {/* Assignment Name */}
-              <p className="text-[#173A64] font-medium hover:underline text-left">
+              <p className="font-medium text-[#173A64] hover:underline">
                 {a.name}
               </p>
 
-              {/* Due Date */}
-              <p className="text-left text-gray-700">
+              <p className="text-gray-600">
                 {a.date}
                 <br />
                 {a.time}
               </p>
 
-              {/* Submissions */}
-              <p className="text-left pl-4 text-gray-700">{a.submissions}</p>
+              {/* SUBMISSIONS */}
+              <div className="flex justify-center text-gray-700 font-medium">
+                {a.submissions}
+              </div>
 
-              {/* Status */}
-              <div className="flex justify-start -ml-4">
+              {/* STATUS */}
+              <div className="flex justify-center">
                 <span
-                  className={`px-3 py-1 rounded-md text-white text-xs font-semibold ${
+                  className={`min-w-[72px] h-5 flex items-center justify-center text-[10px] font-semibold border ${
                     a.status === "AI Graded"
-                      ? "bg-[#4B4B89]"
-                      : "bg-[#4B91E2]"
+                      ? "bg-indigo-100 text-indigo-700 border-indigo-500"
+                      : "bg-green-100/60 text-green-700 border-green-600"
                   }`}
                 >
-                  {a.status}
+                  {a.status === "Submitted" ? "Final Result" : a.status}
                 </span>
               </div>
             </div>
-          ))}
-        </div>
+          ))
+        )}
       </div>
     </div>
   );
 }
+
+/* ================= STAT CARD ================= */
+const StatCard = ({ icon, value, label }) => (
+  <div className="bg-white rounded-xl shadow-sm px-4 py-3 flex items-center gap-3">
+    <div className="p-2 rounded-md bg-blue-100 text-blue-700">
+      {React.cloneElement(icon, { className: "w-4 h-4" })}
+    </div>
+    <div>
+      <p className="text-base font-semibold text-gray-800">{value}</p>
+      <p className="text-[11px] text-gray-500">{label}</p>
+    </div>
+  </div>
+);

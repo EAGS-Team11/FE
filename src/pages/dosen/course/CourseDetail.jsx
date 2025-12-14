@@ -42,9 +42,12 @@ export default function CourseDetail() {
         </button>
 
         <button
-          onClick={() => 
-            navigate("/dosen/give-grade", {
-              state: { courseId: course.id, assignment: null }
+          onClick={() =>
+            navigate("/dosen/AiGrading1", {
+              state: {
+                courseId: course.id,
+                courseTitle: course.title
+              }
             })
           }
           className="flex items-center gap-2 border border-gray-300 bg-white rounded-lg px-5 py-2.5 text-blue-600 text-sm font-semibold hover:bg-blue-50 transition"
