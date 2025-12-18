@@ -22,82 +22,49 @@ export default function GiveGrade() {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
 
-    // --- HELPER: GROUPING ---
-    const groupSubmissionsByStudent = (data, maxScore) => {
-        const grouped = {};
-        
-        data.forEach(item => {
-            const studentId = item.id_mahasiswa;
-            const studentNIM = item.mahasiswa ? item.mahasiswa.nim_nip : "N/A";
-            const studentName = item.mahasiswa ? item.mahasiswa.nama : "Unknown";
-            
-            if (!grouped[studentId]) {
-                grouped[studentId] = {
-                    studentId: studentNIM,
-                    name: studentName,
-                    submittedAt: item.submitted_at, 
-                    submissionItems: [], 
-                    isFullyGraded: true,
-                    totalScore: 0,
-                    totalMaxScore: maxScore, 
-                };
-            }
-
-            grouped[studentId].submissionItems.push(item);
-
-            if (item.is_graded === false || item.grading === null) {
-                 grouped[studentId].isFullyGraded = false;
-            }
-            
-            const scoreValue = item.grading ? parseFloat(item.grading.skor_dosen) : 0;
-            if (!isNaN(scoreValue)) {
-                grouped[studentId].totalScore += scoreValue;
-            }
-        });
-
-        return Object.values(grouped).map(group => ({
-            key: group.studentId,
-            studentId: group.studentId,
-            name: group.name,
-            submittedAt: new Date(group.submittedAt).toLocaleString("id-ID", {
-                day: 'numeric', month: 'short', year: 'numeric', 
-                hour: '2-digit', minute: '2-digit'
-            }),
-            scoreDisplay: group.isFullyGraded ? `${group.totalScore}` : '-',
-            status: group.isFullyGraded ? "Graded" : "Need to Grade",
-            rawData: group.submissionItems 
-        }));
-    };
-
-    // --- FETCH DATA (PERBAIKAN UTAMA DISINI) ---
+    // --- FETCH DATA ---
     useEffect(() => {
         const fetchData = async () => {
             if (!initialAssignment?.id) return;
             setLoading(true);
 
             try {
-                // 1. FETCH ASSIGNMENT DETAIL (WAJIB: Agar dapat QUESTIONS)
+                // 1. FETCH DETAIL SOAL
                 const resAssign = await fetch(`http://127.0.0.1:8000/assignment/${initialAssignment.id}`, {
                     headers: { "Authorization": `Bearer ${token}` }
                 });
                 const assignmentData = await resAssign.json();
-                setDetailedAssignment(assignmentData); // Simpan data lengkap
+                setDetailedAssignment(assignmentData);
 
-                // Hitung Max Score dari soal yang didapat
-                const maxScore = assignmentData.questions 
-                    ? assignmentData.questions.reduce((sum, q) => sum + q.bobot, 0) 
-                    : 0;
-
-                // 2. FETCH SUBMISSIONS
+                // 2. FETCH DAFTAR MAHASISWA & NILAI
                 const resSub = await fetch(`http://127.0.0.1:8000/submission/assignment/${initialAssignment.id}/submissions`, {
                     headers: { "Authorization": `Bearer ${token}` }
                 });
 
                 if (resSub.ok) {
                     const submissionData = await resSub.json();
-                    const processed = groupSubmissionsByStudent(submissionData, maxScore);
+                    
+                    // --- MAPPING DATA ---
+                    const processed = submissionData.map(item => ({
+                        key: item.id_mahasiswa,
+                        studentId: item.id_mahasiswa,
+                        name: item.nama_mahasiswa,
+                        submittedAt: new Date(item.submitted_at).toLocaleString("id-ID", {
+                            day: 'numeric', month: 'short', year: 'numeric', 
+                            hour: '2-digit', minute: '2-digit'
+                        }),
+                        
+                        status: item.status_grading === "Sudah Dinilai" ? "Graded" : "Need to Grade",
+                        
+                        // --- UPDATE DISINI: ---
+                        // Menggunakan item.total_score yang dikirim backend
+                        scoreDisplay: item.status_grading === "Sudah Dinilai" ? item.total_score : "-",
+                        
+                        originalData: item
+                    }));
+                    
                     setGroupedSubmissions(processed);
-                } else if (resSub.status === 404) {
+                } else {
                     setGroupedSubmissions([]);
                 }
 
@@ -112,28 +79,26 @@ export default function GiveGrade() {
     }, [initialAssignment, token]);
 
 
-    // Navigasi ke Check Answer
+    // --- NAVIGASI KE HALAMAN PENILAIAN ---
     const handleCheckGrade = (studentSubmission) => {
-        // SAFETY CHECK: Pastikan data soal sudah ada
         if (!detailedAssignment || !detailedAssignment.questions) {
-            alert("Sedang memuat data soal... Silakan tunggu sebentar lalu coba lagi.");
+            alert("Data soal belum siap, mohon tunggu sebentar.");
             return;
         }
 
         navigate("/dosen/check-answer", { 
             state: { 
-                submissionItems: studentSubmission.rawData, 
-                studentName: studentSubmission.name,
-                // KIRIM DATA LENGKAP YANG KITA FETCH DARI ENDPOINT /assignment/:id
-                assignment: detailedAssignment 
+                studentId: studentSubmission.studentId, 
+                studentName: studentSubmission.name,    
+                assignment: detailedAssignment          
             } 
         });
     };
 
-    // Filter
+    // Filter Search
     const filteredSubmissions = groupedSubmissions.filter(s => 
         s.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        s.studentId.includes(searchTerm)
+        String(s.studentId).includes(searchTerm)
     );
 
     if (!initialAssignment) return <div className="p-10 text-center">Data Error.</div>;
@@ -195,7 +160,7 @@ export default function GiveGrade() {
                                 </div>
                                 <div className="flex justify-center">
                                     <span className={`px-2 py-0.5 rounded-md text-white text-[10px] font-semibold ${s.status === "Graded" ? "bg-green-600" : "bg-yellow-500"}`}>
-                                        {s.status}
+                                            {s.status}
                                     </span>
                                 </div>
                                 <div className="flex justify-center gap-1">

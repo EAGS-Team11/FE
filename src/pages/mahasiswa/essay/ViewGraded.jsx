@@ -1,108 +1,171 @@
 /* src/pages/mahasiswa/essay/ViewGraded.jsx */
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import ViewGradedCard from "../../../components/mahasiswa/essay/ViewGradedCard";
+import { Loader2, FileText, MessageSquare, Star, AlertCircle } from "lucide-react";
 import LecturerFeedbackCard from "../../../components/mahasiswa/essay/LecturerFeedbackCard";
 import feedbackImg from "../../../assets/feedback1.png";
+import { useAuth } from "../../../context/AuthContext";
 
 export default function ViewGraded() {
   const navigate = useNavigate();
-  const { state: essay } = useLocation();
-  const [showFilter, setShowFilter] = useState(false);
-  const [selectedFeedback, setSelectedFeedback] = useState("lecturer"); 
-  const filterRef = useRef(null);
+  const location = useLocation();
+  const { token } = useAuth();
 
+  // data dari MyEssays (state.submission atau state langsung)
+  const essay = location.state?.submission || location.state;
+
+  // detail per soal
+  const [detailData, setDetailData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [showAnswerSheet, setShowAnswerSheet] = useState(false);
+
+  // FETCH detail per soal
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (filterRef.current && !filterRef.current.contains(event.target)) {
-        setShowFilter(false);
+    const fetchDetail = async () => {
+      const assignmentId = essay?.id_assignment || essay?.rawData?.id_assignment;
+      if (!assignmentId || !token) return;
+
+      try {
+        setLoading(true);
+        const response = await fetch(
+          `http://127.0.0.1:8000/submission/my/${assignmentId}/detail`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        if (!response.ok) throw new Error("Gagal mengambil detail nilai");
+
+        const data = await response.json();
+        setDetailData(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error("Error fetching details:", err);
+      } finally {
+        setLoading(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+
+    fetchDetail();
+  }, [essay, token]);
+
+  const handleViewAnswer = () => {
+    setShowAnswerSheet(true);
+    setTimeout(() => {
+      document.getElementById("answer-sheet-section")?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+  };
+
+  if (!essay) return <div className="p-10 text-center">Data tidak ditemukan.</div>;
 
   return (
     <div className="relative w-full min-h-screen bg-[#F5F8FB] font-[Inter] px-12 py-24 overflow-hidden">
       {/* Header */}
-      <h1 className="text-3xl font-bold mb-6 flex items-center gap-2">
+      <h1 className="text-3xl font-bold mb-6 flex items-center gap-2 text-[#1F1F1F]">
         <img src={feedbackImg} alt="icon" className="w-20 h-20" />
         Detail Feedback
       </h1>
 
-      {/* Filter Section */}
-      <div className="relative flex items-center gap-3 mb-6">
-        <button
-          onClick={() => setShowFilter(!showFilter)}
-          className="flex items-center justify-between w-[220px] bg-[#D9D9D9] text-[#1F1F1F] font-medium px-4 py-2 rounded-md shadow-sm hover:bg-[#cfcfcf] transition"
-        >
-          <div className="flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h18M6 8h12M9 12h6" />
-            </svg>
-            <span>View feedback by</span>
-          </div>
-          <svg xmlns="http://www.w3.org/2000/svg" className={`w-4 h-4 transform transition-transform duration-300 ${showFilter ? "rotate-90" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-
-        <div
-          ref={filterRef}
-          className={`absolute left-[240px] top-0 flex items-center bg-[#D9D9D9] rounded-md overflow-hidden transition-all duration-500 ease-in-out ${
-            showFilter ? "translate-x-0 opacity-100" : "-translate-x-10 opacity-0"
-          }`}
-        >
-          <button
-            className={`px-4 py-2 border-r border-gray-400 ${
-              selectedFeedback === "Lecturer" ? "font-bold text-black" : "text-gray-500"
-            }`}
-            onClick={() => {
-              setSelectedFeedback("Lecturer");
-            }}
-          >
-            Lecturer
-          </button>
-          <button
-            className={`px-4 py-2 ${
-              selectedFeedback === "AI" ? "font-bold text-black" : "text-gray-500"
-            }`}
-            onClick={() => {
-              setSelectedFeedback("AI");
-            }}
-          >
-            AI
-          </button>
-        </div>
-      </div>
-
-      {/* Content */}
-      {selectedFeedback === "AI" ? (
-        <ViewGradedCard
+      {/* Card utama (Title + Lecturer + Date + Congratulation + Score + Button Lihat Jawaban) */}
+      <div className="mb-10">
+        <LecturerFeedbackCard
           score={essay.score}
           status={essay.status}
-          feedback={essay.feedbackAI}
-          onViewAnswer={() => alert("Lihat jawaban essay")}
-        />
-      ) : (
-        <LecturerFeedbackCard 
-          score={essay.score}
-          status={essay.status}
-          feedback={essay.feedbackLecturer}
-          lecturerName={essay.lecturerName}
+          lecturerName={essay.lecturerName || "Dosen Pengampu"}
           date={essay.date}
           title={essay.title}
-          onViewAnswer={() => alert("Lihat jawaban essay")}
+          onViewAnswer={handleViewAnswer} // ✅ tombol ada di bawah score (di dalam card)
         />
+      </div>
+
+      {/* --- LEMBAR JAWABAN --- */}
+      {showAnswerSheet && (
+        <div id="answer-sheet-section" className="animate-in fade-in slide-in-from-bottom-10 duration-500">
+          <div className="flex items-center gap-2 mb-6 border-b border-gray-300 pb-2">
+            <FileText className="w-6 h-6 text-[#173A64]" />
+            <h2 className="text-2xl font-bold text-[#173A64]">Lembar Jawaban & Detail Nilai</h2>
+          </div>
+
+          {loading ? (
+            <div className="flex justify-center py-10">
+              <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+            </div>
+          ) : detailData.length === 0 ? (
+            <div className="bg-white p-6 rounded-lg shadow-sm text-center text-gray-500">
+              <AlertCircle className="w-10 h-10 mx-auto mb-2 opacity-50" />
+              Tidak ada data soal untuk ditampilkan.
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {detailData.map((item, idx) => (
+                <div key={idx} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                  {/* Header Soal */}
+                  <div className="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                    <span className="font-bold text-[#173A64] flex items-center gap-2">
+                      <span className="bg-[#173A64] text-white w-7 h-7 flex items-center justify-center rounded-full text-sm">
+                        {item.nomor_soal}
+                      </span>
+                      Pertanyaan
+                    </span>
+                    <span className="text-xs font-semibold text-gray-600 bg-white border px-3 py-1 rounded-full">
+                      Bobot Max: {item.bobot_maks}
+                    </span>
+                  </div>
+
+                  <div className="p-6">
+                    {/* Teks Soal */}
+                    <p className="text-gray-800 font-medium mb-6 text-lg leading-relaxed">
+                      {item.pertanyaan}
+                    </p>
+
+                    {/* Jawaban Mahasiswa */}
+                    <div className="mb-6">
+                      <p className="text-xs font-bold text-gray-400 uppercase mb-2 flex items-center gap-1">
+                        <FileText className="w-3 h-3" /> Jawaban Kamu
+                      </p>
+                      <div className="bg-[#F8FAFC] p-4 rounded-lg border border-gray-100 text-gray-700 whitespace-pre-wrap leading-relaxed">
+                        {item.jawaban_kamu}
+                      </div>
+                    </div>
+
+                    {/* Feedback Dosen Per Soal */}
+                    <div
+                      className={`rounded-xl p-5 border transition-colors ${
+                        item.status_nilai === "Sudah Dinilai"
+                          ? "bg-blue-50/40 border-blue-100"
+                          : "bg-gray-50 border-dashed border-gray-300"
+                      }`}
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <p className="text-xs font-bold text-[#3D73B4] uppercase flex items-center gap-1">
+                          <MessageSquare className="w-3 h-3" /> Catatan Dosen
+                        </p>
+
+                        {item.status_nilai === "Sudah Dinilai" && (
+                          <div className="flex items-center gap-1 bg-white px-3 py-1 rounded-full shadow-sm border border-blue-100">
+                            <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                            <span className="text-lg font-bold text-[#173A64]">{item.nilai_dosen}</span>
+                            <span className="text-gray-400 text-xs font-normal">/ {item.bobot_maks}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      <p className={`text-sm ${item.status_nilai === "Sudah Dinilai" ? "text-gray-800" : "text-gray-400 italic"}`}>
+                        {item.status_nilai === "Sudah Dinilai"
+                          ? item.feedback_dosen || "Tidak ada feedback tertulis untuk soal ini."
+                          : "Belum dinilai secara spesifik."}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       )}
 
       {/* Back Button */}
-      <div className="mt-6 flex justify-start">
+      <div className="mt-10 flex justify-start pb-10">
         <button
-          className="bg-blue-600 text-white font-bold px-6 py-2 rounded-[7px] hover:bg-blue-700 flex items-center gap-2 transition"
+          className="bg-blue-600 text-white font-bold px-6 py-2 rounded-[7px] hover:bg-blue-700 flex items-center gap-2 transition shadow-lg"
           onClick={() => navigate(-1)}
         >
           &#8592; Back

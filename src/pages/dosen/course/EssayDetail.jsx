@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Pencil, FileText } from "lucide-react";
-// import createEssayImg from "../../../assets/createessay.png"; // Gunakan jika file ada
-// Jika gambar tidak ada/error, kita pakai Icon FileText sebagai fallback di bawah
+import { Pencil, FileText, ArrowLeft } from "lucide-react"; 
 
 export default function EssayDetail() {
-  // Pastikan parameter di route App.jsx Anda sesuai, misal: /course/:courseId/essay/:essayId
-  // Di sini kita anggap essayId = assignmentId dari database
-  const { courseId, essayId } = useParams(); 
+  // Hanya ambil essayId dari URL. Abaikan courseId dari params agar tidak error undefined.
+  const { essayId } = useParams(); 
   const navigate = useNavigate();
 
   const [essay, setEssay] = useState(null);
@@ -18,7 +15,6 @@ export default function EssayDetail() {
   useEffect(() => {
     const fetchEssayDetail = async () => {
       try {
-        // Ambil token
         const token = localStorage.getItem("token") || 
                       localStorage.getItem("access_token") || 
                       localStorage.getItem("authToken");
@@ -29,7 +25,6 @@ export default function EssayDetail() {
             return;
         }
 
-        // Panggil Endpoint Backend: GET /assignment/{id}
         const response = await fetch(`http://127.0.0.1:8000/assignment/${essayId}`, {
           headers: {
             "Authorization": `Bearer ${token}`
@@ -42,7 +37,7 @@ export default function EssayDetail() {
         }
 
         const data = await response.json();
-        setEssay(data); // Simpan data ke state
+        setEssay(data); 
       } catch (err) {
         console.error("Error fetching detail:", err);
         setError(err.message);
@@ -56,14 +51,26 @@ export default function EssayDetail() {
     }
   }, [essayId, navigate]);
 
-  // Kembali ke halaman course, menggunakan courseId
-  const handleBack = () => navigate(`/dosen/course/${courseId}`);
+  // --- PERBAIKAN NAVIGASI BACK (Anti Undefined) ---
+  const handleBack = () => {
+    // Cek apakah data essay sudah ada dan memiliki id_course
+    if (essay && essay.id_course) {
+        navigate(`/dosen/course/${essay.id_course}`);
+    } else {
+        // Fallback aman jika data belum terload
+        console.warn("Course ID belum tersedia, kembali ke dashboard.");
+        navigate("/dosen/dashboard");
+    }
+  };
   
-  // --- NAVIGASI KE HALAMAN EDIT (Path sudah benar) ---
-  const handleEdit = () =>
-    navigate(`/dosen/course/${courseId}/edit-essay/${essayId}`, {
-    state: { essay }, // Mengirim data saat ini ke halaman edit (opsional)
-  });
+  // --- PERBAIKAN NAVIGASI EDIT ---
+  const handleEdit = () => {
+    if (essay && essay.id_course) {
+        navigate(`/dosen/course/${essay.id_course}/edit-essay/${essayId}`, {
+            state: { essay }, 
+        });
+    }
+  };
 
   // --- TAMPILAN LOADING / ERROR ---
   if (loading) {
@@ -75,7 +82,9 @@ export default function EssayDetail() {
       <div className="text-center mt-20 text-red-500">
         {error || "Essay not found 😢"}
         <div className="mt-4">
-            <button onClick={handleBack} className="text-blue-600 underline">Kembali</button>
+            <button onClick={() => navigate("/dosen/dashboard")} className="text-blue-600 underline">
+                Kembali ke Dashboard
+            </button>
         </div>
       </div>
     );
@@ -85,10 +94,21 @@ export default function EssayDetail() {
   return (
     <div className="w-full bg-[#F6F7FB] min-h-screen p-8 flex justify-center -mt-20">
       <div className="w-full max-w-4xl scale-[0.9]">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6 ml-[-70px]">
+        
+        {/* --- 1. TOMBOL BACK --- */}
+        <div className="mb-6 w-full flex justify-start">
+          <button
+            onClick={handleBack}
+            className="flex items-center gap-2 text-gray-600 hover:text-[#30326A] transition font-inter text-sm"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            Back to Course
+          </button>
+        </div>
+
+        {/* --- 2. HEADER --- */}
+        <div className="flex items-center justify-between mb-6">
           <div className="flex items-center">
-            {/* Ganti img dengan Icon jika gambar createEssayImg error */}
             <FileText className="w-8 h-8 mr-3 text-[#30326A]" />
             <h1 className="text-[#30326A] font-bold text-xl font-inter text-left">
               Essay Detail
@@ -98,10 +118,10 @@ export default function EssayDetail() {
           {/* Tombol Edit */}
           <button
             onClick={handleEdit}
-            className="flex items-center text-[#30326A] hover:text-[#23245c] transition font-inter text-sm"
+            className="flex items-center text-[#30326A] hover:text-[#23245c] transition font-inter text-sm bg-white px-4 py-2 rounded-lg shadow-sm hover:shadow-md border border-gray-200"
           >
-            <Pencil className="w-5 h-5 mr-2" />
-            Edit
+            <Pencil className="w-4 h-4 mr-2" />
+            Edit Assignment
           </button>
         </div>
 
@@ -111,7 +131,6 @@ export default function EssayDetail() {
             <label className="block text-[#0B102D] font-semibold text-sm mb-1 text-left">
               * ASSIGNMENT NAME
             </label>
-            {/* Mapping field 'judul' dari API */}
             <input
               type="text"
               value={essay.judul || ""}
@@ -124,7 +143,6 @@ export default function EssayDetail() {
             <label className="block text-[#0B102D] font-semibold text-sm mb-1 text-left">
               * DESCRIPTION
             </label>
-            {/* Mapping field 'deskripsi' dari API */}
             <textarea
               value={essay.deskripsi || ""}
               readOnly
@@ -152,7 +170,6 @@ export default function EssayDetail() {
               </label>
               <input
                 type="text"
-                // Menggunakan created_at jika ada, atau fallback
                 value={essay.created_at ? new Date(essay.created_at).toLocaleString() : "-"}
                 readOnly
                 className="w-full border border-gray-300 rounded-lg p-2.5 bg-gray-100 text-sm"
@@ -161,14 +178,13 @@ export default function EssayDetail() {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            {/* Jika ada field time_duration di DB, tampilkan. Jika tidak, hide atau strip */}
             <div>
               <label className="block text-[#0B102D] font-semibold text-sm mb-1 text-left">
                 * TIME DURATION
               </label>
               <input
                 type="text"
-                value="-" // Placeholder karena belum ada di DB standard
+                value="-" 
                 readOnly
                 className="w-full border border-gray-300 rounded-lg p-2.5 bg-gray-100 text-sm"
               />
@@ -178,7 +194,6 @@ export default function EssayDetail() {
               <label className="block text-[#0B102D] font-semibold text-sm mb-1 text-left">
                 * DEADLINE
               </label>
-              {/* Format Tanggal Deadline */}
               <input
                 type="text"
                 value={essay.deadline ? new Date(essay.deadline).toLocaleString() : ""}
@@ -188,16 +203,16 @@ export default function EssayDetail() {
             </div>
           </div>
 
-          {/* Bagian Total Submitted (Placeholder Logic) */}
+          {/* Bagian Total Submitted */}
           <div>
             <label className="block text-[#0B102D] font-semibold text-sm mb-1 text-left">
               * TOTAL SUBMITTED
             </label>
             <input
               type="text"
-              value="0 Students" // Belum ada endpoint count submission
+              value={`${essay.total_submitted || 0} Students`} 
               readOnly
-              className="w-full border border-gray-300 rounded-lg p-2.5 bg-gray-100 text-sm"
+              className="w-full border border-gray-300 rounded-lg p-2.5 bg-gray-100 text-sm font-bold text-[#30326A]"
             />
           </div>
 
@@ -213,7 +228,7 @@ export default function EssayDetail() {
             />
           </div>
 
-          {/* --- QUESTIONS SECTION (DYNAMIC FROM API) --- */}
+          {/* --- QUESTIONS SECTION --- */}
           <div>
             <label className="block text-[#0B102D] font-semibold text-sm mb-3 text-left">
               QUESTIONS
@@ -256,15 +271,7 @@ export default function EssayDetail() {
           </div>
         </div>
 
-        {/* Back Button */}
-        <div className="mt-10">
-          <button
-            onClick={handleBack}
-            className="bg-[#30326A] text-white px-6 py-2 rounded-lg font-inter text-sm hover:bg-[#23245c] ml-[-800px]"
-          >
-            ← Back
-          </button>
-        </div>
+        <div className="mb-20"></div>
       </div>
     </div>
   );

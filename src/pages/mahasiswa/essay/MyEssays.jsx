@@ -1,11 +1,11 @@
 /* src/pages/mahasiswa/essay/MyEssays.jsx */
 
 import React, { useState, useEffect, useRef } from "react";
-import { ChevronDown, Search, Loader2 } from "lucide-react";
+import { ChevronDown, Search } from "lucide-react";
 import myessays1 from "../../../assets/myessays1.png";
 import myessays2 from "../../../assets/myessays2.png";
 import EssayTable from "../../../components/mahasiswa/essay/EssayTable";
-import EssayStat from "../../../components/mahasiswa/essay/EssayStat"; 
+import EssayStat from "../../../components/mahasiswa/essay/EssayStat";
 
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
@@ -15,62 +15,81 @@ export default function MyEssays() {
   const [filterStatus, setFilterStatus] = useState("All");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
-  
-  const navigate = useNavigate();
-  const { token } = useAuth(); // Ambil token
 
-  // STATE DATA REAL
+  const navigate = useNavigate();
+  const { token } = useAuth();
+
   const [essays, setEssays] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // 1. FETCH DATA SUBMISSION DARI BACKEND
   useEffect(() => {
     const fetchMyEssays = async () => {
-        try {
-            const response = await fetch("http://127.0.0.1:8000/submission/my", {
-                headers: { "Authorization": `Bearer ${token}` }
-            });
+      try {
+        setLoading(true);
 
-            if (!response.ok) throw new Error("Gagal mengambil data essay");
+        const response = await fetch("http://127.0.0.1:8000/submission/my", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-            const data = await response.json();
+        if (!response.ok) throw new Error("Gagal mengambil data essay");
 
-            // Mapping Data BE -> FE Table Format
-            const mappedData = data.map(item => ({
-                id: item.id_submission,
-                title: item.assignment?.judul || "Untitled Task",
-                status: item.grading ? "Graded" : "In Review", // Cek jika sudah dinilai
-                score: item.grading ? Number(item.grading.skor_dosen) : "-",
-                feedbackAI: item.grading?.feedback_ai || "-",
-                feedbackLecturer: item.grading?.feedback_dosen || "-",
-                date: new Date(item.waktu_submit).toLocaleDateString("en-GB"),
-                action: "View", // Tombol View di tabel
-                
-                // Simpan data mentah untuk dikirim ke halaman Detail
-                rawData: item 
-            }));
+        const data = await response.json();
 
-            setEssays(mappedData);
+        // Mapping sesuai response backend /submission/my
+        const mappedData = data.map((item) => {
+          const isGraded = item.status === "Graded";
 
-        } catch (err) {
-            console.error("Error fetching essays:", err);
-        } finally {
-            setLoading(false);
-        }
+          return {
+            // key/id untuk table (pakai id_assignment karena pasti ada)
+            id: item.id_assignment,
+            id_assignment: item.id_assignment,
+
+            title: item.judul_assignment || "Untitled Task",
+            courseName: item.nama_course || "Unknown Course",
+
+            // FE kamu pakai label "In Review", BE pakai "Submitted"
+            status: isGraded ? "Graded" : "In Review",
+
+            score: isGraded ? Number(item.nilai ?? 0) : "-",
+
+            // kalau backend belum kirim feedback, default
+            feedbackAI: "-",
+            feedbackLecturer: "-",
+
+            date: item.submitted_at
+              ? new Date(item.submitted_at).toLocaleDateString("en-GB")
+              : "-",
+
+            action: "View",
+
+            // simpan rawData jika masih mau
+            rawData: item,
+          };
+        });
+
+        setEssays(mappedData);
+      } catch (err) {
+        console.error("Error fetching essays:", err);
+      } finally {
+        setLoading(false);
+      }
     };
 
     if (token) fetchMyEssays();
   }, [token]);
 
-
   // 2. FILTER LOGIC
   const filteredEssays = essays.filter((essay) => {
     const query = searchQuery.toLowerCase();
+
     const matchesSearch =
-      essay.title.toLowerCase().includes(query) ||
-      essay.status.toLowerCase().includes(query);
-    const matchesStatus =
-      filterStatus === "All" ? true : essay.status === filterStatus;
+      (essay.title || "").toLowerCase().includes(query) ||
+      (essay.status || "").toLowerCase().includes(query) ||
+      (essay.courseName || "").toLowerCase().includes(query);
+
+    const matchesStatus = filterStatus === "All" ? true : essay.status === filterStatus;
+
     return matchesSearch && matchesStatus;
   });
 
@@ -78,12 +97,14 @@ export default function MyEssays() {
   const totalSubmitted = essays.length;
   const gradedEssays = essays.filter((e) => e.status === "Graded").length;
   const pendingReview = essays.filter((e) => e.status === "In Review").length;
-  
-  // Hitung Rata-rata Nilai
-  const averageScore = gradedEssays > 0
-      ? (essays
-          .filter((e) => e.status === "Graded")
-          .reduce((sum, e) => sum + (e.score || 0), 0) / gradedEssays
+
+  const averageScore =
+    gradedEssays > 0
+      ? (
+          essays
+            .filter((e) => e.status === "Graded")
+            .reduce((sum, e) => sum + (typeof e.score === "number" ? e.score : 0), 0) /
+          gradedEssays
         ).toFixed(1)
       : 0;
 
@@ -108,15 +129,23 @@ export default function MyEssays() {
   return (
     <div className="relative w-full min-h-screen bg-[#F5F8FB] font-[Inter] overflow-hidden z-10 py-20">
       {/* Background images */}
-      <img src={myessays1} alt="header decoration" className="absolute top-4 left-6 w-20 py-20" />
-      <img src={myessays2} alt="background decoration" className="absolute bottom-0 right-[-130px] w-[350px]" />
+      <img
+        src={myessays1}
+        alt="header decoration"
+        className="absolute top-4 left-6 w-20 py-20"
+      />
+      <img
+        src={myessays2}
+        alt="background decoration"
+        className="absolute bottom-0 right-[-130px] w-[350px]"
+      />
 
       {/* Header */}
       <div className="relative z-10 flex justify-between items-center px-12 pt-10">
         <h1 className="text-[28px] font-bold text-black ml-14">My Essays</h1>
-        <button 
+        <button
           className="bg-[#3D73B4] text-white font-bold px-6 py-2 rounded-[7px] hover:bg-[#2f5f97] transition"
-          onClick={() => navigate("/my-course")} // Arahkan ke catalog course
+          onClick={() => navigate("/my-course")}
         >
           Submit New Essay
         </button>
@@ -127,7 +156,7 @@ export default function MyEssays() {
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className={`flex items-center justify-between w-[180px] rounded-[10px] px-4 py-2 text-[16px] text-black/70 transition-all duration-200 
+            className={`flex items-center justify-between w-[180px] rounded-[10px] px-4 py-2 text-[16px] text-black/70 transition-all duration-200
               ${isDropdownOpen ? "shadow-md scale-[1.02]" : "hover:shadow-sm"}`}
           >
             <span className="truncate">
@@ -135,21 +164,15 @@ export default function MyEssays() {
             </span>
             <ChevronDown
               className="w-5 h-5 text-black/60 flex-shrink-0 transition-transform duration-200"
-              style={{
-                transform: isDropdownOpen ? "rotate(180deg)" : "rotate(0deg)",
-              }}
+              style={{ transform: isDropdownOpen ? "rotate(180deg)" : "rotate(0deg)" }}
             />
           </button>
 
           {/* Dropdown */}
           <div
-            className={`absolute bg-white border border-gray-300 rounded-[10px] shadow-md z-10 w-[180px] 
+            className={`absolute bg-white border border-gray-300 rounded-[10px] shadow-md z-10 w-[180px]
               transition-all duration-300 ease-out origin-top
-              ${
-                isDropdownOpen
-                  ? "scale-y-100 opacity-100 mt-2"
-                  : "scale-y-0 opacity-0 mt-0"
-              } `}
+              ${isDropdownOpen ? "scale-y-100 opacity-100 mt-2" : "scale-y-0 opacity-0 mt-0"}`}
           >
             {["All", "Graded", "In Review"].map((status) => (
               <div
@@ -173,7 +196,7 @@ export default function MyEssays() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by Title / Keyword"
-            className="w-full border border-black/40 rounded-[10px] py-2 pl-4 pr-10 text-[16px] text-black/70 placeholder-black/50 focus:outline-none 
+            className="w-full border border-black/40 rounded-[10px] py-2 pl-4 pr-10 text-[16px] text-black/70 placeholder-black/50 focus:outline-none
               focus:ring-2 focus:ring-[#3D73B4] transition-all duration-200"
           />
           <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-black/50 w-5 h-5" />
@@ -190,15 +213,15 @@ export default function MyEssays() {
       {/* Essay Table */}
       <div className="relative z-10 px-12 mt-10 pb-16 min-h-[400px]">
         {loading ? (
-            <div className="flex justify-center items-center h-40">
-                <p className="text-blue-600 font-bold animate-pulse">Memuat Data Essay...</p>
-            </div>
+          <div className="flex justify-center items-center h-40">
+            <p className="text-blue-600 font-bold animate-pulse">Memuat Data Essay...</p>
+          </div>
         ) : (
-            // Kirim onRowClick agar bisa melihat detail nilai
-            <EssayTable 
-                essays={filteredEssays} 
-                onRowClick={(essay) => navigate("/view-graded", { state: { submission: essay.rawData } })}
-            />
+          <EssayTable
+            essays={filteredEssays}
+            // Kirim object essay yang sudah dimapping biar ViewGraded konsisten
+            onRowClick={(essay) => navigate("/view-graded", { state: essay })}
+          />
         )}
       </div>
     </div>
