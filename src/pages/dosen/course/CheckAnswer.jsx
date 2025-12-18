@@ -1,178 +1,219 @@
 /* src/pages/dosen/course/CheckAnswer.jsx */
 
-import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft, Save, Calendar, FileText } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { ArrowLeft, Save, Bot, User, CheckCircle, Loader2 } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
 
-const CheckAnswer = () => {
-  const navigate = useNavigate();
+export default function CheckAnswer() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { token } = useAuth();
 
-  // Ambil data dari halaman GiveGrade
-  const submission = location.state?.submission;
-  const assignmentInfo = location.state?.assignment; // Data judul tugas dari props
+  const { submissionItems, studentName, assignment } = location.state || {};
+  const [grades, setGrades] = useState({}); 
+  const [isSaving, setIsSaving] = useState(false);
 
-  const [score, setScore] = useState(submission?.grading?.nilai || "");
-  const [feedback, setFeedback] = useState(submission?.grading?.feedback || "");
-  const [loading, setLoading] = useState(false);
+  // Safety Check
+  useEffect(() => {
+    if (!submissionItems || !assignment) {
+      alert("Data sesi hilang. Kembali ke list.");
+      navigate(-1);
+    }
+  }, [submissionItems, assignment, navigate]);
 
-  // Jika data hilang (misal di-refresh), kembalikan ke list
-  if (!submission) {
-    return (
-        <div className="flex flex-col items-center justify-center h-screen bg-gray-50">
-            <p className="text-red-500 mb-4 font-semibold">Data tidak ditemukan.</p>
-            <button 
-                onClick={() => navigate("/dosen/course")} 
-                className="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700"
-            >
-                Kembali ke Dashboard
-            </button>
-        </div>
-    );
-  }
+  // Init Data
+  useEffect(() => {
+    if (submissionItems) {
+        const initialGrades = {};
+        submissionItems.forEach((item) => {
+            const skor = item.grading ? item.grading.skor_dosen : "";
+            const feedback = item.grading ? item.grading.feedback_dosen : "";
+            initialGrades[item.id_submission] = {
+                score: skor !== null ? skor : "",
+                feedback: feedback || "",
+            };
+        });
+        setGrades(initialGrades);
+    }
+  }, [submissionItems]);
 
-  // --- FUNGSI SIMPAN NILAI ---
-  const handleSaveGrade = async () => {
-    if (score === "" || score < 0 || score > 100) {
-        alert("Harap masukkan nilai valid (0-100).");
+  // --- PERBAIKAN LOGIC INPUT SCORE (MAX LIMIT) ---
+  const handleScoreChange = (submissionId, value, maxBobot) => {
+    let numericVal = parseFloat(value);
+
+    // Cek jika kosong
+    if (value === "") {
+        setGrades(prev => ({ ...prev, [submissionId]: { ...prev[submissionId], score: "" } }));
         return;
     }
 
-    setLoading(true);
+    // Cek Max Value
+    if (numericVal > maxBobot) {
+        // alert(`Nilai tidak boleh melebihi bobot maksimal (${maxBobot})`);
+        numericVal = maxBobot; // Otomatis mentok ke max
+    } else if (numericVal < 0) {
+        numericVal = 0;
+    }
+
+    setGrades(prev => ({ ...prev, [submissionId]: { ...prev[submissionId], score: numericVal } }));
+  };
+
+  const handleFeedbackChange = (sid, val) => {
+    setGrades(prev => ({ ...prev, [sid]: { ...prev[sid], feedback: val } }));
+  };
+
+  const handleAiGrade = (question, submissionItem) => {
+    alert("Fitur AI Suggestion belum diaktifkan di Frontend ini.");
+  };
+
+  const handleSaveAll = async () => {
+    if (!window.confirm("Simpan semua penilaian?")) return;
+    setIsSaving(true);
+    
     try {
-        const response = await fetch("http://127.0.0.1:8000/grading/", {
+      const promises = submissionItems.map(async (item) => {
+        const gradeData = grades[item.id_submission];
+        // Jika dosen belum mengisi nilai (string kosong), jangan kirim update untuk item ini
+        if (!gradeData || gradeData.score === "") return null;
+
+        const payload = {
+            id_submission: item.id_submission,
+            skor_dosen: parseFloat(gradeData.score),
+            feedback_dosen: gradeData.feedback
+        };
+
+        const response = await fetch("http://127.0.0.1:8000/grading/grade_submission", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
             },
-            body: JSON.stringify({
-                id_submission: submission.id_submission,
-                nilai: parseInt(score),
-                feedback: feedback || "Dinilai oleh Dosen"
-            })
+            body: JSON.stringify(payload)
         });
 
-        if (!response.ok) throw new Error("Gagal menyimpan nilai");
+        if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.detail || "Gagal menyimpan.");
+        }
+        return response.json();
+      });
 
-        alert("✅ Nilai berhasil disimpan!");
-        navigate(-1); // Mundur ke halaman tabel
+      await Promise.all(promises);
+      alert("Berhasil menyimpan penilaian!");
+      navigate(-1); 
 
-    } catch (err) {
-        console.error(err);
-        alert("Gagal menyimpan: " + err.message);
+    } catch (error) {
+      console.error("Error:", error);
+      alert(`Gagal menyimpan: ${error.message}`);
     } finally {
-        setLoading(false);
+      setIsSaving(false);
     }
   };
 
-  // Safe Title Access (Agar tidak putih lagi)
-  const taskTitle = assignmentInfo?.title || submission.assignment?.judul || "Detail Jawaban";
-  const courseName = assignmentInfo?.courseName || "Tugas Mahasiswa";
+  if (!assignment || !submissionItems) return <div className="p-10 text-center">Loading...</div>;
 
   return (
-    <div className="min-h-screen bg-[#F6F7FB] relative font-sans pb-20">
-      {/* Header Background */}
-      <div className="absolute top-0 left-0 w-full h-[30vh] bg-gradient-to-r from-[#173A64] to-[#2c59c0] -z-10"></div>
-
-      <div className="max-w-5xl mx-auto px-6 pt-8">
-        {/* Navigation & Title */}
-        <div className="mb-8 text-white">
-            <button 
-                onClick={() => navigate(-1)} 
-                className="flex items-center gap-2 text-sm opacity-80 hover:opacity-100 transition mb-4"
-            >
-                <ArrowLeft size={16} /> Back to Submission List
-            </button>
-            <h1 className="text-2xl font-bold">{taskTitle}</h1>
-            <p className="opacity-90 text-sm mt-1">{courseName}</p>
+    <div className="min-h-screen bg-[#F6F7FB] p-8 font-[Inter]">
+      <div className="max-w-6xl mx-auto">
+        {/* HEADER */}
+        <div className="flex items-center justify-between mb-8">
+          <button onClick={() => navigate(-1)} className="flex items-center text-gray-600 hover:text-[#173A64] font-medium">
+            <ArrowLeft className="w-5 h-5 mr-2" /> Back
+          </button>
+          <div className="text-right">
+             <h1 className="text-xl font-bold text-[#173A64]">{assignment.judul}</h1>
+             <div className="flex items-center justify-end gap-2 text-sm text-gray-500">
+                <User className="w-4 h-4" />
+                <span>Student: <span className="font-semibold text-gray-700">{studentName}</span></span>
+             </div>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            {/* KOLOM KIRI: JAWABAN MAHASISWA */}
-            <div className="lg:col-span-2 space-y-6">
-                {/* Info Mahasiswa */}
-                <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center">
-                    <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-xl">
-                            {submission.mahasiswa?.nama?.charAt(0) || "M"}
+        {/* LIST SOAL */}
+        <div className="space-y-8 pb-24">
+            {assignment.questions.map((q) => {
+                const subItem = submissionItems.find(s => s.id_question === q.id_question);
+                const current = subItem ? grades[subItem.id_submission] : { score: "", feedback: "" };
+
+                return (
+                    <div key={q.id_question} className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                            <h3 className="font-bold text-[#173A64] text-lg">Soal {q.nomor_soal}</h3>
+                            <span className="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full">Max: {q.bobot}</span>
                         </div>
-                        <div>
-                            <h3 className="font-semibold text-gray-800 text-lg">{submission.mahasiswa?.nama}</h3>
-                            <p className="text-sm text-gray-500">{submission.mahasiswa?.nim_nip}</p>
+                        <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            {/* KIRI */}
+                            <div className="space-y-6">
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-400 uppercase mb-2">Pertanyaan</label>
+                                    <div className="text-gray-800 font-medium whitespace-pre-wrap">{q.teks_soal}</div>
+                                </div>
+                                <div className="bg-green-50 p-4 rounded-xl border border-green-100">
+                                    <label className="block text-xs font-bold text-green-700 uppercase mb-2 flex items-center gap-2">
+                                        <CheckCircle className="w-4 h-4" /> Kunci Jawaban
+                                    </label>
+                                    <div className="text-gray-700 text-sm italic whitespace-pre-wrap">{q.kunci_jawaban || "-"}</div>
+                                </div>
+                            </div>
+                            {/* KANAN */}
+                            <div className="space-y-6 border-l pl-8 border-gray-100">
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-400 uppercase mb-2">Jawaban Mahasiswa</label>
+                                    {subItem ? (
+                                        <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 text-gray-800 min-h-[100px] whitespace-pre-wrap">
+                                            {subItem.jawaban || subItem.jawaban_mahasiswa}
+                                        </div>
+                                    ) : (
+                                        <div className="text-red-500 italic text-sm">Tidak ada jawaban.</div>
+                                    )}
+                                </div>
+                                {subItem && (
+                                    <div className="bg-[#F8FAFC] p-5 rounded-xl border border-gray-200 space-y-4">
+                                        <div className="flex justify-between items-center">
+                                            <label className="text-sm font-bold text-[#173A64]">Penilaian Dosen</label>
+                                            <button onClick={() => handleAiGrade(q, subItem)} className="flex items-center gap-1.5 text-xs bg-purple-100 text-purple-700 px-3 py-1.5 rounded-lg hover:bg-purple-200 font-semibold">
+                                                <Bot className="w-4 h-4" /> AI Suggestion
+                                            </button>
+                                        </div>
+                                        <div className="flex gap-4">
+                                            <div className="w-32">
+                                                <label className="block text-xs text-gray-500 mb-1">Skor (Max: {q.bobot})</label>
+                                                <input 
+                                                    type="number" 
+                                                    min="0" 
+                                                    max={q.bobot} 
+                                                    value={current?.score ?? ""} 
+                                                    // PERBAIKAN: PASS q.bobot KE HANDLER
+                                                    onChange={(e) => handleScoreChange(subItem.id_submission, e.target.value, q.bobot)} 
+                                                    className="w-full border border-gray-300 rounded-lg p-2 text-center font-bold text-[#173A64] focus:ring-2 focus:ring-blue-500 outline-none" 
+                                                />
+                                            </div>
+                                            <div className="flex-1">
+                                                <label className="block text-xs text-gray-500 mb-1">Feedback</label>
+                                                <input type="text" value={current?.feedback ?? ""} onChange={(e) => handleFeedbackChange(subItem.id_submission, e.target.value)} placeholder="Berikan masukan..." className="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
-                    <div className="text-right text-xs text-gray-500">
-                        <p className="flex items-center gap-1 justify-end"><Calendar size={14}/> Submitted:</p>
-                        <p className="font-medium">{new Date(submission.waktu_submit).toLocaleString("id-ID")}</p>
-                    </div>
-                </div>
+                );
+            })}
+        </div>
 
-                {/* Jawaban */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
-                        <h3 className="font-semibold text-gray-700 flex items-center gap-2">
-                            <FileText size={18}/> Student's Answer
-                        </h3>
-                    </div>
-                    
-                    <div className="p-8 min-h-[300px]">
-                        {/* Render HTML Jawaban */}
-                        <div 
-                            className="prose max-w-none text-gray-800 leading-relaxed"
-                            dangerouslySetInnerHTML={{ __html: submission.jawaban }}
-                        />
-                    </div>
-                </div>
+        {/* SAVE BAR */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg z-10">
+            <div className="max-w-6xl mx-auto flex justify-end gap-4">
+                <button onClick={() => navigate(-1)} className="px-6 py-2.5 rounded-lg font-semibold text-gray-600 hover:bg-gray-100">Cancel</button>
+                <button onClick={handleSaveAll} disabled={isSaving} className={`flex items-center gap-2 px-8 py-2.5 rounded-lg font-bold text-white shadow-lg hover:scale-105 transition ${isSaving ? "bg-gray-400" : "bg-[#173A64] hover:bg-[#23245c]"}`}>
+                    {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
+                    {isSaving ? "Saving..." : "Save All Grades"}
+                </button>
             </div>
-
-            {/* KOLOM KANAN: FORM PENILAIAN */}
-            <div className="lg:col-span-1">
-                <div className="bg-white p-6 rounded-xl shadow-lg border border-blue-100 sticky top-24">
-                    <h3 className="font-bold text-[#173A64] text-lg mb-4 border-b pb-2">Grading Form</h3>
-                    
-                    <div className="mb-4">
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Score (0-100)</label>
-                        <input 
-                            type="number" 
-                            min="0" max="100"
-                            value={score}
-                            onChange={(e) => setScore(e.target.value)}
-                            className="w-full border border-gray-300 rounded-lg p-3 text-center text-3xl font-bold text-blue-600 focus:ring-2 focus:ring-blue-500 outline-none"
-                            placeholder="0"
-                        />
-                    </div>
-
-                    <div className="mb-6">
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Feedback</label>
-                        <textarea 
-                            rows="4"
-                            value={feedback}
-                            onChange={(e) => setFeedback(e.target.value)}
-                            className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none"
-                            placeholder="Berikan masukan untuk mahasiswa..."
-                        ></textarea>
-                    </div>
-
-                    <button 
-                        onClick={handleSaveGrade}
-                        disabled={loading}
-                        className={`w-full text-white py-3 rounded-lg font-semibold flex justify-center items-center gap-2 transition ${
-                            loading ? "bg-gray-400 cursor-not-allowed" : "bg-[#173A64] hover:bg-[#2c59c0]"
-                        }`}
-                    >
-                        {loading ? "Saving..." : <><Save size={18}/> Submit Grade</>}
-                    </button>
-                </div>
-            </div>
-
         </div>
       </div>
     </div>
   );
-};
-
-export default CheckAnswer;
+}
