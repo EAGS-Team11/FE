@@ -175,9 +175,15 @@ export default function App() {
               <Route path="/course/:courseId" element={<CourseEssay />} />
               <Route path="/my-essays" element={<MyEssays />} />
               <Route path="/submit-essay" element={<SubmitEssay />} />
+              
+              {/* --- ROUTE SUBMIT DENGAN PARAMETER (BENAR) --- */}
               <Route path="/submit-essay/:courseId/:essayId" element={<InputEssay />} />
-              <Route path="/view-graded" element={<ViewGraded />} />
+              
+              {/* --- MENGHAPUS ROUTE MATI --- 
               <Route path="/input-essay" element={<InputEssay />} />
+              */}
+              
+              <Route path="/view-graded" element={<ViewGraded />} />
               <Route path="/profile" element={<Profil />} />
               <Route path="/EditMyProfil" element={<EditMyProfil />} />
               <Route path="/EditPersonal" element={<EditPersonal />} />
@@ -194,6 +200,8 @@ export default function App() {
               <Route path="/dosen/course/:courseId" element={<CourseDetail />} />
               <Route path="/dosen/course/:courseId/create-essay" element={<CreateEssay />} />
               <Route path="/dosen/course/:courseId/add-question" element={<AddQuestion />} />
+              
+              {/* --- ROUTE LAMA (Mungkin masih dipakai link lain) --- */}
               <Route path="/dosen/course/:courseId/essay/:essayId" element={<EssayDetail />} />
               <Route path="/dosen/assignment/:essayId" element={<EssayDetail />} />
               <Route path="/dosen/course/:courseId/edit-essay/:essayId" element={<EditEssay />} />
