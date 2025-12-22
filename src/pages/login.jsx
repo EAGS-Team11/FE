@@ -1,15 +1,10 @@
-// src/pages/login.jsx 
-
 import React, { useState } from "react";
-import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
 import loginImg from "../assets/login1.png";
 import logoCapstone from "../assets/Logo capstone.png";
-import { motion } from "framer-motion";
-import { useNavigate, Link } from "react-router-dom"; // Import Link
+import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-
-// Use relative paths; Vite dev proxy forwards /auth to backend during development
-const API_BASE_URL = '';
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -18,157 +13,156 @@ export default function Login() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const togglePassword = () => setShowPassword(!showPassword);
   const navigate = useNavigate();
-  const { login } = useAuth(); // Ambil fungsi login dari Context
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     setError(null);
     setLoading(true);
 
-    // Menggunakan skema lengkap karena BE endpoint login Anda masih menerima UserCreate/UserLogin
-    // Untuk menghindari 422, kita kirim semua field yang dibutuhkan BE
     const finalData = {
         nim_nip: nim_nip,
         password: password,
         nama: "dummy", 
-        role: "mahasiswa", // Default role
+        role: "mahasiswa", 
         prodi: "dummy"
     };
 
     try {
       const response = await fetch(`/auth/login`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(finalData), 
       });
 
-      setLoading(false);
-
       if (!response.ok) {
-        let errMsg = `Request failed (${response.status})`;
-        try {
-          const errorData = await response.json();
-          errMsg = errorData.detail || JSON.stringify(errorData) || errMsg;
-        } catch (parseErr) {
-          // ignore JSON parse error
-        }
-        setError(errMsg);
-        return;
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Authentication failed.");
       }
 
       const data = await response.json();
-      
-      // Panggil fungsi login dari Context untuk menyimpan token dan user
       login(data.user, data.access_token);
       
-      // 1. Cek Role dan Redirect
-      if (data.user.role === 'admin') {
-          navigate("/admin/dashboard"); // <-- REDIRECT KE HALAMAN ADMIN
-      } else if (data.user.role === 'dosen') {
-          navigate("/dosen/course"); // Redirect ke halaman Dosen
-      } else {
-          navigate("/home"); // Redirect ke halaman Mahasiswa
-      }
+      if (data.user.role === 'admin') navigate("/admin/dashboard");
+      else if (data.user.role === 'dosen') navigate("/dosen/course");
+      else navigate("/home");
 
     } catch (err) {
+      setError(err.message);
+    } finally {
       setLoading(false);
-      console.error("Login request failed:", err);
-      // Tampilkan pesan error yang lebih informatif jika tersedia
-      setError(err?.message || "Failed to connect to the API server or network error.");
     }
   };
 
   return (
-    <div className="relative w-screen h-screen flex items-center justify-center font-[JetBrains_Mono] overflow-hidden">
-      <img src={loginImg} alt="Login Background" className="absolute inset-0 w-full h-full object-cover"/>
-      <div className="absolute inset-0 bg-black/40"></div>
+    <div className="relative w-screen h-screen flex items-center justify-center font-[Inter] overflow-hidden bg-black">
+      {/* Background Image with Blur Effect */}
+      <div 
+        className="absolute inset-0 w-full h-full scale-110 blur-sm brightness-[0.4]"
+        style={{
+          backgroundImage: `url(${loginImg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}
+      />
 
-      {/* Kotak login */}
+      {/* Login Card */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.6 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.9, ease: "easeOut" }}
-        className="relative z-10 bg-black/70 backdrop-blur-sm border border-gray-700 rounded-2xl shadow-[0_0_25px_rgba(0,0,0,0.6)] p-7 w-[85%] max-w-[420px]"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="relative z-10 bg-black/60 backdrop-blur-2xl border border-white/10 rounded-[32px] shadow-2xl p-10 w-[90%] max-w-[440px]"
       >
-        <h2 className="text-[22px] font-bold text-center text-white mb-3 tracking-wide">Log In</h2>
-        <div className="flex justify-center mb-5">
-          <img src={logoCapstone} alt="Logo Capstone" className="w-[65px] h-auto opacity-90 hover:opacity-100 transition-all"/>
+        <div className="flex flex-col items-center mb-10">
+          <motion.img 
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+            src={logoCapstone} 
+            alt="Logo" 
+            className="w-20 h-auto mb-6 drop-shadow-2xl"
+          />
+          <h2 className="text-3xl font-black text-white tracking-tight">Welcome Back</h2>
+          <p className="text-gray-400 text-sm mt-2 font-medium">Please enter your details to sign in</p>
         </div>
 
-        {/* Form Submission */}
-        <form className="space-y-5" onSubmit={handleSubmit}> 
-          
-          {/* Tampilkan Error */}
-          {error && (
-             <div className="bg-red-900/50 text-red-300 text-sm p-3 rounded-lg border border-red-700">
-               {error}
-             </div>
-          )}
+        <form className="space-y-6" onSubmit={handleSubmit}> 
+          <AnimatePresence>
+            {error && (
+                <motion.div 
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    className="bg-red-500/10 border border-red-500/20 text-red-400 text-xs p-4 rounded-xl flex items-center gap-3"
+                >
+                    <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
+                    {error}
+                </motion.div>
+            )}
+          </AnimatePresence>
 
-          {/* Input NIM / NIP */}
-          <div className="relative">
-            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <input
-              type="text"
-              placeholder="NIM / NIP"
-              value={nim_nip}
-              onChange={(e) => setNimNip(e.target.value)}
-              required
-              className="w-full bg-[#1a1a1a] border border-gray-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4F8EF7] focus:border-transparent transition-all"
-            />
+          <div className="space-y-4">
+            {/* NIM / NIP Input */}
+            <div className="relative group">
+              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-blue-400 transition-colors w-5 h-5" />
+              <input
+                type="text"
+                placeholder="NIM / NIP"
+                value={nim_nip}
+                onChange={(e) => setNimNip(e.target.value)}
+                required
+                className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 py-4 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white/10 transition-all outline-none"
+              />
+            </div>
+
+            {/* Password Input */}
+            <div className="relative group">
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-blue-400 transition-colors w-5 h-5" />
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-12 py-4 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white/10 transition-all outline-none"
+              />
+              <button
+                type="button"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
+              </button>
+            </div>
           </div>
 
-          {/* Input Password */}
-          <div className="relative">
-            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full bg-[#1a1a1a] border border-gray-700 rounded-lg pl-10 pr-9 py-2.5 text-sm text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4F8EF7] focus:border-transparent transition-all"
-            />
-            <button
-              type="button"
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
-              onClick={togglePassword}
-            >
-              {showPassword ? (
-                <Eye className="w-4 h-4" />
-              ) : (
-                <EyeOff className="w-4 h-4" />
-              )}
-            </button>
-          </div>
-
-          {/* Lupa password */}
-          <div className="text-center">
+          <div className="flex justify-end">
             <Link
               to="/forgot-password" 
-              className="text-[#4F8EF7] hover:underline text-xs font-medium"
+              className="text-blue-400 hover:text-blue-300 text-xs font-semibold tracking-wide transition-colors"
             >
-              Forgot your password?
+              Forgot password?
             </Link>
           </div>
 
-          {/* Tombol login */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#4F8EF7] text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-[#3a6edb] transition-all shadow-[0_0_10px_rgba(79,142,247,0.4)] hover:shadow-[0_0_20px_rgba(79,142,247,0.6)] disabled:bg-gray-500"
+            className="w-full bg-blue-600 text-white py-4 rounded-2xl text-sm font-bold hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/20 active:scale-[0.98] disabled:bg-gray-700 disabled:shadow-none flex items-center justify-center gap-2 overflow-hidden group"
           >
-            {loading ? "Logging In..." : "Log In"}
+            {loading ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <>
+                Sign In
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </>
+            )}
           </button>
-          
-          {/* Teks daftar (DIHAPUS) */}
-          
         </form>
+
+        <p className="text-center text-gray-500 text-[10px] mt-10 uppercase tracking-[2px] font-bold">
+            Project EAGS Team 11
+        </p>
       </motion.div>
     </div>
   );
