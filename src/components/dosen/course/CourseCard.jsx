@@ -1,27 +1,31 @@
-/* src/components/dosen/course/CourseCard.jsx */
-
 import React, { useState } from "react";
-import { Edit2, Trash2, X } from "lucide-react";
+import { Edit2, Trash2, X, AlertTriangle, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import defaultImage from "../../../assets/default-course.png";
+import { useAuth } from "../../../context/AuthContext";
 
-export default function CourseCard({ course }) {
+export default function CourseCard({ course, onRefresh }) {
   const navigate = useNavigate();
+  const { token } = useAuth();
+  
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const imageSrc = course.image || defaultImage;
 
+  // Navigasi ke detail course saat card diklik
   const handleClick = () => {
     navigate(`/dosen/course/${course.id}`);
   };
 
   const handleEditClick = (e) => {
-    e.stopPropagation();
+    e.stopPropagation(); // Mencegah navigasi detail
     setIsEditModalOpen(true);
   };
 
   const handleDeleteClick = (e) => {
-    e.stopPropagation();
+    e.stopPropagation(); // Mencegah navigasi detail
     setIsDeleteModalOpen(true);
   };
 
@@ -30,122 +34,134 @@ export default function CourseCard({ course }) {
     setIsDeleteModalOpen(false);
   };
 
-  const handleDeleteConfirm = () => {
-    console.log("Course deleted:", course.id);
-    setIsDeleteModalOpen(false);
+  // --- LOGIKA UTAMA: LEAVE COURSE ---
+  const handleLeaveConfirm = async () => {
+    if (!course.id) {
+        alert("ID Course tidak ditemukan.");
+        return;
+    }
+
+    setLoading(true);
+    try {
+      // Pastikan URL ini sesuai dengan Backend: /course/leave/{id}
+      const response = await fetch(`http://127.0.0.1:8000/course/leave/${course.id}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setIsDeleteModalOpen(false);
+        // Memanggil fungsi refresh dari parent (CourseList.jsx) agar kartu menghilang
+        if (onRefresh) onRefresh(); 
+      } else {
+        // Jika 404, tampilkan pesan detail dari backend
+        alert(result.detail || "Gagal keluar dari course (Error 404).");
+      }
+    } catch (error) {
+      console.error("Error leaving course:", error);
+      alert("Terjadi kesalahan jaringan. Pastikan backend menyala.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <>
-      {/* Card */}
+      {/* CARD UI */}
       <div
-        className="bg-white rounded-xl border border-gray-300 shadow-sm overflow-hidden cursor-pointer hover:shadow-lg transition"
+        className="bg-white rounded-xl border border-gray-300 shadow-sm overflow-hidden cursor-pointer hover:shadow-lg transition group"
         onClick={handleClick}
       >
         <div className="relative">
           <img
             src={imageSrc}
             alt={course.title}
-            className="w-full h-28 object-cover"
+            className="w-full h-28 object-cover transition duration-300 group-hover:scale-105"
           />
-          <span className="absolute top-2 left-2 bg-[#20184d] text-white text-xs px-2 py-1 rounded-md italic">
-            {course.category}
+          <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition"></div>
+          
+          <span className="absolute top-2 left-2 bg-[#173A64] text-white text-[10px] px-2 py-1 rounded-md font-bold shadow-md">
+            {course.category || "Informatics"}
           </span>
+          
           <button
             onClick={handleEditClick}
-            className="absolute top-2 right-2 flex items-center gap-1 bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-md hover:bg-gray-200"
+            className="absolute top-2 right-2 flex items-center gap-1 bg-white/90 text-gray-700 text-[10px] px-2 py-1 rounded-md hover:bg-white transition shadow-sm font-bold"
           >
-            <Edit2 size={12} />
+            <Edit2 size={10} />
             Edit
           </button>
         </div>
+
         <div className="p-3 flex justify-between items-center">
-          <p className="text-sm font-medium">{course.title}</p>
+          <div className="flex flex-col">
+            <p className="text-sm font-extrabold text-[#173A64] truncate w-40">{course.title}</p>
+            <p className="text-[10px] text-gray-400 font-bold">{course.code || "No Code"}</p>
+          </div>
+          
           <button
-            className="text-red-500 hover:text-red-600"
+            className="text-red-400 hover:text-red-600 transition p-2 hover:bg-red-50 rounded-full"
             onClick={handleDeleteClick}
+            title="Leave Course"
           >
-            <Trash2 size={16} />
+            <Trash2 size={18} />
           </button>
         </div>
       </div>
 
+      {/* MODAL EDIT COURSE */}
       {isEditModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-lg w-full max-w-md p-5 relative">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[999] backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 relative animate-in zoom-in-95 duration-200">
             <button
               onClick={handleCloseModal}
-              className="absolute top-3 right-3 text-red-500 hover:text-red-700"
+              className="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition"
             >
-              <X size={20} />
+              <X size={24} />
             </button>
 
-            <h2 className="text-center text-lg font-semibold mb-5">
-              Edit Course
+            <h2 className="text-xl font-bold mb-6 text-[#173A64] border-b pb-2">
+              Edit Course Detail
             </h2>
 
-            <form className="space-y-3 text-sm">
+            <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
               <div>
-                <label className="block font-medium mb-1 text-left">
-                  Course Title
-                </label>
+                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Course Title</label>
                 <input
                   type="text"
                   defaultValue={course.title}
-                  className="w-full border border-gray-300 rounded-md p-1.5 text-sm focus:ring-2 focus:ring-blue-400 outline-none"
+                  className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none transition"
                 />
               </div>
 
-              <div>
-                <label className="block font-medium mb-1 text-left">
-                  Course Code
-                </label>
-                <input
-                  type="text"
-                  defaultValue={course.code || "MATH101"}
-                  className="w-full border border-gray-300 rounded-md p-1.5 text-sm focus:ring-2 focus:ring-blue-400 outline-none"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Code</label>
+                  <input
+                    type="text"
+                    defaultValue={course.code}
+                    className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-400 outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase mb-1">SKS</label>
+                  <input
+                    type="number"
+                    defaultValue={3}
+                    className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-400 outline-none"
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="block font-medium mb-1 text-left">
-                  Description
-                </label>
-                <input
-                  type="text"
-                  defaultValue={
-                    course.description || "Deskripsi singkat mata kuliah"
-                  }
-                  className="w-full border border-gray-300 rounded-md p-1.5 text-sm focus:ring-2 focus:ring-blue-400 outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block font-medium mb-1 text-left">
-                  Category / Department
-                </label>
-                <input
-                  type="text"
-                  defaultValue={course.category || "Informatics Engineering"}
-                  className="w-full border border-gray-300 rounded-md p-1.5 text-sm focus:ring-2 focus:ring-blue-400 outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block font-medium mb-1 text-left">
-                  Credit (SKS)
-                </label>
-                <input
-                  type="number"
-                  defaultValue={course.sks || 3}
-                  className="w-full border border-gray-300 rounded-md p-1.5 text-sm focus:ring-2 focus:ring-blue-400 outline-none"
-                />
-              </div>
-
-              <div className="pt-3 flex justify-center">
+              <div className="pt-4">
                 <button
                   type="submit"
-                  className="bg-[#1E4F91] text-white text-sm px-5 py-1.5 rounded-md hover:bg-[#163E74] transition"
+                  className="w-full bg-[#173A64] text-white py-2.5 rounded-lg hover:bg-[#0f2846] transition font-bold shadow-lg"
                 >
                   Save Changes
                 </button>
@@ -155,35 +171,39 @@ export default function CourseCard({ course }) {
         </div>
       )}
 
-
+      {/* MODAL LEAVE COURSE (INTUITIF) */}
       {isDeleteModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-lg w-full max-w-md p-6 text-center relative">
-            {/* Icon */}
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[999] backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-8 text-center relative animate-in fade-in zoom-in-95 duration-200">
             <div className="flex justify-center mb-4">
-              <div className="bg-[#E6ECF5] rounded-full p-4">
-                <Trash2 size={40} className="text-[#1E4F91]" />
+              <div className="bg-red-50 rounded-full p-4 text-red-500 ring-8 ring-red-50/50">
+                <AlertTriangle size={40} />
               </div>
             </div>
 
-            {/* Text */}
-            <h3 className="text-base font-semibold mb-2">
-              Are you sure you want to delete this course?
+            <h3 className="text-xl font-extrabold mb-2 text-gray-800">
+              Leave Course?
             </h3>
+            <p className="text-sm text-gray-500 mb-8 leading-relaxed">
+                Anda akan berhenti mengampu kursus <br/>
+                <span className="font-bold text-gray-700">"{course.title}"</span>. <br/>
+                Data Anda akan dihapus dari daftar pendaftaran.
+            </p>
 
-            {/* Buttons */}
-            <div className="flex justify-center gap-3 mt-5">
+            <div className="flex flex-col gap-2">
               <button
-                onClick={handleDeleteConfirm}
-                className="bg-[#1E4F91] text-white text-sm px-5 py-1.5 rounded-md hover:bg-[#163E74] transition"
+                disabled={loading}
+                onClick={handleLeaveConfirm}
+                className="w-full bg-red-500 text-white py-3 rounded-xl hover:bg-red-600 transition font-bold shadow-md flex justify-center items-center gap-2 disabled:bg-gray-400"
               >
-                Yes, delete
+                {loading ? <Loader2 className="animate-spin w-5 h-5" /> : "Ya, Keluar dari Kursus"}
               </button>
               <button
+                disabled={loading}
                 onClick={handleCloseModal}
-                className="bg-gray-200 text-gray-700 text-sm px-5 py-1.5 rounded-md hover:bg-gray-300 transition"
+                className="w-full bg-gray-100 text-gray-700 py-3 rounded-xl hover:bg-gray-200 transition font-bold"
               >
-                Cancel
+                Batalkan
               </button>
             </div>
           </div>
