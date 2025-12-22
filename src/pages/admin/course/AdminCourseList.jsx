@@ -1,10 +1,10 @@
 // src/pages/admin/course/AdminCourseList.jsx
 
 import React, { useState, useEffect, useCallback } from "react";
-import { Plus, Search, Layers, Loader2, Edit2, Trash2 } from "lucide-react";
+import { Plus, Search, Layers, Loader2, Trash2 } from "lucide-react";
 import { apiFetch } from "../../../services/apiService";
 import { useAuth } from "../../../context/AuthContext";
-import CreateCourseModal from "./CreateCourseModal"; // Pastikan path ini benar (relative ke direktori yang sama)
+import CreateCourseModal from "./CreateCourseModal";
 
 export default function AdminCourseList() {
     const [courses, setCourses] = useState([]);
@@ -17,7 +17,6 @@ export default function AdminCourseList() {
         setLoading(true);
         setError(null);
         try {
-            // Menggunakan endpoint public: GET /course/ (semua course)
             const response = await apiFetch("/course/", "GET");
             setCourses(response);
         } catch (err) {
@@ -32,7 +31,6 @@ export default function AdminCourseList() {
         if(token) fetchCourses();
     }, [fetchCourses, token]);
 
-    // Handle Delete Course (Simulasi/API Call)
     const handleDeleteCourse = async (courseId, courseName) => {
         if (!window.confirm(`Yakin ingin menghapus Course ${courseName} (ID: ${courseId})? Ini akan menghapus Assignments, Submissions, dan Enrollments terkait!`)) {
             return;
@@ -40,18 +38,16 @@ export default function AdminCourseList() {
 
         setLoading(true);
         try {
-            // Endpoint di backend: DELETE /course/{course_id}
             await apiFetch(`/course/${courseId}`, "DELETE"); 
             alert(`✅ Course ${courseName} berhasil dihapus.`);
-            fetchCourses(); // Refresh list
+            fetchCourses(); 
         } catch (err) {
             console.error("Delete failed:", err);
-            alert(`❌ Gagal menghapus course: ${err.message}. Pastikan tidak ada data yang terkait yang belum dihapus!`);
+            alert(`❌ Gagal menghapus course: ${err.message}.`);
             setLoading(false);
         }
     };
 
-    // Fungsi untuk memicu refresh setelah modal Create Course ditutup dan sukses
     const handleCourseCreated = () => {
         setIsCreateModalOpen(false);
         fetchCourses(); 
@@ -63,7 +59,6 @@ export default function AdminCourseList() {
                 <Layers size={24} /> Course Management
             </h1>
 
-            {/* Header / Add Button */}
             <div className="flex justify-between items-center mb-6">
                 <div className="relative w-1/3">
                     <input
@@ -74,7 +69,6 @@ export default function AdminCourseList() {
                     <Search className="absolute left-2.5 top-2.5 text-gray-400" size={16} />
                 </div>
                 
-                {/* Tombol Tambah Course (Membuka Modal) */}
                 <button
                     onClick={() => setIsCreateModalOpen(true)}
                     className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition flex items-center gap-2"
@@ -102,11 +96,10 @@ export default function AdminCourseList() {
                     <table className="min-w-full divide-y divide-gray-200 text-sm">
                         <thead className="bg-gray-50">
                             <tr>
-                                <th className="px-6 py-3 text-left font-medium text-gray-500 w-[15%]">Code</th>
-                                <th className="px-6 py-3 text-left font-medium text-gray-500 w-[30%]">Course Name</th>
-                                <th className="px-6 py-3 text-left font-medium text-gray-500 w-[15%]">Access Code</th>
-                                <th className="px-6 py-3 text-left font-medium text-gray-500 w-[15%]">Created At</th>
-                                <th className="px-6 py-3 text-center font-medium text-gray-500 w-[10%]">Actions</th>
+                                <th className="px-6 py-3 text-left font-medium text-gray-500 w-[20%]">Code</th>
+                                <th className="px-6 py-3 text-left font-medium text-gray-500 w-[45%]">Course Name</th>
+                                <th className="px-6 py-3 text-left font-medium text-gray-500 w-[20%]">Access Code</th>
+                                <th className="px-6 py-3 text-center font-medium text-gray-500 w-[15%]">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
@@ -114,26 +107,18 @@ export default function AdminCourseList() {
                                 <tr key={course.id_course} className="hover:bg-gray-50">
                                     <td className="px-6 py-4 font-medium text-[#173A64]">{course.kode_course}</td>
                                     <td className="px-6 py-4">{course.nama_course}</td>
-                                    <td className="px-6 py-4 font-mono text-xs">{course.access_code}</td>
-                                    <td className="px-6 py-4 text-gray-500">
-                                        {new Date(course.created_at).toLocaleDateString()}
+                                    <td className="px-6 py-4 font-mono text-xs font-bold text-gray-600 bg-gray-50 text-center rounded-sm">
+                                        {course.access_code}
                                     </td>
                                     <td className="px-6 py-4 text-center whitespace-nowrap">
-                                        <div className="flex justify-center space-x-2">
-                                            {/* Tombol Edit */}
-                                            <button 
-                                                title="Edit Course"
-                                                className="text-blue-600 hover:text-blue-900 p-1 rounded-md hover:bg-blue-50 transition"
-                                            >
-                                                <Edit2 size={16} />
-                                            </button>
-                                            {/* Tombol Delete */}
+                                        <div className="flex justify-center">
+                                            {/* Tombol Delete saja */}
                                             <button 
                                                 onClick={() => handleDeleteCourse(course.id_course, course.nama_course)}
                                                 title="Delete Course"
-                                                className="text-red-600 hover:text-red-900 p-1 rounded-md hover:bg-red-50 transition"
+                                                className="text-red-600 hover:text-red-900 p-2 rounded-md hover:bg-red-50 transition"
                                             >
-                                                <Trash2 size={16} />
+                                                <Trash2 size={18} />
                                             </button>
                                         </div>
                                     </td>
@@ -144,11 +129,10 @@ export default function AdminCourseList() {
                 </div>
             )}
 
-            {/* Modal Create Course (Memanggil handler sukses) */}
             {isCreateModalOpen && (
                 <CreateCourseModal 
                     onClose={() => setIsCreateModalOpen(false)} 
-                    refreshDosenList={handleCourseCreated} // Panggil handler sukses di sini
+                    refreshDosenList={handleCourseCreated} 
                 />
             )}
         </div>

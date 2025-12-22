@@ -89,13 +89,7 @@ export default function CourseCard({ course, onRefresh }) {
             {course.category || "Informatics"}
           </span>
           
-          <button
-            onClick={handleEditClick}
-            className="absolute top-2 right-2 flex items-center gap-1 bg-white/90 text-gray-700 text-[10px] px-2 py-1 rounded-md hover:bg-white transition shadow-sm font-bold"
-          >
-            <Edit2 size={10} />
-            Edit
-          </button>
+
         </div>
 
         <div className="p-3 flex justify-between items-center">

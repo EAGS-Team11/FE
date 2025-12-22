@@ -147,99 +147,94 @@ export default function InputEssay() {
   
   // --- RENDER UI UTAMA ---
   return (
-    <div className="w-full bg-[#F6F7FB] min-h-screen p-6 md:p-10 font-[Inter] py-20">
+    <div className="w-full bg-[#F6F7FB] min-h-screen font-[Inter] pt-28 pb-10 px-6 md:p-10"> 
+      {/* ^ PERBAIKAN: pt-28 untuk memberi jarak dari Navbar */}
+      
       <div className="max-w-4xl mx-auto">
         
         {/* Header Assignment */}
-        <div className="bg-white shadow-sm rounded-2xl p-8 mb-8 border border-gray-200">
-            <h1 className="text-2xl font-bold text-[#173A64] flex items-center mb-2">
-                <FileText className="w-6 h-6 mr-3 text-blue-600" />
+        <div className="bg-white shadow-sm rounded-2xl p-6 md:p-8 mb-8 border border-gray-200">
+            <h1 className="text-2xl font-bold text-[#173A64] flex items-center mb-4">
+                <FileText className="w-7 h-7 mr-3 text-blue-600" />
                 {assignment.judul}
             </h1>
             
-            <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-6">
-                <span className="flex items-center gap-1 bg-blue-50 text-blue-700 px-3 py-1 rounded-full font-medium">
+            <div className="flex flex-wrap gap-3 text-sm mb-6">
+                <span className="flex items-center gap-1.5 bg-blue-50 text-blue-700 px-4 py-1.5 rounded-full font-semibold border border-blue-100">
                     <Clock className="w-4 h-4" /> 
-                    Deadline: {assignment.deadline ? new Date(assignment.deadline).toLocaleString() : 'Tidak ada'}
+                    Deadline: {assignment.deadline ? new Date(assignment.deadline).toLocaleString('id-ID') : 'Tidak ada'}
                 </span>
-                <span className="bg-purple-50 text-purple-700 px-3 py-1 rounded-full font-medium">
-                    {assignment.questions ? assignment.questions.length : 0} Soal
+                <span className="flex items-center gap-1.5 bg-purple-50 text-purple-700 px-4 py-1.5 rounded-full font-semibold border border-purple-100">
+                    {assignment.questions ? assignment.questions.length : 0} Soal Essay
                 </span>
-                {assignment.time_duration && (
-                     <span className="bg-orange-50 text-orange-700 px-3 py-1 rounded-full font-medium">
-                        Durasi: {assignment.time_duration}
-                    </span>
-                )}
             </div>
 
-            <div className="bg-gray-50 p-4 rounded-xl text-gray-700 border border-gray-200">
-                {assignment.deskripsi || "Kerjakan soal-soal di bawah ini dengan teliti."}
+            <div className="bg-gray-50 p-5 rounded-xl text-gray-600 leading-relaxed border border-gray-100 italic">
+                {assignment.deskripsi || "Silakan kerjakan soal-soal di bawah ini dengan jawaban yang orisinal."}
             </div>
         </div>
         
-        <form onSubmit={handleSubmit} className="space-y-8 pb-24">
+        {/* PERBAIKAN: pb-32 agar konten terakhir tidak terhalang Footer Button */}
+        <form onSubmit={handleSubmit} className="space-y-8 pb-32">
           
-          {/* Loop Questions */}
           {assignment.questions && assignment.questions.length > 0 ? (
             assignment.questions
                 .sort((a, b) => a.nomor_soal - b.nomor_soal)
                 .map((q, index) => (
-                <div key={q.id_question} className="bg-white shadow-sm rounded-2xl p-8 border border-gray-200 relative overflow-hidden">
-                    {/* Hiasan Nomor Soal */}
-                    <div className="absolute top-0 left-0 bg-[#173A64] text-white px-4 py-2 rounded-br-2xl text-sm font-bold shadow-sm">
-                        Soal {index + 1}
+                <div key={q.id_question} className="bg-white shadow-md rounded-2xl p-8 border border-gray-100 relative overflow-hidden transition-all hover:shadow-lg">
+                    {/* Badge Nomor Soal */}
+                    <div className="absolute top-0 left-0 bg-[#173A64] text-white px-6 py-2 rounded-br-2xl text-sm font-bold shadow-md">
+                        SOAL {index + 1}
                     </div>
                     
-                    <div className="flex justify-end mb-4">
-                         <span className="text-xs font-bold text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                            Bobot: {q.bobot}
+                    <div className="flex justify-end mb-6">
+                         <span className="text-[10px] tracking-widest uppercase font-black text-gray-400 bg-gray-50 px-3 py-1 rounded-lg border border-gray-200">
+                            Poin Maks: {q.bobot}
                         </span>
                     </div>
 
-                    {/* Teks Soal */}
-                    <div className="mb-6 mt-4 text-gray-800 text-lg leading-relaxed font-medium">
+                    <div className="mb-6 mt-2 text-gray-800 text-lg leading-relaxed font-semibold">
                         {q.teks_soal}
                     </div>
 
-                    {/* Area Jawaban */}
-                    <div>
-                        <label className="block text-xs font-bold text-gray-400 uppercase mb-2">Jawaban Anda</label>
+                    <div className="relative">
+                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest">Lembar Jawaban</label>
                         <textarea
                             rows="6"
                             value={answers[q.id_question] || ''}
                             onChange={(e) => handleAnswerChange(q.id_question, e.target.value)}
-                            placeholder="Ketik jawaban Anda di sini..."
-                            className="w-full border border-gray-300 rounded-xl p-4 text-base focus:outline-none focus:ring-2 focus:ring-[#173A64] focus:border-transparent transition shadow-inner bg-gray-50 focus:bg-white"
+                            placeholder="Tuliskan analisis atau jawaban lengkap Anda di sini..."
+                            className="w-full border border-gray-200 rounded-2xl p-5 text-base focus:outline-none focus:ring-2 focus:ring-[#173A64] focus:border-transparent transition-all shadow-inner bg-gray-50 focus:bg-white placeholder:text-gray-300"
                         />
                     </div>
                 </div>
             ))
           ) : (
-            <div className="text-center py-10 bg-white rounded-xl shadow-sm">
-                <AlertCircle className="w-10 h-10 text-gray-300 mx-auto mb-2" />
-                <p className="text-gray-500">Belum ada soal untuk tugas ini.</p>
+            <div className="text-center py-16 bg-white rounded-2xl shadow-sm border border-dashed border-gray-300">
+                <AlertCircle className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                <p className="text-gray-400 font-medium">Belum ada daftar soal tersedia.</p>
             </div>
           )}
 
-          {/* Footer Action */}
-          <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-[0_-5px_15px_rgba(0,0,0,0.05)] z-20">
+          {/* Footer Action Bar */}
+          <div className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md border-t border-gray-200 p-4 shadow-[0_-10px_20px_rgba(0,0,0,0.03)] z-50">
              <div className="max-w-4xl mx-auto flex justify-between items-center">
                 <button
                     type="button"
                     onClick={() => navigate(-1)}
-                    className="flex items-center gap-2 text-gray-500 hover:text-[#173A64] font-bold transition px-4 py-2 rounded-lg hover:bg-gray-100"
+                    className="flex items-center gap-2 text-gray-500 hover:text-red-600 font-bold transition px-6 py-3 rounded-xl hover:bg-red-50"
                 >
-                    <ArrowLeft className="w-5 h-5" /> Batal
+                    <ArrowLeft className="w-5 h-5" /> Kembali
                 </button>
 
                 <button
                     type="submit"
                     disabled={isSubmitting}
-                    className={`flex items-center gap-2 px-8 py-3 rounded-xl font-bold text-white shadow-lg transition transform hover:-translate-y-1 ${
-                        isSubmitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#173A64] hover:bg-[#23245c]'
+                    className={`flex items-center gap-2 px-10 py-3.5 rounded-xl font-bold text-white shadow-xl transition active:scale-95 ${
+                        isSubmitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#173A64] hover:bg-[#0f2642] hover:shadow-blue-900/20'
                     }`}
                 >
-                    {isSubmitting ? "Mengirim..." : "Kirim Jawaban"} 
+                    {isSubmitting ? "Sedang Mengirim..." : "Kumpulkan Sekarang"} 
                     {!isSubmitting && <Send className="w-5 h-5" />}
                 </button>
              </div>

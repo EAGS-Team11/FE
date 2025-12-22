@@ -149,17 +149,7 @@ export default function NavbarDosen({ isSidebarOpen, setIsSidebarOpen }) {
               </li>
 
               {/* AI Grading Review */}
-              <li
-                onClick={() => handleNavigation("AI Grading Review")}
-                className={`flex items-center space-x-3 px-4 py-3 cursor-pointer transition-all 
-                  ${
-                    isActive("/dosen/AiGrading1")
-                      ? "bg-white/20 shadow-md"
-                      : "hover:bg-white/10"
-                  }`}
-              >
-                <MessageSquare size={18} /> <span>AI Grading Review</span>
-              </li>
+
             </ul>
           </div>
         </div>
